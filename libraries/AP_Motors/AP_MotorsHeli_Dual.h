@@ -61,6 +61,9 @@ public:
     // output_test - spin a motor at the pwm value specified
     void output_test(uint8_t motor_seq, int16_t pwm) override;
 
+    // set_rpm - for rotor speed governor
+    void set_rpm(int16_t rotor_rpm) override;
+
     // set_desired_rotor_speed - sets target rotor speed as a number from 0 ~ 1000
     void set_desired_rotor_speed(float desired_speed) override;
 
@@ -72,6 +75,12 @@ public:
 
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     bool rotor_speed_above_critical() const  override { return _rotor.get_rotor_speed() > _rotor.get_critical_speed(); }
+    
+    // get_governor_output
+    float get_governor_output() const { return _rotor.get_governor_output(); }
+    
+    // get_control_output
+    float get_control_output() const { return _rotor.get_control_output(); }
 
     // calculate_scalars - recalculates various scalars used
     void calculate_scalars() override;
