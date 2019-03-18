@@ -1,3 +1,24 @@
+HeliPilot Release Notes:
+------------------------------------------------------------------
+HeliPilot 19.08.05 Pre-Release 05-August-2019
+Changes from ArduHeli 3.6.7
+1) Actual rotor speed used for runup complete when rotor speed sensor is installed
+2) Four-servo swashplate support added
+3) All throttle related settings changed to 0-100%
+4) General improvements to param descriptions
+------------------------------------------------------------------
+ArduHeli 3.6.7 Stable Release 23-June-2019
+Changes from Copter 3.6.7
+1) Enhancements
+    a) Helicopter rotor droop speed governor
+    b) Improved Acro for Heli with virtual flybar
+    c) Remove collective pre-arm check for helicopters
+    d) Improved handling of slowdown and speed changes in Auto
+    e) Improved GCS message for throttle hold
+    f) Changed 'motor interlock' GSC message to 'throttle hold' for heli
+    g) Improve governor to handle signal outliers
+------------------------------------------------------------------
+------------------------------------------------------------------
 ArduPilot Copter Release Notes:
 ------------------------------------------------------------------
 Copter 3.6.12 13-Dec-2019 / 3.6.12-rc1 06-Dec-2019
