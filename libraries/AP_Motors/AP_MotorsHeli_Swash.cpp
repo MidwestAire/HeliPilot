@@ -20,57 +20,84 @@
 
 extern const AP_HAL::HAL& hal;
 
-const AP_Param::GroupInfo SwashInt16Param::var_info[] = {
+const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
 
-    // @Param: ENABLE
-    // @DisplayName: Enable settings for H3
-    // @Description: Automatically set when H3 swash type is selected. Should not be set manually.
+    // @Param: TYPE
+    // @DisplayName: Swashplate Type
+    // @Description: H3 is generic, three-servo only. H3_120/H3_140 plates have Motor1 left side, Motor2 right side, Motor3 elevator in rear. HR3_120/HR3_140 have Motor1 right side, Motor2 left side, Motor3 elevator in front - use H3_120/H3_140 and reverse servo and collective directions as necessary. For all H3_90 swashplates use H4_90 and don't use servo output for the missing servo. For H4-90 Motors1&2 are left/right respectively, Motors3&4 are rear/front respectively. For H4-45 Motors1&2 are LF/RF, Motors3&4 are LR/RR 
+    // @Values: 0:H3 Generic, 1:H1 non-CPPM, 2:H3_140, 3:H3_120, 4:H4_90, 5:H4_45
+    // @User: Standard
+    AP_GROUPINFO("TYPE", 1, AP_MotorsHeli_Swash, _swashplate_type, SWASHPLATE_TYPE_H3),
+
+    // @Param: COL_DIR
+    // @DisplayName: Collective Control Direction
+    // @Description: Direction collective moves for positive pitch. 0 for Normal, 1 for Reversed
+    // @Values: 0:Normal,1:Reversed
+    // @User: Standard
+    AP_GROUPINFO("COL_DIR", 2, AP_MotorsHeli_Swash, _swash_coll_dir, COLLECTIVE_DIRECTION_NORMAL),
+
+    // @Param: LIN_SVO
+    // @DisplayName: Linearize swashplate servo mechanical throw
+    // @Description: This linearizes the swashplate servo's mechanical output to account for nonlinear output due to arm rotation.  This requires a specific setup procedure to work properly.  The servo arm must be centered on the mechanical throw at the servo trim position and the servo trim position kept as close to 1500 as possible. Leveling the swashplate can only be done through the pitch links.  See the ardupilot wiki for more details on setup.
+    // @Values: 0:Disabled,1:Enabled
+    // @User: Standard
+    AP_GROUPINFO("LIN_SVO", 3, AP_MotorsHeli_Swash, _linear_swash_servo, 0),
+
+    // @Param: H3_ENABLE
+    // @DisplayName: Enable generic H3 swashplate settings
+    // @Description: Automatically set when H3 generic swash type is selected. Do not set manually.
     // @Values: 0:Disabled,1:Enabled
     // @User: Advanced
-    AP_GROUPINFO_FLAGS("ENABLE", 1, SwashInt16Param, enable, 0, AP_PARAM_FLAG_ENABLE),
+    AP_GROUPINFO_FLAGS("H3_ENABLE", 4, AP_MotorsHeli_Swash, enable, 0, AP_PARAM_FLAG_ENABLE),
 
-    // @Param: SV1_POS
-    // @DisplayName: servo1_pos
-    // @Description: servo 1 position
-    // @Range: -180 to 180
+    // @Param: H3_SV1_POS
+    // @DisplayName: servo 1 position
+    // @Description: Azimuth position on swashplate for servo 1 with the front of the heli being 0 deg
+    // @Range: -180 180
     // @Units: deg
     // @User: Advanced
-    AP_GROUPINFO("SV1_POS", 2, SwashInt16Param, servo1_pos, -60),
+    AP_GROUPINFO("H3_SV1_POS", 5, AP_MotorsHeli_Swash, _servo1_pos, -60),
 
-    // @Param: SV2_POS
-    // @DisplayName: servo2_pos
-    // @Description: servo 2 position
-    // @Range: -180 to 180
+    // @Param: H3_SV2_POS
+    // @DisplayName: servo 2 position
+    // @Description: Azimuth position on swashplate for servo 2 with the front of the heli being 0 deg
+    // @Range: -180 180
     // @Units: deg
     // @User: Advanced
-    AP_GROUPINFO("SV2_POS", 3, SwashInt16Param, servo2_pos, 60),
+    AP_GROUPINFO("H3_SV2_POS", 6, AP_MotorsHeli_Swash, _servo2_pos, 60),
 
-    // @Param: SV3_POS
-    // @DisplayName: servo3_pos
-    // @Description: servo 3 position
-    // @Range: -180 to 180
+    // @Param: H3_SV3_POS
+    // @DisplayName: servo 3 position
+    // @Description: Azimuth position on swashplate for servo 3 with the front of the heli being 0 deg
+    // @Range: -180 180
     // @Units: deg
     // @User: Advanced
-    AP_GROUPINFO("SV3_POS", 4, SwashInt16Param, servo3_pos, 180),
+    AP_GROUPINFO("H3_SV3_POS", 7, AP_MotorsHeli_Swash, _servo3_pos, 180),
     
-    // @Param: PHANG
+    // @Param: H3_PHANG
     // @DisplayName: Swashplate Phase Angle Compensation
     // @Description: Only for H3 swashplate.  If pitching the swash forward induces a roll, this can be correct the problem
     // @Range: -30 30
     // @Units: deg
     // @User: Advanced
     // @Increment: 1
-    AP_GROUPINFO("PHANG", 5, SwashInt16Param, phase_angle, 0),
+    AP_GROUPINFO("H3_PHANG", 8, AP_MotorsHeli_Swash, _phase_angle, 0),
    
     AP_GROUPEND
 };
 
-/*
-  a manual swashplate definition with enable and servo position parameters - constructor
- */
-SwashInt16Param::SwashInt16Param(void)
+// configure - configure the swashplate settings for any updated parameters
+void AP_MotorsHeli_Swash::configure()
 {
-    AP_Param::setup_object_defaults(this, var_info);    
+
+    _swash_type = static_cast<SwashPlateType>(_swashplate_type.get());
+    _collective_direction = static_cast<CollectiveDirection>(_swash_coll_dir.get());
+    _make_servo_linear = _linear_swash_servo;
+    if (_swash_type == SWASHPLATE_TYPE_H3) {
+        enable = 1;
+    } else {
+        enable = 0;
+    }
 }
 
 // CCPM Mixers - calculate mixing scale factors by swashplate type
@@ -163,15 +190,15 @@ void AP_MotorsHeli_Swash::calculate_roll_pitch_collective_factors()
 }
 
 // get_servo_out - calculates servo output
-float AP_MotorsHeli_Swash::get_servo_out(int8_t CH_num, float pitch, float roll, float collective)
+float AP_MotorsHeli_Swash::get_servo_out(int8_t ch_num, float pitch, float roll, float collective) const
 {
     // Collective control direction. Swash moves up for negative collective pitch, down for positive collective pitch
     if (_collective_direction == COLLECTIVE_DIRECTION_REVERSED){
         collective = 1 - collective;
     }
 
-    float servo = ((_rollFactor[CH_num] * roll) + (_pitchFactor[CH_num] * pitch))*0.45f + _collectiveFactor[CH_num] * collective;
-    if (_swash_type == SWASHPLATE_TYPE_H1 && (CH_num == CH_1 || CH_num == CH_2)) {
+    float servo = ((_rollFactor[ch_num] * roll) + (_pitchFactor[ch_num] * pitch))*0.45f + _collectiveFactor[ch_num] * collective;
+    if (_swash_type == SWASHPLATE_TYPE_H1 && (ch_num == CH_1 || ch_num == CH_2)) {
         servo += 0.5f;
     }
 
@@ -185,16 +212,14 @@ float AP_MotorsHeli_Swash::get_servo_out(int8_t CH_num, float pitch, float roll,
     return servo;
 }
 
-float AP_MotorsHeli_Swash::get_linear_servo_output(float input)
+// set_linear_servo_out - sets swashplate servo output to be linear
+float AP_MotorsHeli_Swash::get_linear_servo_output(float input) const
 {
-    float ret;
 
     input = constrain_float(input, -1.0f, 1.0f);
 
-    //servo output is normalized to 0.866 for a linear throw
-    ret = asin(0.766044f * input) * 1.145916;
-
-    return ret;
+    //servo output is calculated by normalizing input to 50 deg arm rotation as full input for a linear throw
+    return safe_asin(0.766044f * input) * 1.145916;
 
 }
 
