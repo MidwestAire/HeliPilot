@@ -49,11 +49,12 @@ public:
     float       get_idle_output() { return _idle_output; }
     void        set_idle_output(float idle_output) { _idle_output = idle_output; }
 
-    // set engine governor parameters
+    // set rotor speed governor parameters
     void        set_governor_disengage(float governor_disengage) {_governor_disengage = governor_disengage; }
-    void        set_governor_droop_setting(float governor_droop_setting) { _governor_droop_setting = governor_droop_setting; }
+    void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
-    void        set_governor_setpoint(float governor_setpoint) { _governor_setpoint = governor_setpoint; }
+    void        set_governor_reference(float governor_reference) { _governor_reference = governor_reference; }
+    void        set_governor_range(float governor_range) { _governor_range = governor_range; }
     void        set_governor_tc(float governor_tc) {_governor_tc = governor_tc; }
 
     // get_desired_speed
@@ -115,9 +116,10 @@ private:
     float           _collective_in;                 // collective in for throttle curve calculation, range 0-1.0f
     int16_t         _rotor_rpm;                     // rotor rpm from speed sensor for governor
     float           _governor_disengage = 0.0f;     // throttle percentage where governor disenages to allow return to flight idle
-    float           _governor_droop_setting = 0.0f; // governor droop setting, range 0-100%
+    float           _governor_droop_response = 0.0f;// governor droop setting, range 0-100%
     float           _governor_output = 0.0f;        // governor output for rotor speed control
-    int16_t         _governor_setpoint = 0.0f;      // governor speed setpoint, range 800-3500 rpm
+    int16_t         _governor_reference = 0.0f;     // governor speed setpoint, range 800-3500 rpm
+    float           _governor_range = 0.0f;         // RPM range +/- governor rpm reference setting where governor is operational
     bool            _governor_engage = false;       // RSC governor status flag for soft-start
     float           _governor_tc = 0.0f;            // governor throttle curve gain, range 50-100%
 

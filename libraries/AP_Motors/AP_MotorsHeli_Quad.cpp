@@ -115,8 +115,9 @@ void AP_MotorsHeli_Quad::calculate_armed_scalars()
     _rotor.set_idle_output(_rsc_idle_output*0.001f);
     _rotor.set_throttle_curve(thrcrv, (uint16_t)_rsc_slewrate.get());
     _rotor.set_governor_disengage(_rsc_governor_disengage*0.01f);
-    _rotor.set_governor_droop_setting(_rsc_governor_droop_setting*0.01f);
-    _rotor.set_governor_setpoint(_rsc_governor_setpoint);
+    _rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
+    _rotor.set_governor_reference(_rsc_governor_reference);
+    _rotor.set_governor_range(_rsc_governor_range);
     _rotor.set_governor_tc(_rsc_governor_tc*0.01f);
 }
 
