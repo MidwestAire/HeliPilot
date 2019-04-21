@@ -38,10 +38,11 @@
 #define AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT   1000
 
 // RSC governor defaults
-#define AP_MOTORS_HELI_RSC_GOVERNOR_SET_DEFAULT   1500
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE     25
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT 30
-#define AP_MOTORS_HELI_RSC_GOVERNOR_TC            90
+#define AP_MOTORS_HELI_RSC_GOVERNOR_SET_DEFAULT       1500
+#define AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT 25
+#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT     30
+#define AP_MOTORS_HELI_RSC_GOVERNOR_TC_DEFAULT        90
+#define AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT     100
 
 // default main rotor ramp up time in seconds
 #define AP_MOTORS_HELI_RSC_RAMP_TIME            1       // 1 second to ramp output to main rotor ESC to setpoint
@@ -226,8 +227,9 @@ protected:
     AP_Int16        _rsc_slewrate;              // throttle slew rate (percentage per second)
     AP_Int8         _servo_test;                // sets number of cycles to test servo movement on bootup
     AP_Float        _rsc_governor_disengage;    // sets the throttle percent where the governor disengages for return to flight idle
-    AP_Int16        _rsc_governor_setpoint;     // sets rotor speed for governor
-    AP_Float        _rsc_governor_droop_setting;// governor response to droop under load
+    AP_Float        _rsc_governor_range;        // RPM range +/- governor rpm reference setting where governor is operational
+    AP_Int16        _rsc_governor_reference;    // sets rotor speed for governor
+    AP_Float        _rsc_governor_droop_response;// governor response to droop under load
     AP_Float        _rsc_governor_tc;           // governor throttle curve weighting, range 50-100%
 
     // internal variables

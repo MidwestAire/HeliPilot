@@ -93,19 +93,18 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
                 // governor provides two modes of throttle control - governor engaged
                 // or throttle curve if governor is out of range or sensor failed
             	float desired_throttle = calculate_desired_throttle(_collective_in);
-            	// governor is engaged if within -100/+50 rpm of setpoint
-                if ((_rotor_rpm >= (_governor_setpoint - 100.0f)) && (_rotor_rpm <= (_governor_setpoint + 50.0f))) {
-            	    float governor_droop = constrain_float(_governor_setpoint - _rotor_rpm,0.0f,10.0f);
-            	    // use 33% of normal output for soft-starting governor with no droop compensation
-            	    // this will be over-ridden during autorotation bailout via the throttle curve
-            	    if (_governor_engage && _rotor_rpm < (_governor_setpoint - 40.0f)) {
-                        float governor_droop_response = ((_rotor_rpm - _governor_setpoint) * desired_throttle) * -0.01f;
-            	        _governor_output = (governor_droop_response * _governor_droop_setting) * 0.33f;
-            	    } else {
-            	        // normal flight status, use full governor control with droop compensation
+            	// governor is active if within user-set range from reference speed
+                if ((_rotor_rpm >= (_governor_reference - _governor_range)) && (_rotor_rpm <= (_governor_reference + _governor_range))) {
+            	    float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_range);
+            	    // if rpm has not reached 40% of the operational range from reference speed, governor
+            	    // remains in pre-engage status, no reference speed compensation due to droop
+            	    // this provides a soft-start function that engages the governor less aggressively
+            	    if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_range * 0.4f))) {
+                        _governor_output = ((_rotor_rpm - _governor_reference) * desired_throttle) * _governor_droop_response * -0.01f;
+                    } else {
+            	        // normal flight status, governor fully engaged with reference speed compensation for droop
             	        _governor_engage = true;
-                        float governor_droop_response = ((_rotor_rpm - (_governor_setpoint + governor_droop)) * desired_throttle) * -0.01f;
-                        _governor_output = governor_droop_response * _governor_droop_setting;
+                        _governor_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor_droop_response * -0.01f;
                     }
                     // check for governor disengage for return to flight idle power
                     if (desired_throttle <= _governor_disengage) {
