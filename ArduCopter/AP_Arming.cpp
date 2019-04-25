@@ -44,7 +44,11 @@ bool AP_Arming_Copter::pre_arm_checks(bool display_failure)
     // otherwise exit immediately.  This check to be repeated,
     // as state can change at any time.
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
+        #if FRAME_CONFIG == HELI_FRAME
+        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Hold Switch");
+        #else
         check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
+        #endif
     }
 
     // succeed if pre arm checks are disabled
@@ -545,7 +549,11 @@ bool AP_Arming_Copter::arm_checks(bool display_failure, bool arming_from_gcs)
     // if we are using motor interlock switch and it's enabled, fail to arm
     // skip check in Throw mode which takes control of the motor interlock
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
+        #if FRAME_CONFIG == HELI_FRAME
+        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Hold Switch");
+        #else
         check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
+        #endif
         return false;
     }
 
