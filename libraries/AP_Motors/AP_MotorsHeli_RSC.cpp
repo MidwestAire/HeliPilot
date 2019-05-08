@@ -111,7 +111,10 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
                         _governor_output = 0.0f;
                         _governor_engage = false;
                     }
-            	    _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tc) + _governor_output) - _idle_output)), _idle_output, 1.0f);
+                    // throttle output with governor on is constrained from minimum called for from throttle curve
+                    // to maximum WOT. This prevents outliers on rpm signal from closing the throttle in flight due
+                    // to rpm sensor failure or bad signal quality
+            	    _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tc) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tc)) - _idle_output), 1.0f);
             	} else {
             	    // hold governor output at zero, engage status is false and use the throttle curve
             	    // this is failover for in-flight failure of the speed sensor
