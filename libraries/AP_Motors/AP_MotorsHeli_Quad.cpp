@@ -97,7 +97,7 @@ void AP_MotorsHeli_Quad::set_desired_rotor_speed(float desired_speed)
 }
 
 // set_rotor_rpm - used for governor with speed sensor
-void AP_MotorsHeli_Quad::set_rpm(int16_t rotor_rpm)
+void AP_MotorsHeli_Quad::set_rpm(float rotor_rpm)
 {
     _rotor.set_rotor_rpm(rotor_rpm);
 }
@@ -118,7 +118,7 @@ void AP_MotorsHeli_Quad::calculate_armed_scalars()
     _rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
     _rotor.set_governor_reference(_rsc_governor_reference);
     _rotor.set_governor_range(_rsc_governor_range);
-    _rotor.set_governor_tc(_rsc_governor_tc*0.01f);
+    _rotor.set_governor_tcgain(_rsc_governor_tcgain*0.01f);
 }
 
 // calculate_scalars
@@ -284,7 +284,6 @@ void AP_MotorsHeli_Quad::move_actuators(float roll_out, float pitch_out, float c
         rc_write_angle(AP_MOTORS_MOT_1+i, out[i] * QUAD_SERVO_MAX_ANGLE);
     }
 }
-
 
 // servo_test - move servos through full range of movement
 void AP_MotorsHeli_Quad::servo_test()
