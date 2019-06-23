@@ -35,14 +35,12 @@ void AP_MotorsHeli_RSC::init_servo()
 // TODO: Look at possibly calling this at a slower rate.  Doesn't need to be called every cycle.
 void AP_MotorsHeli_RSC::set_throttle_curve(float thrcrv[5], uint16_t slewrate)
 {
-
     // Ensure user inputs are within parameter limits
     for (uint8_t i = 0; i < 5; i++) {
         thrcrv[i] = constrain_float(thrcrv[i], 0.0f, 1.0f);
     }
     // Calculate the spline polynomials for the throttle curve
     splinterp5(thrcrv,_thrcrv_poly);
-
     _power_slewrate = slewrate;
 }
 
@@ -114,7 +112,7 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
                     // throttle output with governor on is constrained from minimum called for from throttle curve
                     // to maximum WOT. This prevents outliers on rpm signal from closing the throttle in flight due
                     // to rpm sensor failure or bad signal quality
-            	    _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tc) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tc)) - _idle_output), 1.0f);
+            	    _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
             	} else {
             	    // hold governor output at zero, engage status is false and use the throttle curve
             	    // this is failover for in-flight failure of the speed sensor
@@ -242,4 +240,3 @@ float AP_MotorsHeli_RSC::calculate_desired_throttle(float collective_in)
     return throttle;
 
 }
-

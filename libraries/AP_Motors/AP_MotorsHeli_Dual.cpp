@@ -254,7 +254,7 @@ void AP_MotorsHeli_Dual::set_desired_rotor_speed(float desired_speed)
 }
 
 // set_rotor_rpm - used for governor with speed sensor
-void AP_MotorsHeli_Dual::set_rpm(int16_t rotor_rpm)
+void AP_MotorsHeli_Dual::set_rpm(float rotor_rpm)
 {
     _rotor.set_rotor_rpm(rotor_rpm);
 }
@@ -265,7 +265,7 @@ void AP_MotorsHeli_Dual::calculate_armed_scalars()
     float thrcrv[5];
     for (uint8_t i = 0; i < 5; i++) {
         thrcrv[i]=_rsc_thrcrv[i]*0.001f;
-    } 
+    }
     _rotor.set_ramp_time(_rsc_ramp_time);
     _rotor.set_runup_time(_rsc_runup_time);
     _rotor.set_critical_speed(_rsc_critical*0.001f);
@@ -275,7 +275,7 @@ void AP_MotorsHeli_Dual::calculate_armed_scalars()
     _rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
     _rotor.set_governor_reference(_rsc_governor_reference);
     _rotor.set_governor_range(_rsc_governor_range);
-    _rotor.set_governor_tc(_rsc_governor_tc*0.01f);
+    _rotor.set_governor_tcgain(_rsc_governor_tcgain*0.01f);
 }
 
 // calculate_scalars
