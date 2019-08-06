@@ -500,10 +500,11 @@ bool AP_MotorsHeli_Single::parameter_check(bool display_msg) const
     // returns false if DDVP tail throttle setting is over 100%
     if (_direct_drive_tailspeed > 100.0f){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Tail throttle setting over 100 percent");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: DDVP throttle over 100 percent");
         }
         return false;
     }
+
     // returns false if Phase Angle is outside of range for H3 swashplate
     if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H3 && (_swashplate.get_phase_angle() > 30 || _swashplate.get_phase_angle() < -30)){
         if (display_msg) {

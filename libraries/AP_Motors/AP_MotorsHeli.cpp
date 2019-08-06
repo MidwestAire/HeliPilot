@@ -76,10 +76,10 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: RSC_MODE
     // @DisplayName: Throttle Control Mode
-    // @Description: Selects the type of throttle control that will be used
+    // @Description: Selects the type of throttle control used. RC Passthru passes the throttle signal from the RC radio but does not provide protection for loss of RC signal. Electric ESC Governor uses H_RSC_SETPOINT to send the throttle signal to an ESC with an internal governor. Throttle Curve controls throttle with the collective by using the five throttle curve settings. Rotor Governor uses the throttle curve with ArduPilot's built-in governor to control rotor speed
     // @Values: 1:RC Passthru,2:Electric ESC Governor,3:Throttle Curve,4:Rotor Governor
     // @User: Standard
-    AP_GROUPINFO("RSC_MODE", 8, AP_MotorsHeli, _rsc_mode, ROTOR_CONTROL_MODE_SPEED_SETPOINT),
+    AP_GROUPINFO("RSC_MODE", 8, AP_MotorsHeli, _rsc_mode, ROTOR_CONTROL_MODE_CLOSED_LOOP_POWER_OUTPUT),
 
     // @Param: LAND_COL_MIN
     // @DisplayName: Landing Collective Minimum
@@ -110,6 +110,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @DisplayName: Critical Rotor Speed
     // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to the percentage of the governor rpm setting used. Even if governor is not used when a speed sensor is installed, set the governor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than electric ESC throttle setting for ESC's with governor, or lower than normal in-flight throttle percentage when the throttle curve or RC Passthru is used.
     // @Range: 0 100
+    // @Units: %
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_CRITICAL", 12, AP_MotorsHeli, _rsc_critical, AP_MOTORS_HELI_RSC_CRITICAL),
@@ -154,40 +155,40 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("RSC_SLEWRATE", 19, AP_MotorsHeli, _rsc_slewrate, 0),
 
     // @Param: RSC_THRCRV_0
-    // @DisplayName: Throttle Servo Position for 0 percent collective
-    // @Description: Throttle Servo Position for 0 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
+    // @DisplayName: Throttle at 0% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative collective pitch position
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_0", 20, AP_MotorsHeli, _rsc_thrcrv[0], AP_MOTORS_HELI_RSC_THRCRV_0_DEFAULT),
 
     // @Param: RSC_THRCRV_25
-    // @DisplayName: Throttle Servo Position for 25 percent collective
-    // @Description: Throttle Servo Position for 25 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
+    // @DisplayName: Throttle at 25% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 25% of it's full collective travel.This may or may not correspond to 25% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 25% of 12 degrees is 3 degrees, so this setting would correspond to +1 degree of positive pitch.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_25", 21, AP_MotorsHeli, _rsc_thrcrv[1], AP_MOTORS_HELI_RSC_THRCRV_25_DEFAULT),
 
     // @Param: RSC_THRCRV_50
-    // @DisplayName: Throttle Servo Position for 50 percent collective
-    // @Description: Throttle Servo Position for 50 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
+    // @DisplayName: Throttle at 50% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_50", 22, AP_MotorsHeli, _rsc_thrcrv[2], AP_MOTORS_HELI_RSC_THRCRV_50_DEFAULT),
 
     // @Param: RSC_THRCRV_75
-    // @DisplayName: Throttle Servo Position for 75 percent collective
-    // @Description: Throttle Servo Position for 75 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
+    // @DisplayName: Throttle at 75% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_75", 23, AP_MotorsHeli, _rsc_thrcrv[3], AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT),
 
     // @Param: RSC_THRCRV_100
-    // @DisplayName: Throttle Servo Position for 100 percent collective
-    // @Description: Throttle Servo Position for 100 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
+    // @DisplayName: Throttle at 100% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel, which is maximum positive pitch.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -203,8 +204,9 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: RSC_GOV_DISGAG
     // @DisplayName: Throttle Percentage for Governor Disengage
-    // @Description: Percentage of throttle where the governor will disenage to allow return to flight idle power. Typically should be set to a value slightly below flight idle throttle. The governor disengage can be disabled by setting this value to zero, requiring throttle hold to shut down the governor
+    // @Description: Percentage of throttle where the governor will disengage to allow return to flight idle power. Typically should be set to the same value as flight idle throttle (the very lowest throttle setting on your throttle curve). The governor disengage can be disabled by setting this value to zero and using the pull-down from the governor TCGAIN to reduce power to flight idle with the collective at it's lowest throttle setting on the throttle curve.
     // @Range: 0 50
+    // @Units: %
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_GOV_DISGAG", 26, AP_MotorsHeli, _rsc_governor_disengage, AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT),
@@ -213,14 +215,16 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @DisplayName: Governor Droop Response Setting
     // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or over-run on headspeed when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the gas generator for proper torque response of the N2 spool
     // @Range: 0 150
+    // @Units: %
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_GOV_DROOP", 27, AP_MotorsHeli, _rsc_governor_droop_response, AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT),
 
     // @Param: RSC_GOV_TCGAIN
     // @DisplayName: Governor Throttle Curve Gain
-    // @Description: Percentage of throttle curve gain in governor output. If the governor runs with excessive droop more than 15 rpm lower than the speed setting, increase this setting until the governor runs at 8-10 rpm droop from the speed setting. The throttle curve must be properly tuned to fly the helicopter without the governor before this setting will work properly
+    // @Description: Percentage of throttle curve gain in governor output. This provides a type of feedforward response to sudden loading or unloading of the engine. If headspeed drops excessively during sudden heavy load, increase the throttle curve gain. If the governor runs with excessive droop more than 15 rpm lower than the speed setting, increase this setting until the governor runs at 8-10 rpm droop from the speed setting. The throttle curve must be properly tuned to fly the helicopter without the governor for this setting to work properly
     // @Range: 50 100
+    // @Units: %
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_GOV_TCGAIN", 28, AP_MotorsHeli, _rsc_governor_tcgain, AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT),
@@ -401,7 +405,7 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     // returns false if _rsc_setpoint exceeds 100% throttle
     if (_rsc_setpoint > 100.0f) {
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Electric throttle over 100 percent");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Throttle setting over 100 percent");
         }
         return false;
     }
@@ -417,7 +421,7 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     // returns false if RSC Runup Time is less than Ramp time as this could cause undesired behaviour of rotor speed estimate when no speed sensor is used
     if (_rsc_runup_time <= _rsc_ramp_time){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Runup time too small");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Runup time too short");
         }
         return false;
     }
