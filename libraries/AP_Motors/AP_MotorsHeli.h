@@ -24,19 +24,19 @@
 #define AP_MOTORS_HELI_LAND_COLLECTIVE_MIN      0
 
 // default main rotor speed (ch8 out) as a number from 0 ~ 1000
-#define AP_MOTORS_HELI_RSC_SETPOINT             700
+#define AP_MOTORS_HELI_RSC_SETPOINT             70
 
 // default main rotor critical speed
-#define AP_MOTORS_HELI_RSC_CRITICAL             500
+#define AP_MOTORS_HELI_RSC_CRITICAL             50
 
 // RSC output defaults
 #define AP_MOTORS_HELI_RSC_IDLE_DEFAULT         0
 #define AP_MOTORS_HELI_RSC_RPM_DEFAULT          1500
-#define AP_MOTORS_HELI_RSC_THRCRV_0_DEFAULT     250
-#define AP_MOTORS_HELI_RSC_THRCRV_25_DEFAULT    320
-#define AP_MOTORS_HELI_RSC_THRCRV_50_DEFAULT    380
-#define AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT    500
-#define AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT   1000
+#define AP_MOTORS_HELI_RSC_THRCRV_0_DEFAULT     25
+#define AP_MOTORS_HELI_RSC_THRCRV_25_DEFAULT    32
+#define AP_MOTORS_HELI_RSC_THRCRV_50_DEFAULT    38
+#define AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT    50
+#define AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT   100
 
 // rotor governor defaults
 #define AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT   25
@@ -106,7 +106,7 @@ public:
     uint8_t get_rsc_mode() const { return _rsc_mode; }
 
     // get_rsc_setpoint - gets contents of _rsc_setpoint parameter (0~1)
-    float get_rsc_setpoint() const { return _rsc_setpoint * 0.001f; }
+    float get_rsc_setpoint() const { return _rsc_setpoint * 0.01f; }
     
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;
