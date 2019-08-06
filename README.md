@@ -1,14 +1,15 @@
-# ArduPilot Project
+# HeliPilot Project
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ArduPilot/ardupilot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+HeliPilot is a fork of the ArduPilot project specific to commercially flown unmanned helicopters
+Credit is given below the ArduPilot project's resources, developers and maintainers.
 
-[![Build SemaphoreCI](https://semaphoreci.com/api/v1/ardupilot/ardupilot/branches/master/badge.svg)](https://semaphoreci.com/ardupilot/ardupilot)
+## License ##
 
-[![Build Travis](https://travis-ci.org/ArduPilot/ardupilot.svg?branch=master)](https://travis-ci.org/ArduPilot/ardupilot)
+The HeliPilot project is compliant with and licenced under the GNU General Public License, version 3.
 
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/5331/badge.svg)](https://scan.coverity.com/projects/ardupilot-ardupilot)
+- [Full Text](https://github.com/ChristopherOlson/HeliPilot/blob/HeliPilot-master/COPYING.txt)
 
-## The ArduPilot project is made up of: ##
+# The ArduPilot project is made up of:
 
 - ArduCopter (or APM:Copter) : [code](https://github.com/ArduPilot/ardupilot/tree/master/ArduCopter), [wiki](http://ardupilot.org/copter/index.html)
 
@@ -20,48 +21,9 @@
 
 - Antenna Tracker : [code](https://github.com/ArduPilot/ardupilot/tree/master/AntennaTracker), [wiki](http://ardupilot.org/antennatracker/index.html)
 
-## User Support & Discussion Forums ##
-
-- Support Forum: <http://discuss.ardupilot.org/>
-
-- Community Site: <http://ardupilot.org>
-
-## Developer Information ##
-
-- Github repository: <https://github.com/ArduPilot/ardupilot>
-
-- Main developer wiki: <http://dev.ardupilot.org>
-
-- Developer discussion: <http://discuss.ardupilot.org>
-
-- Developer email group: drones-discuss@googlegroups.com. Deprecated November 2016. Included for historical reference.
-
 ## Contributors ##
 
 - [Github statistics](https://github.com/ArduPilot/ardupilot/graphs/contributors)
-
-## How To Get Involved ##
-
-- The ArduPilot project is open source and we encourage participation and code contributions: [guidelines for contributors to the ardupilot codebase](http://dev.ardupilot.org/wiki/guidelines-for-contributors-to-the-apm-codebase)
-
-- We have an active group of Beta Testers especially for ArduCopter to help us find bugs: [release procedures](http://dev.ardupilot.org/wiki/release-procedures)
-
-- Desired Enhancements and Bugs can be posted to the [issues list](https://github.com/ArduPilot/ardupilot/issues).
-
-- Helping other users with log analysis on [http://discuss.ardupilot.org/](http://discuss.ardupilot.org/) is always appreciated:
-
-- There is a group of wiki editors as well in case documentation is your thing: <ardu-wiki-editors@googlegroups.com>
-
-- Developer discussions occur on <drones-discuss@google-groups.com>
-
-## License ##
-
-The ArduPilot project is licensed under the GNU General Public
-License, version 3.
-
-- [Overview of license](http://dev.ardupilot.com/wiki/license-gplv3)
-
-- [Full Text](https://github.com/ArduPilot/ardupilot/blob/master/COPYING.txt)
 
 ## Maintainers ##
 
