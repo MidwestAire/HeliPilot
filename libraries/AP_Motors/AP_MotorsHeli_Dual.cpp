@@ -217,12 +217,12 @@ void AP_MotorsHeli_Dual::calculate_armed_scalars()
 {
     float thrcrv[5];
     for (uint8_t i = 0; i < 5; i++) {
-        thrcrv[i]=_rsc_thrcrv[i]*0.001f;
+        thrcrv[i]=_rsc_thrcrv[i]*0.01f;
     }
     _rotor.set_ramp_time(_rsc_ramp_time);
     _rotor.set_runup_time(_rsc_runup_time);
-    _rotor.set_critical_speed(_rsc_critical*0.001f);
-    _rotor.set_idle_output(_rsc_idle_output*0.001f);
+    _rotor.set_critical_speed(_rsc_critical*0.01f);
+    _rotor.set_idle_output(_rsc_idle_output*0.01f);
     _rotor.set_throttle_curve(thrcrv, (uint16_t)_rsc_slewrate.get());
     _rotor.set_governor_disengage(_rsc_governor_disengage*0.01f);
     _rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);

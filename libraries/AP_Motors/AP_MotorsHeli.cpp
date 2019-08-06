@@ -66,11 +66,11 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("SV_MAN",  6, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
     // @Param: RSC_SETPOINT
-    // @DisplayName: Electric ESC Throttle Setting
+    // @DisplayName: Electric ESC Governor Setting
     // @Description: Throttle signal percent for electric helicopters when a governor is used in the ESC
-    // @Range: 0 1000
-    // @Units: PWM
-    // @Increment: 10
+    // @Range: 0 100
+    // @Units: %
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_SETPOINT", 7, AP_MotorsHeli, _rsc_setpoint, AP_MOTORS_HELI_RSC_SETPOINT),
 
@@ -109,16 +109,16 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Param: RSC_CRITICAL
     // @DisplayName: Critical Rotor Speed
     // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to the percentage of the governor rpm setting used. Even if governor is not used when a speed sensor is installed, set the governor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than electric ESC throttle setting for ESC's with governor, or lower than normal in-flight throttle percentage when the throttle curve or RC Passthru is used.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_CRITICAL", 12, AP_MotorsHeli, _rsc_critical, AP_MOTORS_HELI_RSC_CRITICAL),
 
     // @Param: RSC_IDLE
     // @DisplayName: Engine Ground Idle Setting
     // @Description: FOR COMBUSTION ENGINES. Sets the engine ground idle throttle percentage with clutch disengaged. This must be set to zero for electric helicopters under most situations. If the ESC has an autorotation window this can be set to keep the autorotation window open in the ESC. Consult the operating manual for your ESC to set it properly for this purpose
-    // @Range: 0 500
-    // @Increment: 10
+    // @Range: 0 50
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_IDLE", 13, AP_MotorsHeli, _rsc_idle_output, AP_MOTORS_HELI_RSC_IDLE_DEFAULT),
 
@@ -156,40 +156,40 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Param: RSC_THRCRV_0
     // @DisplayName: Throttle Servo Position for 0 percent collective
     // @Description: Throttle Servo Position for 0 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_0", 20, AP_MotorsHeli, _rsc_thrcrv[0], AP_MOTORS_HELI_RSC_THRCRV_0_DEFAULT),
 
     // @Param: RSC_THRCRV_25
     // @DisplayName: Throttle Servo Position for 25 percent collective
     // @Description: Throttle Servo Position for 25 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_25", 21, AP_MotorsHeli, _rsc_thrcrv[1], AP_MOTORS_HELI_RSC_THRCRV_25_DEFAULT),
 
     // @Param: RSC_THRCRV_50
     // @DisplayName: Throttle Servo Position for 50 percent collective
     // @Description: Throttle Servo Position for 50 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_50", 22, AP_MotorsHeli, _rsc_thrcrv[2], AP_MOTORS_HELI_RSC_THRCRV_50_DEFAULT),
 
     // @Param: RSC_THRCRV_75
     // @DisplayName: Throttle Servo Position for 75 percent collective
     // @Description: Throttle Servo Position for 75 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_75", 23, AP_MotorsHeli, _rsc_thrcrv[3], AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT),
 
     // @Param: RSC_THRCRV_100
     // @DisplayName: Throttle Servo Position for 100 percent collective
     // @Description: Throttle Servo Position for 100 percent collective. This is on a scale from 0 to 1000, where 1000 is full throttle and 0 is zero throttle. Actual PWM values are controlled by SERVOX_MIN and SERVOX_MAX. The 0 percent collective is defined by H_COL_MIN and 100 percent collective is defined by H_COL_MAX.
-    // @Range: 0 1000
-    // @Increment: 10
+    // @Range: 0 100
+    // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("RSC_THRCRV_100", 24, AP_MotorsHeli, _rsc_thrcrv[4], AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT),
 
@@ -398,10 +398,10 @@ void AP_MotorsHeli::output_disarmed()
 // parameter_check - check if helicopter specific parameters are sensible
 bool AP_MotorsHeli::parameter_check(bool display_msg) const
 {
-    // returns false if _rsc_setpoint is not higher than _rsc_critical as this would not allow rotor_runup_complete to ever return true for electric helicopters with ESC governor
-    if (_rsc_critical >= _rsc_setpoint) {
+    // returns false if _rsc_setpoint exceeds 100% throttle
+    if (_rsc_setpoint > 100.0f) {
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: H_RSC_CRITICAL too large");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Electric throttle over 100 percent");
         }
         return false;
     }
