@@ -435,9 +435,7 @@ bool Copter::should_log(uint32_t mask)
 // default frame_class to match firmware if possible
 void Copter::set_default_frame_class()
 {
-    if (FRAME_CONFIG == HELI_FRAME &&
-        g2.frame_class.get() != AP_Motors::MOTOR_FRAME_HELI_DUAL &&
-        g2.frame_class.get() != AP_Motors::MOTOR_FRAME_HELI_QUAD) {
+    if (FRAME_CONFIG == HELI_FRAME) {
         g2.frame_class.set(AP_Motors::MOTOR_FRAME_HELI);
     }
 }
@@ -456,8 +454,6 @@ MAV_TYPE Copter::get_frame_mav_type()
         case AP_Motors::MOTOR_FRAME_OCTAQUAD:
             return MAV_TYPE_OCTOROTOR;
         case AP_Motors::MOTOR_FRAME_HELI:
-        case AP_Motors::MOTOR_FRAME_HELI_DUAL:
-        case AP_Motors::MOTOR_FRAME_HELI_QUAD:
             return MAV_TYPE_HELICOPTER;
         case AP_Motors::MOTOR_FRAME_TRI:
             return MAV_TYPE_TRICOPTER;
@@ -488,10 +484,6 @@ const char* Copter::get_frame_string()
             return "OCTA_QUAD";
         case AP_Motors::MOTOR_FRAME_HELI:
             return "HELI";
-        case AP_Motors::MOTOR_FRAME_HELI_DUAL:
-            return "HELI_DUAL";
-        case AP_Motors::MOTOR_FRAME_HELI_QUAD:
-            return "HELI_QUAD";
         case AP_Motors::MOTOR_FRAME_TRI:
             return "TRI";
         case AP_Motors::MOTOR_FRAME_SINGLE:
@@ -542,19 +534,7 @@ void Copter::allocate_motors(void)
             motors = new AP_MotorsTailsitter(copter.scheduler.get_loop_rate_hz());
             motors_var_info = AP_MotorsTailsitter::var_info;
             break;
-#else // FRAME_CONFIG == HELI_FRAME
-        case AP_Motors::MOTOR_FRAME_HELI_DUAL:
-            motors = new AP_MotorsHeli_Dual(copter.scheduler.get_loop_rate_hz());
-            motors_var_info = AP_MotorsHeli_Dual::var_info;
-            AP_Param::set_frame_type_flags(AP_PARAM_FRAME_HELI);
-            break;
-
-        case AP_Motors::MOTOR_FRAME_HELI_QUAD:
-            motors = new AP_MotorsHeli_Quad(copter.scheduler.get_loop_rate_hz());
-            motors_var_info = AP_MotorsHeli_Quad::var_info;
-            AP_Param::set_frame_type_flags(AP_PARAM_FRAME_HELI);
-            break;
-            
+#else // FRAME_CONFIG == HELI_FRAME      
         case AP_Motors::MOTOR_FRAME_HELI:
         default:
             motors = new AP_MotorsHeli_Single(copter.scheduler.get_loop_rate_hz());
@@ -665,7 +645,4 @@ void Copter::allocate_motors(void)
 
     // upgrade parameters. This must be done after allocating the objects
     convert_pid_parameters();
-#if FRAME_CONFIG == HELI_FRAME
-    convert_tradheli_parameters();
-#endif
 }
