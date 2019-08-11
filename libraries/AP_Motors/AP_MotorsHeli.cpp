@@ -27,9 +27,7 @@ extern const AP_HAL::HAL& hal;
 
 const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
-    // 1 was ROL_MAX which has been replaced by CYC_MAX
-
-    // 2 was PIT_MAX which has been replaced by CYC_MAX
+    // Indices 1-2 deprecated, do not use
 
     // @Param: COL_MIN
     // @DisplayName: Collective Pitch Minimum
@@ -58,12 +56,12 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("COL_MID", 5, AP_MotorsHeli, _collective_mid, AP_MOTORS_HELI_COLLECTIVE_MID),
 
-    // @Param: SV_MAN
-    // @DisplayName: Manual Servo Mode
-    // @Description: Manual servo override for swash set-up. Do not set this manually!
+    // @Param: COL_SETUP
+    // @DisplayName: Swash Setup Mode
+    // @Description: Manual servo override for swash setup only
     // @Values: 0:Disabled,1:Passthrough,2:Max collective,3:Mid collective,4:Min collective
     // @User: Standard
-    AP_GROUPINFO("SV_MAN",  6, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
+    AP_GROUPINFO("COL_SETUP",  6, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
     // @Param: RSC_SETPOINT
     // @DisplayName: Electric ESC Governor Setting
@@ -123,9 +121,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("RSC_IDLE", 13, AP_MotorsHeli, _rsc_idle_output, AP_MOTORS_HELI_RSC_IDLE_DEFAULT),
 
-    // index 14 was RSC_POWER_LOW. Do not use this index in the future.
-
-    // index 15 was RSC_POWER_HIGH. Do not use this index in the future.
+    // Indices 14-15 deprecated, do not use
 
     // @Param: CYC_MAX
     // @DisplayName: Cyclic Pitch Angle Max
@@ -136,15 +132,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("CYC_MAX", 16, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
 
-    // @Param: SV_TEST
-    // @DisplayName: Boot-up Servo Test Cycles
-    // @Description: Number of cycles to run servo test on boot-up
-    // @Range: 0 10
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("SV_TEST",  17, AP_MotorsHeli, _servo_test, 0),
-
-    // index 18 was RSC_POWER_NEGC. Do not use this index in the future.
+    // Indices 17-18 deprecated, do not use
 
     // @Param: RSC_SLEWRATE
     // @DisplayName: Throttle servo slew rate
@@ -253,9 +241,6 @@ void AP_MotorsHeli::init(motor_frame_class frame_class, motor_frame_type frame_t
     // set update rate
     set_update_rate(_speed_hz);
 
-    // load boot-up servo test cycles into counter to be consumed
-    _servo_test_cycle_counter = _servo_test;
-
     // ensure inputs are not passed through to servos on start-up
     _servo_mode = SERVO_CONTROL_MODE_AUTOMATED;
 
@@ -343,49 +328,40 @@ void AP_MotorsHeli::output_armed_zero_throttle()
 // output_disarmed - sends commands to the motors
 void AP_MotorsHeli::output_disarmed()
 {
-    if (_servo_test_cycle_counter > 0){
-        // perform boot-up servo test cycle if enabled
-        servo_test();
-    } else {
-        // manual override (i.e. when setting up swash)
-        switch (_servo_mode) {
-            case SERVO_CONTROL_MODE_MANUAL_PASSTHROUGH:
-                // pass pilot commands straight through to swash
-                _roll_in = _roll_radio_passthrough;
-                _pitch_in = _pitch_radio_passthrough;
-                _throttle_filter.reset(_throttle_radio_passthrough);
-                _yaw_in = _yaw_radio_passthrough;
-                break;
-            case SERVO_CONTROL_MODE_MANUAL_CENTER:
-                // fixate mid collective
-                _roll_in = 0.0f;
-                _pitch_in = 0.0f;
-                _throttle_filter.reset(_collective_mid_pct);
-                _yaw_in = 0.0f;
-                break;
-            case SERVO_CONTROL_MODE_MANUAL_MAX:
-                // fixate max collective
-                _roll_in = 0.0f;
-                _pitch_in = 0.0f;
-                _throttle_filter.reset(1.0f);
-                _yaw_in = 1.0f;
-                break;
-            case SERVO_CONTROL_MODE_MANUAL_MIN:
-                // fixate min collective
-                _roll_in = 0.0f;
-                _pitch_in = 0.0f;
-                _throttle_filter.reset(0.0f);
-                _yaw_in = -1.0f;
-                break;
-            case SERVO_CONTROL_MODE_MANUAL_OSCILLATE:
-                // use servo_test function from child classes
-                servo_test();
-                break;
-            default:
-                // no manual override
-                break;
+    // manual override (i.e. when setting up swash)
+    switch (_servo_mode) {
+        case SERVO_CONTROL_MODE_MANUAL_PASSTHROUGH:
+            // pass pilot commands straight through to swash
+            _roll_in = _roll_radio_passthrough;
+            _pitch_in = _pitch_radio_passthrough;
+            _throttle_filter.reset(_throttle_radio_passthrough);
+            _yaw_in = _yaw_radio_passthrough;
+            break;
+        case SERVO_CONTROL_MODE_MANUAL_CENTER:
+            // fixate mid collective
+            _roll_in = 0.0f;
+            _pitch_in = 0.0f;
+            _throttle_filter.reset(_collective_mid_pct);
+            _yaw_in = 0.0f;
+            break;
+        case SERVO_CONTROL_MODE_MANUAL_MAX:
+            // fixate max collective
+            _roll_in = 0.0f;
+            _pitch_in = 0.0f;
+            _throttle_filter.reset(1.0f);
+            _yaw_in = 1.0f;
+            break;
+        case SERVO_CONTROL_MODE_MANUAL_MIN:
+            // fixate min collective
+            _roll_in = 0.0;
+            _pitch_in = 0.0f;
+            _throttle_filter.reset(0.0f);
+            _yaw_in = -1.0f;
+            break;
+        default:
+            // no manual override
+            break;
         }
-    }
 
     // ensure swash servo endpoints haven't been moved
     init_outputs();
