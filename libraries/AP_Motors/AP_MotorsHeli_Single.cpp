@@ -26,24 +26,24 @@ const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
 
     // Indices 1-7 depricated. Do not use for compatibility with GCS
 
-    // @Param: COLYAW
+    // @Param: COL_YAW
     // @DisplayName: Collective-Yaw Mixing
     // @Description: Feed-forward compensation to automatically add rudder input when collective pitch is increased. Can be positive or negative depending on mechanics.
     // @Range: -10 10
     // @Increment: 0.1
-    // @User: Advanced
-    AP_GROUPINFO("COLYAW", 8,  AP_MotorsHeli_Single, _collective_yaw_effect, 0),
+    // @User: Standard
+    AP_GROUPINFO("COL_YAW", 8,  AP_MotorsHeli_Single, _collective_yaw_effect, 0),
 
     // @Param: FLYBAR_MODE
     // @DisplayName: Flybar Mode Selector
-    // @Description: Flybar present or not.  Affects attitude controller used during ACRO flight mode
+    // @Description: Flybar present or not. Affects attitude controller used during ACRO flight mode
     // @Values: 0:NoFlybar,1:Flybar
     // @User: Standard
     AP_GROUPINFO("FLYBAR_MODE", 9, AP_MotorsHeli_Single, _flybar_mode, AP_MOTORS_HELI_NOFLYBAR),
 
     // Indices 10-19 depricated. Do not use for compatibility with GCS
 
-    // @Group: H3_SW_
+    // @Group: H3_SW
     // @Path: AP_MotorsHeli_Swash.cpp
     AP_SUBGROUPINFO(_swashplate, "SW_", 20, AP_MotorsHeli_Single, AP_MotorsHeli_Swash),
 

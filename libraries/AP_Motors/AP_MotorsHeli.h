@@ -23,20 +23,12 @@
 // swash min while landed or landing (as a number from 0 ~ 1000
 #define AP_MOTORS_HELI_LAND_COLLECTIVE_MIN      0
 
-// default main rotor speed (ch8 out) as a number from 0 ~ 1000
-#define AP_MOTORS_HELI_RSC_SETPOINT             70
-
 // default main rotor critical speed
 #define AP_MOTORS_HELI_RSC_CRITICAL             50
 
 // RSC output defaults
 #define AP_MOTORS_HELI_RSC_IDLE_DEFAULT         0
 #define AP_MOTORS_HELI_RSC_RPM_DEFAULT          1500
-#define AP_MOTORS_HELI_RSC_THRCRV_0_DEFAULT     25
-#define AP_MOTORS_HELI_RSC_THRCRV_25_DEFAULT    32
-#define AP_MOTORS_HELI_RSC_THRCRV_50_DEFAULT    38
-#define AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT    50
-#define AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT   100
 
 // rotor governor defaults
 #define AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT   25
@@ -45,7 +37,7 @@
 #define AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT       100
 
 // default main rotor ramp up time in seconds
-#define AP_MOTORS_HELI_RSC_RAMP_TIME            1       // 1 second to ramp output to main rotor ESC to setpoint
+#define AP_MOTORS_HELI_RSC_RAMP_TIME            5       // 5 seconds to ramp throttle output to throttle curve
 #define AP_MOTORS_HELI_RSC_RUNUP_TIME           10      // 10 seconds for rotor to reach full speed
 
 // flybar types
@@ -102,11 +94,8 @@ public:
     // set_inverted_flight - enables/disables inverted flight
     void set_inverted_flight(bool inverted) { _heliflags.inverted_flight = inverted; }
 
-    // get_rsc_mode - gets the rotor speed control method (AP_MOTORS_HELI_RSC_MODE_CH8_PASSTHROUGH or AP_MOTORS_HELI_RSC_MODE_SETPOINT)
+    // get_rsc_mode - gets the throttle control method, either throttle curve or governor
     uint8_t get_rsc_mode() const { return _rsc_mode; }
-
-    // get_rsc_setpoint - gets contents of _rsc_setpoint parameter (0~1)
-    float get_rsc_setpoint() const { return _rsc_setpoint * 0.01f; }
     
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;

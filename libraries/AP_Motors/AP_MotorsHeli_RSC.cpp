@@ -80,14 +80,11 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
 
-            if ((_control_mode == ROTOR_CONTROL_MODE_SPEED_PASSTHROUGH) || (_control_mode == ROTOR_CONTROL_MODE_SPEED_SETPOINT)) {
-                // set control rotor speed to ramp slewed value between idle and desired speed
-                _control_output = _idle_output + (_rotor_ramp_output * (_desired_speed - _idle_output));
-            } else if (_control_mode == ROTOR_CONTROL_MODE_OPEN_LOOP_POWER_OUTPUT) {
+            if (_control_mode == ROTOR_CONTROL_MODE_THROTTLE_CURVE) {
                 // throttle output from throttle curve based on collective position
                 float desired_throttle = calculate_desired_throttle(_collective_in);
                 _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
-            } else if (_control_mode == ROTOR_CONTROL_MODE_CLOSED_LOOP_POWER_OUTPUT) {
+            } else if (_control_mode == ROTOR_CONTROL_MODE_GOVERNOR) {
                 // governor provides two modes of throttle control - governor engaged
                 // or throttle curve if governor is out of range or sensor failed
             	float desired_throttle = calculate_desired_throttle(_collective_in);
