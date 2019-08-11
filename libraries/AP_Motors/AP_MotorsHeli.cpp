@@ -67,7 +67,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_MODE
     // @DisplayName: Throttle Control Mode
-    // @Description: Throttle Curve controls throttle with the collective by using the five throttle curve settings. Governor uses the throttle curve with built-in governor to control rotor speed
+    // @Description: Throttle Curve controls throttle with the collective by using the five throttle curve settings. Governor uses the throttle curve with built-in governor to control rotor speed. Use a flat throttle curve for electric ESC governors
     // @Values: 1:Throttle Curve,2:Governor
     // @User: Standard
     AP_GROUPINFO("THROTTLE_MODE", 8, AP_MotorsHeli, _rsc_mode, ROTOR_CONTROL_MODE_THROTTLE_CURVE),
@@ -84,7 +84,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
-    // @Description: Actual time in seconds for the main rotor to reach full speed after throttle hold is released. Must be at least one second longer than the Throttle Ramp Time that is set with RSC_RAMP_TIME.
+    // @Description: Actual time in seconds for the main rotor to reach full speed after throttle hold is released. Must be at least one second longer than the Throttle Ramp Time
     // @Range: 0 60
     // @Units: s
     // @User: Standard
@@ -92,8 +92,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
-    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to the percentage of the governor rpm setting used. Even if governor is not used when a speed sensor is installed, set the governor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than electric ESC throttle setting for ESC's with governor, or lower than normal in-flight throttle percentage when the throttle curve or RC Passthru is used.
-    // @Range: 0 100
+    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than normal in-flight throttle percentage
+    // @Range: 0 90
     // @Units: %
     // @Increment: 1
     // @User: Standard
@@ -116,7 +116,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: deg
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("CYCLIC_MAX", 16, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
+    AP_GROUPINFO("CYCLIC_DEG", 16, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
 
     // Indices 17-19 deprecated, do not use
 
@@ -356,18 +356,10 @@ void AP_MotorsHeli::output_disarmed()
 // parameter_check - check if helicopter specific parameters are sensible
 bool AP_MotorsHeli::parameter_check(bool display_msg) const
 {
-    // returns false if _rsc_setpoint exceeds 100% throttle
-    if (_rsc_setpoint > 100.0f) {
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Throttle setting over 100 percent");
-        }
-        return false;
-    }
-
     // returns false if RSC Mode is not set to a valid control mode
     if (_rsc_mode <= (int8_t)ROTOR_CONTROL_MODE_DISABLED || _rsc_mode > (int8_t)ROTOR_CONTROL_MODE_GOVERNOR) {
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Throttle mode invalid");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Throttle mode invalid");
         }
         return false;
     }
@@ -375,7 +367,7 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     // returns false if RSC Runup Time is less than Ramp time as this could cause undesired behaviour of rotor speed estimate when no speed sensor is used
     if (_rsc_runup_time <= _rsc_ramp_time){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Runup time too short");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Throttle ramp exceeds runup time");
         }
         return false;
     }
@@ -383,7 +375,23 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     // returns false if idle output is higher than critical rotor speed percentage
     if ( _rsc_idle_output >=  _rsc_critical){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: Engine idle speed too high");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Engine idle and critical speed misconfigured");
+        }
+        return false;
+    }
+
+    // returns false if cyclic pitch is out of range
+    if (_cyclic_max > 45){
+        if (display_msg) {
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Cyclic exceeds 45 degrees");
+        }
+        return false;
+    }
+
+    // returns false if cyclic pitch is out of range
+    if (_rsc_critical > 90){
+        if (display_msg) {
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 90 percent");
         }
         return false;
     }
