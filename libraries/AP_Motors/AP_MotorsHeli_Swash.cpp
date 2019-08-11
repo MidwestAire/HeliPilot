@@ -43,7 +43,7 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("LIN_SVO", 3, AP_MotorsHeli_Swash, _linear_swash_servo, 0),
 
-    // Indices 4 thru 8 was for H3, do not use for compatibility with GCS
+    // Indices 4-8 depricated, do not use for compatibility with GCS
    
     AP_GROUPEND
 };
