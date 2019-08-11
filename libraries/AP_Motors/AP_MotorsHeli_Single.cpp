@@ -24,27 +24,7 @@ extern const AP_HAL::HAL& hal;
 const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
     AP_NESTEDGROUPINFO(AP_MotorsHeli, 0),
 
-    // Indices 1-3 were used by servo position params and should not be used
-
-    // @Param: TAIL_TYPE
-    // @DisplayName: Tail Type
-    // @Description: Tail type selection.  Simpler yaw controller used if external gyro is selected
-    // @Values: 0:Servo only,1:Servo with ExtGyro,2:DirectDrive VarPitch,3:DirectDrive FixedPitch
-    // @User: Standard
-    AP_GROUPINFO("TAIL_TYPE", 4, AP_MotorsHeli_Single, _tail_type, AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO),
-
-    // Indice 5 was used by SWASH_TYPE and should not be used
-
-    // @Param: GYR_GAIN
-    // @DisplayName: External Gyro Gain
-    // @Description: PWM in microseconds sent to external gyro on ch7 when tail type is Servo w/ ExtGyro
-    // @Range: 0 1000
-    // @Units: PWM
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("GYR_GAIN", 6, AP_MotorsHeli_Single, _ext_gyro_gain_std, AP_MOTORS_HELI_SINGLE_EXT_GYRO_GAIN),
-
-    // Index 7 was used for phase angle and should not be used
+    // Indices 1-7 depricated. Do not use for compatibility with GCS
 
     // @Param: COLYAW
     // @DisplayName: Collective-Yaw Mixing
@@ -61,25 +41,7 @@ const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("FLYBAR_MODE", 9, AP_MotorsHeli_Single, _flybar_mode, AP_MOTORS_HELI_NOFLYBAR),
 
-    // @Param: TAIL_SPEED
-    // @DisplayName: Direct Drive Variable Pitch tail motor throttle setting
-    // @Description: DDVP tail motor throttle setting, 0-100%  Only used when TailType is DirectDrive VarPitch
-    // @Range: 0 100
-    // @Units: %
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("TAIL_SPEED", 10, AP_MotorsHeli_Single, _direct_drive_tailspeed, AP_MOTORS_HELI_SINGLE_DDVP_SPEED_DEFAULT),
-
-    // @Param: GYR_GAIN_ACRO
-    // @DisplayName: External Gyro Gain for ACRO
-    // @Description: PWM in microseconds sent to external gyro on ch7 when tail type is Servo w/ ExtGyro. A value of zero means to use H_GYR_GAIN
-    // @Range: 0 1000
-    // @Units: PWM
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("GYR_GAIN_ACRO", 11, AP_MotorsHeli_Single,  _ext_gyro_gain_acro, 0),
-
-    // Indices 16-19 were used by RSC_PWM_MIN, RSC_PWM_MAX, RSC_PWM_REV, and COL_CTRL_DIR and should not be used
+    // Indices 10-19 depricated. Do not use for compatibility with GCS
 
     // @Group: H3_SW_
     // @Path: AP_MotorsHeli_Swash.cpp
@@ -125,18 +87,6 @@ bool AP_MotorsHeli_Single::init_outputs()
 
         // initialize main rotor servo
         _main_rotor.init_servo();
-
-        if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_DIRECTDRIVE_VARPITCH) {
-            _tail_rotor.init_servo();
-        } else if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-            // external gyro output
-            add_motor_num(AP_MOTORS_HELI_SINGLE_EXTGYRO);
-        }
-    }
-
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-        // External Gyro uses PWM output thus servo endpoints are forced
-        SRV_Channels::set_output_min_max(SRV_Channels::get_motor_function(AP_MOTORS_HELI_SINGLE_EXTGYRO), 1000, 2000);
     }
 
     // reset swash servo range and endpoints
@@ -180,14 +130,7 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
             rc_write(AP_MOTORS_MOT_3, pwm);
             break;
         case 4:
-            // external gyro & tail servo
-            if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-                if (_acro_tail && _ext_gyro_gain_acro > 0) {
-                    rc_write(AP_MOTORS_HELI_SINGLE_EXTGYRO, _ext_gyro_gain_acro);
-                } else {
-                    rc_write(AP_MOTORS_HELI_SINGLE_EXTGYRO, _ext_gyro_gain_std);
-                }
-            }
+            // tail servo 4
             rc_write(AP_MOTORS_MOT_4, pwm);
             break;
         case 5:
@@ -204,9 +147,6 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
 void AP_MotorsHeli_Single::set_desired_rotor_speed(float desired_speed)
 {
     _main_rotor.set_desired_speed(desired_speed);
-
-    // always send desired speed to tail rotor control, will do nothing if not DDVP not enabled
-    _tail_rotor.set_desired_speed(_direct_drive_tailspeed*0.01f);
 }
 
 // set_rotor_rpm - used for governor with speed sensor
@@ -254,21 +194,6 @@ void AP_MotorsHeli_Single::calculate_scalars()
     // send setpoints to main rotor controller and trigger recalculation of scalars
     _main_rotor.set_control_mode(static_cast<RotorControlMode>(_rsc_mode.get()));
     calculate_armed_scalars();
-
-    // send setpoints to DDVP rotor controller and trigger recalculation of scalars
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_DIRECTDRIVE_VARPITCH) {
-        _tail_rotor.set_control_mode(ROTOR_CONTROL_MODE_SPEED_SETPOINT);
-        _tail_rotor.set_ramp_time(_rsc_ramp_time);
-        _tail_rotor.set_runup_time(_rsc_runup_time);
-        _tail_rotor.set_critical_speed(_rsc_critical*0.01f);
-        _tail_rotor.set_idle_output(_rsc_idle_output*0.01f);
-    } else {
-        _tail_rotor.set_control_mode(ROTOR_CONTROL_MODE_DISABLED);
-        _tail_rotor.set_ramp_time(0);
-        _tail_rotor.set_runup_time(0);
-        _tail_rotor.set_critical_speed(0);
-        _tail_rotor.set_idle_output(0);
-    }
 }
 
 // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
@@ -283,14 +208,6 @@ uint16_t AP_MotorsHeli_Single::get_motor_mask()
         mask |= 1U << 4;
     }
 
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-        mask |= 1U << AP_MOTORS_HELI_SINGLE_EXTGYRO;
-    }
-
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_DIRECTDRIVE_VARPITCH) {
-        mask |= 1U << AP_MOTORS_HELI_SINGLE_TAILRSC;
-    }
-
     return rc_map_mask(mask);
 }
 
@@ -298,7 +215,6 @@ uint16_t AP_MotorsHeli_Single::get_motor_mask()
 void AP_MotorsHeli_Single::update_motor_control(RotorControlState state)
 {
     // Send state update to motors
-    _tail_rotor.output(state);
     _main_rotor.output(state);
 
     if (state == ROTOR_CONTROL_STOP){
@@ -310,7 +226,7 @@ void AP_MotorsHeli_Single::update_motor_control(RotorControlState state)
     }
 
     // Check if both rotors are run-up, tail rotor controller always returns true if not enabled
-    _heliflags.rotor_runup_complete = ( _main_rotor.is_runup_complete() && _tail_rotor.is_runup_complete() );
+    _heliflags.rotor_runup_complete = ( _main_rotor.is_runup_complete());
 }
 
 //
@@ -367,21 +283,10 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
 
     // if servo output not in manual mode, process pre-compensation factors
     if (_servo_mode == SERVO_CONTROL_MODE_AUTOMATED) {
-        // rudder feed forward based on collective
-        // the feed-forward is not required when the motor is stopped or at idle, and thus not creating torque
-        // also not required if we are using external gyro
-        if ((_main_rotor.get_control_output() > _main_rotor.get_idle_output()) && _tail_type != AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-            // sanity check collective_yaw_effect
-            _collective_yaw_effect = constrain_float(_collective_yaw_effect, -AP_MOTORS_HELI_SINGLE_COLYAW_RANGE, AP_MOTORS_HELI_SINGLE_COLYAW_RANGE);
-            // the 4.5 scaling factor is to bring the values in line with previous releases
-            yaw_offset = _collective_yaw_effect * fabsf(collective_out - _collective_mid_pct) / 4.5f;
-        }
-    } else {
         yaw_offset = 0.0f;
     }
 
     // feed power estimate into main rotor controller
-    // ToDo: include tail rotor power?
     // ToDo: add main rotor cyclic power?
     _main_rotor.set_collective(fabsf(collective_out));
 
@@ -422,27 +327,7 @@ void AP_MotorsHeli_Single::move_yaw(float yaw_out)
         yaw_out = 1.0f;
         limit.yaw = true;
     }
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_DIRECTDRIVE_FIXEDPITCH){
-        if (_main_rotor.get_desired_speed() > 0.0f && hal.util->get_soft_armed()) {
-            // constrain output so that motor never fully stops
-            yaw_out = constrain_float(yaw_out, -0.9f, 1.0f);
-            // output yaw servo to tail rsc
-            rc_write_angle(AP_MOTORS_MOT_4, yaw_out * YAW_SERVO_MAX_ANGLE);
-        } else {
-            // output zero speed to tail rsc
-            rc_write_angle(AP_MOTORS_MOT_4, -YAW_SERVO_MAX_ANGLE);
-        }
-    } else {
-        rc_write_angle(AP_MOTORS_MOT_4, yaw_out * YAW_SERVO_MAX_ANGLE);
-    }
-    if (_tail_type == AP_MOTORS_HELI_SINGLE_TAILTYPE_SERVO_EXTGYRO) {
-        // output gain to exernal gyro
-        if (_acro_tail && _ext_gyro_gain_acro > 0) {
-            rc_write(AP_MOTORS_HELI_SINGLE_EXTGYRO, 1000 + _ext_gyro_gain_acro);
-        } else {
-            rc_write(AP_MOTORS_HELI_SINGLE_EXTGYRO, 1000 + _ext_gyro_gain_std);
-        }
-    }
+    rc_write_angle(AP_MOTORS_MOT_4, yaw_out * YAW_SERVO_MAX_ANGLE);
 }
 
 // servo_test - move servos through full range of movement
@@ -497,30 +382,6 @@ void AP_MotorsHeli_Single::servo_test()
 // parameter_check - check if helicopter specific parameters are sensible
 bool AP_MotorsHeli_Single::parameter_check(bool display_msg) const
 {
-    // returns false if DDVP tail throttle setting is over 100%
-    if (_direct_drive_tailspeed > 100.0f){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: DDVP throttle over 100 percent");
-        }
-        return false;
-    }
-
-    // returns false if Acro External Gyro Gain is outside of range
-    if ((_ext_gyro_gain_acro < 0) || (_ext_gyro_gain_acro > 1000)){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: H_GYR_GAIN_ACRO out of range");
-        }
-        return false;
-    }
-
-    // returns false if Standard External Gyro Gain is outside of range
-    if ((_ext_gyro_gain_std < 0) || (_ext_gyro_gain_std > 1000)){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: H_GYR_GAIN out of range");
-        }
-        return false;
-    }
-
     // check parent class parameters
     return AP_MotorsHeli::parameter_check(display_msg);
 }
