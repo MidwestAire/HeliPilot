@@ -247,11 +247,11 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     // rescale roll_out and pitch_out into the min and max ranges to provide linear motion
     // across the input range instead of stopping when the input hits the constrain value
     // these calculations are based on an assumption of the user specified cyclic_max
-    // coming into this equation at 4500 or less
+    // coming into this equation at 45 deg or less
     float total_out = norm(pitch_out, roll_out);
 
-    if (total_out > (_cyclic_max/4500.0f)) {
-        float ratio = (float)(_cyclic_max/4500.0f) / total_out;
+    if (total_out > (_cyclic_max/45.0f)) {
+        float ratio = (float)(_cyclic_max/45.0f) / total_out;
         roll_out *= ratio;
         pitch_out *= ratio;
         limit.roll_pitch = true;

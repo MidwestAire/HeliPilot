@@ -109,13 +109,13 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // Indices 14-15 deprecated, do not use
 
-    // @Param: CYCLIC_MAX
-    // @DisplayName: Cyclic Pitch Angle Max
-    // @Description: Maximum pitch angle of the swash plate
-    // @Range: 0 18000
-    // @Units: cdeg
-    // @Increment: 100
-    // @User: Advanced
+    // @Param: CYCLIC_DEG
+    // @DisplayName: Cyclic Degrees Setting
+    // @Description: Cyclic tilt angle of the swashplate. Normally set this to whatever it takes to get 8 degrees of cyclic pitch
+    // @Range: 0 45
+    // @Units: deg
+    // @Increment: 1
+    // @User: Standard
     AP_GROUPINFO("CYCLIC_MAX", 16, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
 
     // Indices 17-19 deprecated, do not use
