@@ -93,20 +93,11 @@ protected:
     // move_yaw - moves the yaw servo
     void move_yaw(float yaw_out);
 
-    // servo_test - move servos through full range of movement
-    void servo_test() override;
-
     // external objects we depend upon
     AP_MotorsHeli_RSC   _main_rotor;            // main rotor
     AP_MotorsHeli_Swash _swashplate;            // swashplate
 
     // internal variables
-    float _oscillate_angle = 0.0f;              // cyclic oscillation angle, used by servo_test function
-    float _servo_test_cycle_time = 0.0f;        // cycle time tracker, used by servo_test function
-    float _collective_test = 0.0f;              // over-ride for collective output, used by servo_test function
-    float _roll_test = 0.0f;                    // over-ride for roll output, used by servo_test function
-    float _pitch_test = 0.0f;                   // over-ride for pitch output, used by servo_test function
-    float _yaw_test = 0.0f;                     // over-ride for yaw output, used by servo_test function
     float _servo1_out = 0.0f;                   // output value sent to motor
     float _servo2_out = 0.0f;                   // output value sent to motor
     float _servo3_out = 0.0f;                   // output value sent to motor

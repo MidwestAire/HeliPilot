@@ -161,7 +161,6 @@ protected:
         SERVO_CONTROL_MODE_MANUAL_MAX,
         SERVO_CONTROL_MODE_MANUAL_CENTER,
         SERVO_CONTROL_MODE_MANUAL_MIN,
-        SERVO_CONTROL_MODE_MANUAL_OSCILLATE,
     };
 
     // output - sends commands to the motors
@@ -193,10 +192,6 @@ protected:
     // calculate_scalars - must be implemented by child classes
     virtual void calculate_scalars() = 0;
 
-    // servo_test - move servos through full range of movement
-    // to be overloaded by child classes, different vehicle types would have different movement patterns
-    virtual void servo_test() = 0;
-
     // write to a swash servo. output value is pwm
     void rc_write_swash(uint8_t chan, float swash_in);
 
@@ -227,11 +222,9 @@ protected:
     AP_Int16        _rsc_idle_output;             // Combustion engine idle speed setting
     AP_Int16        _rsc_thrcrv[5];               // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective
     AP_Int16        _rsc_slewrate;                // throttle slew rate (percentage per second)
-    AP_Int8         _servo_test;                  // sets number of cycles to test servo movement on bootup
 
     // internal variables
     float           _collective_mid_pct = 0.0f;      // collective mid parameter value converted to 0 ~ 1 range
-    uint8_t         _servo_test_cycle_counter = 0;   // number of test cycles left to run after bootup
 
     motor_frame_type _frame_type;
 };
