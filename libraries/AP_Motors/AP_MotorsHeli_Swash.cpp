@@ -29,21 +29,21 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("TYPE", 1, AP_MotorsHeli_Swash, _swashplate_type, SWASHPLATE_TYPE_H3_120),
 
-    // @Param: COL_DIR
+    // @Param: DIR
     // @DisplayName: Collective Control Direction
     // @Description: Direction collective moves for positive pitch. 0 for Normal, 1 for Reversed
     // @Values: 0:Normal,1:Reversed
     // @User: Standard
-    AP_GROUPINFO("COL_DIR", 2, AP_MotorsHeli_Swash, _swash_coll_dir, COLLECTIVE_DIRECTION_NORMAL),
+    AP_GROUPINFO("DIR", 2, AP_MotorsHeli_Swash, _swash_coll_dir, COLLECTIVE_DIRECTION_NORMAL),
 
-    // @Param: LIN_SVO
+    // @Param: LINEAR
     // @DisplayName: Linearize swashplate servo mechanical throw
     // @Description: This linearizes the swashplate servo's mechanical output to account for nonlinear output due to arm rotation.  This requires a specific setup procedure to work properly.  The servo arm must be centered on the mechanical throw at the servo trim position and the servo trim position kept as close to 1500 as possible. Leveling the swashplate can only be done through the pitch links.  See the ardupilot wiki for more details on setup.
     // @Values: 0:Disabled,1:Enabled
     // @User: Standard
-    AP_GROUPINFO("LIN_SVO", 3, AP_MotorsHeli_Swash, _linear_swash_servo, 0),
+    AP_GROUPINFO("LINEAR", 3, AP_MotorsHeli_Swash, _linear_swash_servo, 0),
 
-    // Indices 4-8 depricated, do not use for compatibility with GCS
+    // Indices 4-8 deprecated, do not use
    
     AP_GROUPEND
 };
