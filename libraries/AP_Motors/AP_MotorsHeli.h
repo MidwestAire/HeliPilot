@@ -20,9 +20,6 @@
 #define AP_MOTORS_HELI_COLLECTIVE_MAX           1750
 #define AP_MOTORS_HELI_COLLECTIVE_MID           1500
 
-// swash min while landed or landing (as a number from 0 ~ 1000
-#define AP_MOTORS_HELI_LAND_COLLECTIVE_MIN      0
-
 // default main rotor critical speed
 #define AP_MOTORS_HELI_RSC_CRITICAL             50
 
@@ -41,7 +38,7 @@
 #define AP_MOTORS_HELI_RSC_RUNUP_TIME           10      // 10 seconds for rotor to reach full speed
 
 // flybar types
-#define AP_MOTORS_HELI_NOFLYBAR                 0
+#define AP_MOTORS_HELI_NOFLYBAR                 0       // set to 1 to compile for flybar helicopter
 
 class AP_HeliControls;
 
@@ -206,7 +203,6 @@ protected:
     AP_Int8         _rsc_mode;                    // Method of throttle control used
     AP_Int8         _rsc_ramp_time;               // Time in seconds to ramp throttle from ground idle to flight idle
     AP_Int8         _rsc_runup_time;              // Time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time
-    AP_Int16        _land_collective_min;         // Minimum collective when landed or landing 
     AP_Int16        _rsc_critical;                // Rotor speed below which autorotation is no longer possible
     AP_Int16        _rsc_idle_output;             // Combustion engine idle speed setting
     AP_Int16        _rsc_thrcrv[5];               // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective

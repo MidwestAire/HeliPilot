@@ -24,7 +24,7 @@ extern const AP_HAL::HAL& hal;
 const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
     AP_NESTEDGROUPINFO(AP_MotorsHeli, 0),
 
-    // Indices 1-7 depricated. Do not use for compatibility with GCS
+    // Indices 1-7 deprecated. Do not use
 
     // @Param: COL_YAW
     // @DisplayName: Collective-Yaw Mixing
@@ -34,18 +34,11 @@ const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("COL_YAW", 8,  AP_MotorsHeli_Single, _collective_yaw_effect, 0),
 
-    // @Param: FLYBAR_MODE
-    // @DisplayName: Flybar Mode Selector
-    // @Description: Flybar present or not. Affects attitude controller used during ACRO flight mode
-    // @Values: 0:NoFlybar,1:Flybar
-    // @User: Standard
-    AP_GROUPINFO("FLYBAR_MODE", 9, AP_MotorsHeli_Single, _flybar_mode, AP_MOTORS_HELI_NOFLYBAR),
+    // Indices 9-19 deprecated. Do not use
 
-    // Indices 10-19 depricated. Do not use for compatibility with GCS
-
-    // @Group: H3_SW
+    // @Group: SWASH
     // @Path: AP_MotorsHeli_Swash.cpp
-    AP_SUBGROUPINFO(_swashplate, "SW_", 20, AP_MotorsHeli_Single, AP_MotorsHeli_Swash),
+    AP_SUBGROUPINFO(_swashplate, "SWASH_", 20, AP_MotorsHeli_Single, AP_MotorsHeli_Swash),
 
     AP_GROUPEND
 };
@@ -276,8 +269,8 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     }
 
     // ensure not below landed/landing collective
-    if (_heliflags.landing_collective && collective_out < (_land_collective_min*0.001f)) {
-        collective_out = (_land_collective_min*0.001f);
+    if (_heliflags.landing_collective && collective_out < _collective_mid_pct) {
+        collective_out = _collective_mid_pct;
         limit.throttle_lower = true;
     }
 

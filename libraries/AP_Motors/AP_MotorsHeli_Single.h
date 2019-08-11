@@ -105,5 +105,5 @@ protected:
 
     // parameters
     AP_Float        _collective_yaw_effect;     // Feed-forward compensation to automatically add rudder input when collective pitch is increased. Can be positive or negative depending on mechanics.
-    AP_Int8         _flybar_mode;               // Flybar present or not.  Affects attitude controller used during ACRO flight mode
+    AP_Int8         _flybar_mode;               // Compile for flybar helicopter
 };

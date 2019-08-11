@@ -72,14 +72,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("THROTTLE_MODE", 8, AP_MotorsHeli, _rsc_mode, ROTOR_CONTROL_MODE_THROTTLE_CURVE),
 
-    // @Param: LAND_COL_MIN
-    // @DisplayName: Landing Collective Minimum
-    // @Description: Minimum collective position in PWM microseconds while landed or landing
-    // @Range: 0 500
-    // @Units: PWM
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("LAND_COL_MIN", 9, AP_MotorsHeli, _land_collective_min, AP_MOTORS_HELI_LAND_COLLECTIVE_MIN),
+    // Index 9 deprecated, do not use 
 
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
