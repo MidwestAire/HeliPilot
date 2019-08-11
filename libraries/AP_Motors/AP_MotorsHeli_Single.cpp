@@ -505,14 +505,6 @@ bool AP_MotorsHeli_Single::parameter_check(bool display_msg) const
         return false;
     }
 
-    // returns false if Phase Angle is outside of range for H3 swashplate
-    if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H3 && (_swashplate.get_phase_angle() > 30 || _swashplate.get_phase_angle() < -30)){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "PreArm: H_H3_PHANG out of range");
-        }
-        return false;
-    }
-
     // returns false if Acro External Gyro Gain is outside of range
     if ((_ext_gyro_gain_acro < 0) || (_ext_gyro_gain_acro > 1000)){
         if (display_msg) {
