@@ -194,7 +194,6 @@ protected:
     AP_Int16        _collective_max;              // Highest possible servo position for the swashplate
     AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
     AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up through mission planner
-    AP_Int16        _rsc_setpoint;                // Electric ESC governor throttle setting
     AP_Int16        _rsc_governor_reference;      // sets headspeed for rotor governor, autorotation and runup
     AP_Float        _rsc_governor_disengage;      // sets the throttle percent where the governor disengages for return to flight idle
     AP_Float        _rsc_governor_droop_response; // governor response to droop under load
