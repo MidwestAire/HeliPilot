@@ -15,10 +15,8 @@ enum RotorControlState {
 // rotor control modes
 enum RotorControlMode {
     ROTOR_CONTROL_MODE_DISABLED = 0,
-    ROTOR_CONTROL_MODE_SPEED_PASSTHROUGH,
-    ROTOR_CONTROL_MODE_SPEED_SETPOINT,
-    ROTOR_CONTROL_MODE_OPEN_LOOP_POWER_OUTPUT,
-    ROTOR_CONTROL_MODE_CLOSED_LOOP_POWER_OUTPUT
+    ROTOR_CONTROL_MODE_THROTTLE_CURVE,
+    ROTOR_CONTROL_MODE_GOVERNOR
 };
 
 class AP_MotorsHeli_RSC {
@@ -99,7 +97,7 @@ private:
     uint8_t         _default_channel;
 
     // internal variables
-    RotorControlMode _control_mode = ROTOR_CONTROL_MODE_DISABLED;   // motor control mode, Passthrough or Setpoint
+    RotorControlMode _control_mode = ROTOR_CONTROL_MODE_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
     float           _desired_speed;               // latest desired rotor speed from pilot
