@@ -84,7 +84,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
-    // @Description: Actual time in seconds for the main rotor to reach full speed after throttle hold is released. Must be at least one second longer than the Throttle Ramp Time
+    // @Description: Time in seconds for the main rotor to reach full speed after throttle hold is released. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.
     // @Range: 0 60
     // @Units: s
     // @User: Standard
@@ -360,14 +360,6 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     if (_rsc_mode <= (int8_t)ROTOR_CONTROL_MODE_DISABLED || _rsc_mode > (int8_t)ROTOR_CONTROL_MODE_GOVERNOR) {
         if (display_msg) {
             gcs().send_text(MAV_SEVERITY_CRITICAL, "Throttle mode invalid");
-        }
-        return false;
-    }
-
-    // returns false if RSC Runup Time is less than Ramp time as this could cause undesired behaviour of rotor speed estimate when no speed sensor is used
-    if (_rsc_runup_time <= _rsc_ramp_time){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "Throttle ramp exceeds runup time");
         }
         return false;
     }
