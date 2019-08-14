@@ -162,22 +162,27 @@ void AP_MotorsHeli_RSC::update_rotor_ramp(float rotor_ramp_input, float dt)
 // update_rotor_runup - function to slew rotor runup scalar, outputs float scalar to _rotor_runup_ouptut
 void AP_MotorsHeli_RSC::update_rotor_runup(float dt)
 {
-    // sanity check runup time
-    if (_runup_time < _ramp_time) {
-        _runup_time = _ramp_time;
-    }
-    if (_runup_time <= 0 ) {
-        _runup_time = 1;
+    // if control mode is disabled, then run-up complete always returns true
+    if ( _control_mode == ROTOR_CONTROL_MODE_DISABLED ){
+        _runup_complete = true;
+        return;
     }
 
-    // calculate _rotor_runup_output
-    // check to see if rpm sensor is installed. If so, use actual rotor speed
-    if (_rotor_rpm > 0) {
-        _rpm_sensor = true;
+    // if _runup_time is set to zero then rotor speed sensor is being used
+    if (_runup_time <= 0) {
+        // update run-up complete flag using measured rotor rpm
+        if (!_runup_complete && (_rotor_rpm > (_governor_reference * _critical_speed))) {
+                _runup_complete = true;
+            }
+        if (_runup_complete && (_rotor_rpm <= (_governor_reference * _critical_speed))) {
+                _runup_complete = false;
+        }
     } else {
-        // no rotor speed sensor is available, estimate speed based on rotor runup scalar
-        // rpm sensor flag is set to false in case sensor has failed in flight
-        _rpm_sensor = false;
+        // measured rotor speed is not used, estimate rotor speed based on rotor runup scalar
+        // check rotor runup setting and correct it if misconfigured
+        if (_runup_time < _ramp_time) {
+            _runup_time = _ramp_time;
+        }
         float runup_increment = dt / _runup_time;
         if (_rotor_runup_output < _rotor_ramp_output) {
             _rotor_runup_output += runup_increment;
@@ -190,31 +195,11 @@ void AP_MotorsHeli_RSC::update_rotor_runup(float dt)
                 _rotor_runup_output = _rotor_ramp_output;
             }
         }
-    }
-
-    // update run-up complete flag
-
-    // if control mode is disabled, then run-up complete always returns true
-    if ( _control_mode == ROTOR_CONTROL_MODE_DISABLED ){
-        _runup_complete = true;
-        return;
-    }
-
-    // runup complete based on actual measured rotor speed or runup scalar
-    if (!_runup_complete) {
-        // if rotor speed sensor is present runup is complete when rotor reaches actual critical speed
-        if (_rpm_sensor  && (_rotor_rpm > (_governor_reference * _critical_speed))) {
-            _runup_complete = true;
-        // if no rotor speed sensor installed _runup_complete is determined by runup timer
-        } else if ((_rotor_ramp_output >= 1.0f) && (_rotor_runup_output >= 1.0f)) {
+        // update run-up complete flag using runup timer
+        if (!_runup_complete && (_rotor_ramp_output >= 1.0f) && (_rotor_runup_output >= 1.0f)) {
             _runup_complete = true;
         }
-    }
-    // if rotor speed is less than critical speed, then run-up is not complete
-    if (_runup_complete) {
-        if (_rpm_sensor  && (_rotor_rpm <= (_governor_reference * _critical_speed))) {
-            _runup_complete = false;
-        } else if (get_rotor_speed() <= _critical_speed) {
+        if (_runup_complete && (get_rotor_speed() <= _critical_speed)) {
             _runup_complete = false;
         }
     }
