@@ -170,7 +170,6 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_critical_speed(_rsc_critical*0.01f);
     _main_rotor.set_idle_output(_rsc_idle_output*0.01f);
     _main_rotor.set_throttle_curve(thrcrv, (uint16_t)_rsc_slewrate.get());
-    _main_rotor.set_governor_disengage(_rsc_governor_disengage*0.01f);
     _main_rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
     _main_rotor.set_governor_reference(_rsc_governor_reference);
     _main_rotor.set_governor_range(_rsc_governor_range);

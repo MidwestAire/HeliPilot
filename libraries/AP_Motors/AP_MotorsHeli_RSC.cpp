@@ -80,11 +80,13 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
 
-            if (_control_mode == ROTOR_CONTROL_MODE_THROTTLE_CURVE) {
+            if (!_governor_on) {
                 // throttle output from throttle curve based on collective position
+                _governor_output = 0.0f;
+                _governor_engage = false;
                 float desired_throttle = calculate_desired_throttle(_collective_in);
                 _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
-            } else if (_control_mode == ROTOR_CONTROL_MODE_GOVERNOR) {
+            } else {
                 // governor provides two modes of throttle control - governor engaged
                 // or throttle curve if governor is out of range or sensor failed
             	float desired_throttle = calculate_desired_throttle(_collective_in);
@@ -101,11 +103,6 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             	        _governor_engage = true;
                         _governor_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor_droop_response * -0.01f;
                     }
-                    // check for governor disengage for return to flight idle power
-                    if (desired_throttle <= _governor_disengage) {
-                        _governor_output = 0.0f;
-                        _governor_engage = false;
-                    }
                     // throttle output with governor on is constrained from minimum called for from throttle curve
                     // to maximum WOT. This prevents outliers on rpm signal from closing the throttle in flight due
                     // to rpm sensor failure or bad signal quality
@@ -118,7 +115,7 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
                     _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                 }
             }
-            break;
+        break;
     }
 
     // update rotor speed run-up estimate

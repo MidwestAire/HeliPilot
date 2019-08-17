@@ -63,17 +63,6 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("COL_SETUP",  6, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
-    // Index 7 deprecated, do not use
-
-    // @Param: THROTTLE_MODE
-    // @DisplayName: Throttle Control Mode
-    // @Description: Throttle Curve controls throttle with the collective by using the five throttle curve settings. Governor uses the throttle curve with built-in governor to control rotor speed. Use a flat throttle curve for electric ESC governors
-    // @Values: 1:Throttle Curve,2:Governor
-    // @User: Standard
-    AP_GROUPINFO("THROTTLE_MODE", 8, AP_MotorsHeli, _rsc_mode, ROTOR_CONTROL_MODE_THROTTLE_CURVE),
-
-    // Index 9 deprecated, do not use 
-
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
     // @Description: Time in seconds for throttle to ramp from ground idle to flight idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
@@ -168,15 +157,6 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("ROTOR_RPM", 25, AP_MotorsHeli, _rsc_governor_reference, AP_MOTORS_HELI_RSC_RPM_DEFAULT),
 
-    // @Param: GOV_DISENGAGE
-    // @DisplayName: Throttle Percentage for Governor Disengage
-    // @Description: Percentage of throttle where the governor will disengage to allow return to flight idle power. Typically should be set to the same value as flight idle throttle (the very lowest throttle setting on your throttle curve). The governor disengage can be disabled by setting this value to zero and using the pull-down from the governor TCGAIN to reduce power to flight idle with the collective at it's lowest throttle setting on the throttle curve.
-    // @Range: 0 50
-    // @Units: %
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("GOV_DISENGAGE", 26, AP_MotorsHeli, _rsc_governor_disengage, AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT),
-
     // @Param: GOV_DROOP
     // @DisplayName: Governor Droop Response Setting
     // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or over-run on headspeed when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the gas generator for proper torque response of the N2 spool
@@ -213,6 +193,9 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 // init
 void AP_MotorsHeli::init(motor_frame_class frame_class, motor_frame_type frame_type)
 {
+    // set throttle control
+    _rsc_mode = ROTOR_CONTROL_MODE_DEFAULT;
+
     // remember frame type
     _frame_type = frame_type;
 
@@ -356,14 +339,6 @@ void AP_MotorsHeli::output_disarmed()
 // parameter_check - check if helicopter specific parameters are sensible
 bool AP_MotorsHeli::parameter_check(bool display_msg) const
 {
-    // returns false if RSC Mode is not set to a valid control mode
-    if (_rsc_mode <= (int8_t)ROTOR_CONTROL_MODE_DISABLED || _rsc_mode > (int8_t)ROTOR_CONTROL_MODE_GOVERNOR) {
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "Throttle mode invalid");
-        }
-        return false;
-    }
-
     // returns false if idle output is higher than critical rotor speed percentage
     if ( _rsc_idle_output >=  _rsc_critical){
         if (display_msg) {
