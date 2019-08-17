@@ -186,7 +186,8 @@ protected:
     AP_Int16        _cyclic_max;                  // Maximum cyclic angle of the swash plate in centi-degrees
     AP_Int16        _collective_min;              // Lowest possible servo position for the swashplate
     AP_Int16        _collective_max;              // Highest possible servo position for the swashplate
-    AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
+    AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch or zero thrust
+    AP_Float        _collective_yaw_effect;       // Feed-forward compensation to automatically add rudder input when collective pitch is increased
     AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up through mission planner
     AP_Int16        _rsc_governor_reference;      // sets headspeed for rotor governor, autorotation and runup
     AP_Float        _rsc_governor_droop_response; // governor response to droop under load

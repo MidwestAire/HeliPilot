@@ -12,9 +12,6 @@
 // rsc and extgyro function output channels. 
 #define AP_MOTORS_HELI_SINGLE_RSC                              CH_8
 
-// COLYAW parameter min and max values
-#define AP_MOTORS_HELI_SINGLE_COLYAW_RANGE                     10.0f
-
 // maximum number of swashplate servos
 #define AP_MOTORS_HELI_SINGLE_NUM_SWASHPLATE_SERVOS            3
 
@@ -107,6 +104,5 @@ protected:
     float _servo5_out = 0.0f;                   // output value sent to motor
 
     // parameters
-    AP_Float        _collective_yaw_effect;     // Feed-forward compensation to automatically add rudder input when collective pitch is increased. Can be positive or negative depending on mechanics.
     AP_Int8         _flybar_mode;               // Compile for flybar helicopter
 };
