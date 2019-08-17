@@ -45,7 +45,7 @@ public:
     void        set_idle_output(float idle_output) { _idle_output = idle_output; }
 
     // set rotor speed governor parameters
-    void        set_governor_on(bool governor_on) {_governor_on = governor_on; }
+    void        set_governor_on(bool governor_on) {_governor_on = (bool)governor_on; }
     void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_reference(float governor_reference) { _governor_reference = governor_reference; }
