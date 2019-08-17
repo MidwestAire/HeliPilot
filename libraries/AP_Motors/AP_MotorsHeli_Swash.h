@@ -58,7 +58,7 @@ private:
 
     // parameters
     AP_Int8  _swashplate_type;                   // Swash Type Setting
-    AP_Int8  _swash_coll_dir;                    // Collective control direction, normal or reversed
+    AP_Int8  _swash_collective_direction;        // Collective control direction, normal or reversed
     AP_Int8  _linear_swash_servo;                // linearize swashplate output
 };
 

@@ -24,10 +24,6 @@ extern const AP_HAL::HAL& hal;
 const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
     AP_NESTEDGROUPINFO(AP_MotorsHeli, 0),
 
-    // Indices 1-7 deprecated. Do not use
-
-    // Indices 9-19 deprecated. Do not use
-
     // @Group: SWASH
     // @Path: AP_MotorsHeli_Swash.cpp
     AP_SUBGROUPINFO(_swashplate, "SWASH_", 20, AP_MotorsHeli_Single, AP_MotorsHeli_Swash),
