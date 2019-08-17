@@ -15,8 +15,7 @@ enum RotorControlState {
 // rotor control modes
 enum RotorControlMode {
     ROTOR_CONTROL_MODE_DISABLED = 0,
-    ROTOR_CONTROL_MODE_THROTTLE_CURVE,
-    ROTOR_CONTROL_MODE_GOVERNOR
+    ROTOR_CONTROL_MODE_DEFAULT,
 };
 
 class AP_MotorsHeli_RSC {
@@ -47,7 +46,6 @@ public:
 
     // set rotor speed governor parameters
     void        set_governor_on(bool governor_on) {_governor_on = governor_on; }
-    void        set_governor_disengage(float governor_disengage) {_governor_disengage = governor_disengage; }
     void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_reference(float governor_reference) { _governor_reference = governor_reference; }
@@ -113,7 +111,6 @@ private:
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
     bool            _governor_on;                 // flag for governor on/off switch
-    float           _governor_disengage;          // throttle percentage where governor disenages to allow return to flight idle
     float           _governor_output;             // governor output for rotor speed control
     float           _governor_range;              // RPM range +/- governor rpm reference setting where governor is operational
     float           _governor_reference;          // sets rotor speed for governor

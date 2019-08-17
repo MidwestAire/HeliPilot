@@ -28,7 +28,6 @@
 #define AP_MOTORS_HELI_RSC_RPM_DEFAULT          1500
 
 // rotor governor defaults
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DISENGAGE_DEFAULT   25
 #define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT       30
 #define AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT      90
 #define AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT       100
@@ -190,11 +189,10 @@ protected:
     AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
     AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up through mission planner
     AP_Int16        _rsc_governor_reference;      // sets headspeed for rotor governor, autorotation and runup
-    AP_Float        _rsc_governor_disengage;      // sets the throttle percent where the governor disengages for return to flight idle
     AP_Float        _rsc_governor_droop_response; // governor response to droop under load
     AP_Float        _rsc_governor_tcgain;         // governor throttle curve weighting, range 50-100%
     AP_Float        _rsc_governor_range;          // RPM range +/- governor rpm reference setting where governor is operational
-    AP_Int8         _rsc_mode;                    // Method of throttle control used
+    AP_Int8         _rsc_mode    ;                // Default throttle control
     AP_Int8         _rsc_ramp_time;               // Time in seconds to ramp throttle from ground idle to flight idle
     AP_Int8         _rsc_runup_time;              // Time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time
     AP_Int16        _rsc_critical;                // Rotor speed below which autorotation is no longer possible
