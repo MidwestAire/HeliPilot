@@ -290,9 +290,6 @@ public:
 
     // passthrough_bf_roll_pitch_rate_yaw - roll and pitch are passed through directly, body-frame rate target for yaw
     virtual void passthrough_bf_roll_pitch_rate_yaw(float roll_passthrough, float pitch_passthrough, float yaw_rate_bf_cds) {};
-
-    // enable inverted flight on backends that support it
-    virtual void set_inverted_flight(bool inverted) {}
     
     // User settable parameters
     static const struct AP_Param::GroupInfo var_info[];
@@ -423,9 +420,6 @@ protected:
     // update state in ControlMonitor
     void control_monitor_filter_pid(float value, float &rms_P);
     void control_monitor_update(void);
-
-    // true in inverted flight mode
-    bool _inverted_flight;
     
 public:
     // log a CTRL message
