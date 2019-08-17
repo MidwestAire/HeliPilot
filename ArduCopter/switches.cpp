@@ -235,7 +235,7 @@ void Copter::init_aux_switch_function(int8_t ch_option, uint8_t ch_flag)
         case AUXSW_AVOID_ADSB:
         case AUXSW_PRECISION_LOITER:
         case AUXSW_AVOID_PROXIMITY:
-        case AUXSW_INVERTED:
+        case AUXSW_GOVERNOR:            // Helicopter governor
         case AUXSW_WINCH_ENABLE:
         case AUXSW_RC_OVERRIDE_ENABLE:
         case AUXSW_KILL_IMU1:
