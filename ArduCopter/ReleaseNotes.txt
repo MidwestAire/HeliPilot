@@ -1,5 +1,14 @@
 HeliPilot Release Notes:
 ------------------------------------------------------------------
+HeliPilot 19.08.17 Pre-Release
+Changes from ArduHeli HeliPilot 19.08.11
+1) Remove inverted flight function
+2) Remove throttle mode setting
+    a.HeliPilot uses throttle curve by default
+3) Re-index and group parameters for easier code maintenance
+4) Add governor on/off switch function
+    a.governor disengage parameter deprecated
+------------------------------------------------------------------
 HeliPilot 19.08.11 Pre-Release
 Changes from ArduHeli HeliPilot 19.08.05
 1) Remove redunduant throttle modes
