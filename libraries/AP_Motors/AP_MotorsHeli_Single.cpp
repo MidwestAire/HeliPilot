@@ -26,14 +26,6 @@ const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
 
     // Indices 1-7 deprecated. Do not use
 
-    // @Param: COL_YAW
-    // @DisplayName: Collective-Yaw Mixing
-    // @Description: Feed-forward compensation to automatically add rudder input when collective pitch is increased. Can be positive or negative depending on mechanics.
-    // @Range: -10 10
-    // @Increment: 0.1
-    // @User: Standard
-    AP_GROUPINFO("COL_YAW", 8,  AP_MotorsHeli_Single, _collective_yaw_effect, 0),
-
     // Indices 9-19 deprecated. Do not use
 
     // @Group: SWASH
@@ -281,6 +273,14 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
 
     // if servo output not in manual mode, process pre-compensation factors
     if (_servo_mode == SERVO_CONTROL_MODE_AUTOMATED) {
+        // rudder feed forward based on collective
+        // the feed-forward is not required when the motor is stopped or at idle, and thus not creating torque
+        // also not required if we are using external gyro
+        if (_main_rotor.get_control_output() > _main_rotor.get_idle_output()) {
+            // the 4.5 scaling factor is to bring the values in line with previous releases
+            yaw_offset = _collective_yaw_effect * fabsf(collective_out - _collective_mid_pct) / 4.5f;
+        }
+    } else {
         yaw_offset = 0.0f;
     }
 

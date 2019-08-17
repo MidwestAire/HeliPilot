@@ -56,6 +56,14 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("COL_MID", 5, AP_MotorsHeli, _collective_mid, AP_MOTORS_HELI_COLLECTIVE_MID),
 
+    // @Param: COL_YAW
+    // @DisplayName: Collective-Yaw Mixing
+    // @Description: Feed-forward compensation to automatically add rudder input when collective pitch is increased. Can be positive or negative depending on mechanics.
+    // @Range: -10 10
+    // @Increment: 0.1
+    // @User: Standard
+    AP_GROUPINFO("COL_YAW", 8,  AP_MotorsHeli, _collective_yaw_effect, 3),
+
     // @Param: COL_SETUP
     // @DisplayName: Swash Setup Mode
     // @Description: Manual servo override for swash setup only
@@ -355,10 +363,18 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
         return false;
     }
 
-    // returns false if cyclic pitch is out of range
+    // returns false if critical speed exceeds 90% of rated rotor speed
     if (_rsc_critical > 90){
         if (display_msg) {
             gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 90 percent");
+        }
+        return false;
+    }
+
+    // returns false if collective yaw compensation out of range
+    if ((_collective_yaw_effect > 10) || (_collective_yaw_effect < -10)) {
+        if (display_msg) {
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Collective yaw compensation out of range");
         }
         return false;
     }
