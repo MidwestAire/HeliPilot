@@ -293,7 +293,6 @@ void Copter::exit_mode(Copter::Mode *&old_flightmode,
     // firmly reset the flybar passthrough to false when exiting acro mode.
     if (old_flightmode == &mode_acro) {
         attitude_control->use_flybar_passthrough(false, false);
-        motors->set_acro_tail(false);
     }
 
     // if we are changing from a mode that did not use manual throttle,

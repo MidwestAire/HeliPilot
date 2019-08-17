@@ -18,7 +18,7 @@
 
 #include "AP_MotorsHeli_RSC.h"
 
-extern const AP_HAL::HAL& hal;
+extern const AP_HAL::HAL& hal;  
 
 // init_servo - servo initialization on start-up
 void AP_MotorsHeli_RSC::init_servo()

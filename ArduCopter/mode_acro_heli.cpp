@@ -12,8 +12,6 @@ bool Copter::ModeAcro_Heli::init(bool ignore_checks)
 {
     // if heli is equipped with a flybar, then tell the attitude controller to pass through controls directly to servos
     attitude_control->use_flybar_passthrough(motors->has_flybar(), motors->supports_yaw_passthrough());
-
-    motors->set_acro_tail(true);
     
     // set stab collective false to use full collective pitch range
     copter.input_manager.set_use_stab_col(false);

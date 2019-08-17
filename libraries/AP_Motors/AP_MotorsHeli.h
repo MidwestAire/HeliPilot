@@ -82,20 +82,20 @@ public:
     // parameter_check - returns true if helicopter specific parameters are sensible, used for pre-arm check
     virtual bool parameter_check(bool display_msg) const;
 
-    // has_flybar - returns true if we have a mechical flybar
+    // has_flybar - returns true if we have a mechanical flybar
     virtual bool has_flybar() const { return AP_MOTORS_HELI_NOFLYBAR; }
 
     // set_collective_for_landing - limits collective from going too low if we know we are landed
     void set_collective_for_landing(bool landing) { _heliflags.landing_collective = landing; }
-
-    // set_inverted_flight - enables/disables inverted flight
-//    void set_inverted_flight(bool inverted) { _heliflags.inverted_flight = inverted; }
 
     // get_rsc_mode - gets the throttle control method, either throttle curve or governor
     uint8_t get_rsc_mode() const { return _rsc_mode; }
     
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;
+
+    // set_governor_on - enables/disables governor
+    virtual void set_governor(bool governor_on) { _heliflags.governor_on = governor_on; };
 
     // set_desired_rotor_speed - sets target rotor speed as a number from 0 ~ 1
     virtual void set_desired_rotor_speed(float desired_speed) = 0;
@@ -121,11 +121,6 @@ public:
     // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
     virtual uint16_t get_motor_mask() = 0;
-
-    virtual void set_acro_tail(bool set) {}
-
-    // ext_gyro_gain - set external gyro gain in range 0 ~ 1
-    virtual void ext_gyro_gain(float gain) {}
 
     // output - sends commands to the motors
     void output();
@@ -185,7 +180,7 @@ protected:
     struct heliflags_type {
         uint8_t landing_collective      : 1;    // true if collective is setup for landing which has much higher minimum
         uint8_t rotor_runup_complete    : 1;    // true if the rotors have had enough time to wind up
-//        uint8_t inverted_flight         : 1;    // true for inverted flight
+        uint8_t governor_on             : 1;    // true for governor on
     } _heliflags;
 
     // parameters

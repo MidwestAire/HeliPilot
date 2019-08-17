@@ -45,6 +45,9 @@ public:
     // set_rpm - for rotor speed governor
     void set_rpm(float rotor_rpm) override;
 
+    // set_governor_on - enables/disables governor
+    void set_governor(bool governor_on) override;
+
     // get_main_rotor_speed - estimated rotor speed when no speed sensor or governor is used
     float get_main_rotor_speed() const  override { return _main_rotor.get_rotor_speed(); }
 
