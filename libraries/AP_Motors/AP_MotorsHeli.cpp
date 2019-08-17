@@ -27,7 +27,14 @@ extern const AP_HAL::HAL& hal;
 
 const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
-    // Indices 1-2 deprecated, do not use
+    // @Param: COL_MID
+    // @DisplayName: Collective Pitch Mid-Point
+    // @Description: Swash servo position in PWM microseconds corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
+    // @Range: 1000 2000
+    // @Units: PWM
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("COL_MID", 1, AP_MotorsHeli, _collective_mid, AP_MOTORS_HELI_COLLECTIVE_MID),
 
     // @Param: COL_MIN
     // @DisplayName: Collective Pitch Minimum
@@ -36,7 +43,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: PWM
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("COL_MIN", 3, AP_MotorsHeli, _collective_min, AP_MOTORS_HELI_COLLECTIVE_MIN),
+    AP_GROUPINFO("COL_MIN", 2, AP_MotorsHeli, _collective_min, AP_MOTORS_HELI_COLLECTIVE_MIN),
 
     // @Param: COL_MAX
     // @DisplayName: Collective Pitch Maximum
@@ -45,16 +52,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: PWM
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("COL_MAX", 4, AP_MotorsHeli, _collective_max, AP_MOTORS_HELI_COLLECTIVE_MAX),
-
-    // @Param: COL_MID
-    // @DisplayName: Collective Pitch Mid-Point
-    // @Description: Swash servo position in PWM microseconds corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
-    // @Range: 1000 2000
-    // @Units: PWM
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("COL_MID", 5, AP_MotorsHeli, _collective_mid, AP_MOTORS_HELI_COLLECTIVE_MID),
+    AP_GROUPINFO("COL_MAX", 3, AP_MotorsHeli, _collective_max, AP_MOTORS_HELI_COLLECTIVE_MAX),
 
     // @Param: COL_YAW
     // @DisplayName: Collective-Yaw Mixing
@@ -62,22 +60,59 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: -10 10
     // @Increment: 0.1
     // @User: Standard
-    AP_GROUPINFO("COL_YAW", 8,  AP_MotorsHeli, _collective_yaw_effect, 3),
+    AP_GROUPINFO("COL_YAW", 4,  AP_MotorsHeli, _collective_yaw_effect, 3),
 
-    // @Param: COL_SETUP
-    // @DisplayName: Swash Setup Mode
-    // @Description: Manual servo override for swash setup only
-    // @Values: 0:Disabled,1:Passthrough,2:Max collective,3:Mid collective,4:Min collective
+    // @Param: CYCLIC_DEG
+    // @DisplayName: Cyclic Degrees Setting
+    // @Description: Cyclic tilt angle of the swashplate. Normally set this to whatever it takes to get 8 degrees of cyclic pitch
+    // @Range: 0 45
+    // @Units: deg
+    // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("COL_SETUP",  6, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
+    AP_GROUPINFO("CYCLIC_DEG", 5, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
 
-    // @Param: THROTTLE_RAMP
-    // @DisplayName: Throttle Ramp Time
-    // @Description: Time in seconds for throttle to ramp from ground idle to flight idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
-    // @Range: 0 60
-    // @Units: s
+    // @Param: GOV_DROOP
+    // @DisplayName: Governor Droop Response Setting
+    // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or over-run on headspeed when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the gas generator for proper torque response of the N2 spool
+    // @Range: 0 150
+    // @Units: %
+    // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_RAMP", 10, AP_MotorsHeli, _rsc_ramp_time, AP_MOTORS_HELI_RSC_RAMP_TIME),
+    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _rsc_governor_droop_response, AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT),
+    
+    // @Param: GOV_RANGE
+    // @DisplayName: Governor Operational Range
+    // @Description: RPM range +/- governor rpm reference setting where governor is operational. If speed sensor fails or rpm falls outside of this range, the governor will disengage and return to throttle curve. Recommended range is 100 rpm
+    // @Range: 50 200
+    // @Increment: 10
+    // @User: Standard
+    AP_GROUPINFO("GOV_RANGE", 7, AP_MotorsHeli, _rsc_governor_range, AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT),
+
+    // @Param: GOV_TCGAIN
+    // @DisplayName: Governor Throttle Curve Gain
+    // @Description: Percentage of throttle curve gain in governor output. This provides a type of feedforward response to sudden loading or unloading of the engine. If headspeed drops excessively during sudden heavy load, increase the throttle curve gain. If the governor runs with excessive droop more than 15 rpm lower than the speed setting, increase this setting until the governor runs at 8-10 rpm droop from the speed setting. The throttle curve must be properly tuned to fly the helicopter without the governor for this setting to work properly
+    // @Range: 50 100
+    // @Units: %
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _rsc_governor_tcgain, AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT),
+
+    // @Param: ROTOR_CRITICAL
+    // @DisplayName: Critical Rotor Speed
+    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than normal in-flight throttle percentage
+    // @Range: 0 90
+    // @Units: %
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("ROTOR_CRITICAL", 9, AP_MotorsHeli, _rsc_critical, AP_MOTORS_HELI_RSC_CRITICAL),
+
+    // @Param: ROTOR_RPM
+    // @DisplayName: Headspeed RPM setting
+    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup. For governor operation this should be set 10 rpm higher than the actual desired headspeed to allow for governor droop
+    // @Range: 800 3500
+    // @Increment: 10
+    // @User: Standard
+    AP_GROUPINFO("ROTOR_RPM", 10, AP_MotorsHeli, _rsc_governor_reference, AP_MOTORS_HELI_RSC_RPM_DEFAULT),
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
@@ -87,14 +122,12 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("ROTOR_RUNUP", 11, AP_MotorsHeli, _rsc_runup_time, AP_MOTORS_HELI_RSC_RUNUP_TIME),
 
-    // @Param: ROTOR_CRITICAL
-    // @DisplayName: Critical Rotor Speed
-    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than normal in-flight throttle percentage
-    // @Range: 0 90
-    // @Units: %
-    // @Increment: 1
+    // @Param: SWASH_SETUP
+    // @DisplayName: Swash Setup Mode
+    // @Description: Manual servo override for swash setup only
+    // @Values: 0:Disabled,1:Passthrough,2:Max collective,3:Mid collective,4:Min collective
     // @User: Standard
-    AP_GROUPINFO("ROTOR_CRITICAL", 12, AP_MotorsHeli, _rsc_critical, AP_MOTORS_HELI_RSC_CRITICAL),
+    AP_GROUPINFO("SWASH_SETUP", 12, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
     // @Param: THROTTLE_IDLE
     // @DisplayName: Engine Ground Idle Setting
@@ -104,26 +137,13 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _rsc_idle_output, AP_MOTORS_HELI_RSC_IDLE_DEFAULT),
 
-    // Indices 14-15 deprecated, do not use
-
-    // @Param: CYCLIC_DEG
-    // @DisplayName: Cyclic Degrees Setting
-    // @Description: Cyclic tilt angle of the swashplate. Normally set this to whatever it takes to get 8 degrees of cyclic pitch
-    // @Range: 0 45
-    // @Units: deg
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("CYCLIC_DEG", 16, AP_MotorsHeli, _cyclic_max, AP_MOTORS_HELI_SWASH_CYCLIC_MAX),
-
-    // Indices 17-19 deprecated, do not use
-
     // @Param: THROTTLE_P1
     // @DisplayName: Throttle at 0% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative collective pitch position
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P1", 20, AP_MotorsHeli, _rsc_thrcrv[0], 0),
+    AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _rsc_thrcrv[0], 0),
 
     // @Param: THROTTLE_P2
     // @DisplayName: Throttle at 25% collective
@@ -131,7 +151,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P2", 21, AP_MotorsHeli, _rsc_thrcrv[1], 0),
+    AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _rsc_thrcrv[1], 0),
 
     // @Param: THROTTLE_P3
     // @DisplayName: Throttle at 50% collective
@@ -139,7 +159,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P3", 22, AP_MotorsHeli, _rsc_thrcrv[2], 0),
+    AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _rsc_thrcrv[2], 0),
 
     // @Param: THROTTLE_P4
     // @DisplayName: Throttle at 75% collective
@@ -147,7 +167,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P4", 23, AP_MotorsHeli, _rsc_thrcrv[3], 0),
+    AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _rsc_thrcrv[3], 0),
 
     // @Param: THROTTLE_P5
     // @DisplayName: Throttle at 100% collective
@@ -155,41 +175,15 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P5", 24, AP_MotorsHeli, _rsc_thrcrv[4], 0),
+    AP_GROUPINFO("THROTTLE_P5", 18, AP_MotorsHeli, _rsc_thrcrv[4], 0),
 
-    // @Param: ROTOR_RPM
-    // @DisplayName: Headspeed RPM setting
-    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup. For governor operation this should be set 10 rpm higher than the actual desired headspeed to allow for governor droop
-    // @Range: 800 3500
-    // @Increment: 10
+    // @Param: THROTTLE_RAMP
+    // @DisplayName: Throttle Ramp Time
+    // @Description: Time in seconds for throttle to ramp from ground idle to flight idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
+    // @Range: 0 60
+    // @Units: s
     // @User: Standard
-    AP_GROUPINFO("ROTOR_RPM", 25, AP_MotorsHeli, _rsc_governor_reference, AP_MOTORS_HELI_RSC_RPM_DEFAULT),
-
-    // @Param: GOV_DROOP
-    // @DisplayName: Governor Droop Response Setting
-    // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or over-run on headspeed when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the gas generator for proper torque response of the N2 spool
-    // @Range: 0 150
-    // @Units: %
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("GOV_DROOP", 27, AP_MotorsHeli, _rsc_governor_droop_response, AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT),
-
-    // @Param: GOV_TCGAIN
-    // @DisplayName: Governor Throttle Curve Gain
-    // @Description: Percentage of throttle curve gain in governor output. This provides a type of feedforward response to sudden loading or unloading of the engine. If headspeed drops excessively during sudden heavy load, increase the throttle curve gain. If the governor runs with excessive droop more than 15 rpm lower than the speed setting, increase this setting until the governor runs at 8-10 rpm droop from the speed setting. The throttle curve must be properly tuned to fly the helicopter without the governor for this setting to work properly
-    // @Range: 50 100
-    // @Units: %
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("GOV_TCGAIN", 28, AP_MotorsHeli, _rsc_governor_tcgain, AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT),
-    
-    // @Param: GOV_RANGE
-    // @DisplayName: Governor Operational Range
-    // @Description: RPM range +/- governor rpm reference setting where governor is operational. If speed sensor fails or rpm falls outside of this range, the governor will disengage and return to throttle curve. Recommended range is 100 rpm
-    // @Range: 50 200
-    // @Increment: 10
-    // @User: Standard
-    AP_GROUPINFO("GOV_RANGE", 29, AP_MotorsHeli, _rsc_governor_range, AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT),
+    AP_GROUPINFO("THROTTLE_RAMP", 19, AP_MotorsHeli, _rsc_ramp_time, AP_MOTORS_HELI_RSC_RAMP_TIME),
 
     AP_GROUPEND
 };

@@ -29,12 +29,12 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
     // @User: Standard
     AP_GROUPINFO("TYPE", 1, AP_MotorsHeli_Swash, _swashplate_type, SWASHPLATE_TYPE_H3_120),
 
-    // @Param: DIR
+    // @Param: COLL_DIR
     // @DisplayName: Collective Control Direction
     // @Description: Direction collective moves for positive pitch. 0 for Normal, 1 for Reversed
     // @Values: 0:Normal,1:Reversed
     // @User: Standard
-    AP_GROUPINFO("DIR", 2, AP_MotorsHeli_Swash, _swash_coll_dir, COLLECTIVE_DIRECTION_NORMAL),
+    AP_GROUPINFO("COLL_DIR", 2, AP_MotorsHeli_Swash, _swash_collective_direction, COLLECTIVE_DIRECTION_NORMAL),
 
     // @Param: LINEAR
     // @DisplayName: Linearize swashplate servo mechanical throw
@@ -42,8 +42,6 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
     // @Values: 0:Disabled,1:Enabled
     // @User: Standard
     AP_GROUPINFO("LINEAR", 3, AP_MotorsHeli_Swash, _linear_swash_servo, 0),
-
-    // Indices 4-8 deprecated, do not use
    
     AP_GROUPEND
 };
@@ -53,7 +51,7 @@ void AP_MotorsHeli_Swash::configure()
 {
 
     _swash_type = static_cast<SwashPlateType>(_swashplate_type.get());
-    _collective_direction = static_cast<CollectiveDirection>(_swash_coll_dir.get());
+    _collective_direction = static_cast<CollectiveDirection>(_swash_collective_direction.get());
     _make_servo_linear = _linear_swash_servo;
 }
 
