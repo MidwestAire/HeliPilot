@@ -89,7 +89,7 @@ public:
     void set_collective_for_landing(bool landing) { _heliflags.landing_collective = landing; }
 
     // set_inverted_flight - enables/disables inverted flight
-    void set_inverted_flight(bool inverted) { _heliflags.inverted_flight = inverted; }
+//    void set_inverted_flight(bool inverted) { _heliflags.inverted_flight = inverted; }
 
     // get_rsc_mode - gets the throttle control method, either throttle curve or governor
     uint8_t get_rsc_mode() const { return _rsc_mode; }
@@ -185,7 +185,7 @@ protected:
     struct heliflags_type {
         uint8_t landing_collective      : 1;    // true if collective is setup for landing which has much higher minimum
         uint8_t rotor_runup_complete    : 1;    // true if the rotors have had enough time to wind up
-        uint8_t inverted_flight         : 1;    // true for inverted flight
+//        uint8_t inverted_flight         : 1;    // true for inverted flight
     } _heliflags;
 
     // parameters
