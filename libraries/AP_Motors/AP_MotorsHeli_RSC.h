@@ -46,6 +46,7 @@ public:
     void        set_idle_output(float idle_output) { _idle_output = idle_output; }
 
     // set rotor speed governor parameters
+    void        set_governor_on(bool governor_on) {_governor_on = governor_on; }
     void        set_governor_disengage(float governor_disengage) {_governor_disengage = governor_disengage; }
     void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
@@ -111,6 +112,7 @@ private:
     uint16_t        _power_slewrate;              // slewrate for throttle (percentage per second)
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
+    bool            _governor_on;                 // flag for governor on/off switch
     float           _governor_disengage;          // throttle percentage where governor disenages to allow return to flight idle
     float           _governor_output;             // governor output for rotor speed control
     float           _governor_range;              // RPM range +/- governor rpm reference setting where governor is operational

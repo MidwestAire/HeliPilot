@@ -148,6 +148,16 @@ void AP_MotorsHeli_Single::set_rpm(float rotor_rpm)
     _main_rotor.set_rotor_rpm(rotor_rpm);
 }
 
+// set_governor_on - governor on/off switch
+void AP_MotorsHeli_Single::set_governor(bool governor_on)
+{
+    if (_heliflags.governor_on) {
+        _main_rotor.set_governor_on(true);
+    } else {
+        _main_rotor.set_governor_on(false);       
+    }
+}
+
 // calculate_scalars - recalculates various scalers used.
 void AP_MotorsHeli_Single::calculate_armed_scalars()
 {

@@ -111,10 +111,6 @@ void Copter::tuning() {
         break;
 
 #if FRAME_CONFIG == HELI_FRAME
-    case TUNING_HELI_EXTERNAL_GYRO:
-        motors->ext_gyro_gain((float)control_in / 1000.0f);
-        break;
-
     case TUNING_RATE_PITCH_FF:
         attitude_control->get_rate_pitch_pid().ff(tuning_value);
         break;
