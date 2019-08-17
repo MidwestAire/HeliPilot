@@ -94,7 +94,7 @@ public:
     virtual void set_rpm(float rotor_rpm) = 0;
 
     // set_governor_on - enables/disables governor
-    virtual void set_governor(bool governor_on) { _heliflags.governor_on = governor_on; };
+    void set_governor(bool governor) { _heliflags.governor_on = governor; }
 
     // set_desired_rotor_speed - sets target rotor speed as a number from 0 ~ 1
     virtual void set_desired_rotor_speed(float desired_speed) = 0;

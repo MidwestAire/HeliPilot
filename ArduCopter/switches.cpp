@@ -697,6 +697,22 @@ void Copter::do_aux_switch_function(int8_t ch_function, uint8_t ch_flag)
 #endif
             break;
 
+        case AUXSW_GOVERNOR:
+#if FRAME_CONFIG == HELI_FRAME
+            // governor on/off switch for helicopter governor
+            switch (ch_flag) {
+            case AUX_SWITCH_HIGH:
+                motors->set_governor(true);
+                heli_flags.governor_on = true;
+                break;
+            case AUX_SWITCH_LOW:
+                motors->set_governor(false);
+                heli_flags.governor_on = false;
+                break;
+            }
+#endif
+            break;
+
         case AUXSW_WINCH_ENABLE:
 #if WINCH_ENABLED == ENABLED
             switch (ch_flag) {
