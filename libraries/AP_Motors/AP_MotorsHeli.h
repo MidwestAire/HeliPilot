@@ -16,8 +16,8 @@
 
 // default swash min and max angles and positions
 #define AP_MOTORS_HELI_SWASH_CYCLIC_MAX         25
-#define AP_MOTORS_HELI_COLLECTIVE_MIN           1250
-#define AP_MOTORS_HELI_COLLECTIVE_MAX           1750
+#define AP_MOTORS_HELI_COLLECTIVE_MIN           1450
+#define AP_MOTORS_HELI_COLLECTIVE_MAX           1650
 #define AP_MOTORS_HELI_COLLECTIVE_MID           1500
 
 // default main rotor critical speed
@@ -28,8 +28,8 @@
 #define AP_MOTORS_HELI_RSC_RPM_DEFAULT          1500
 
 // rotor governor defaults
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT       30
-#define AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT      90
+#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT       50
+#define AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT      80
 #define AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT       100
 
 // default main rotor ramp up time in seconds
@@ -177,9 +177,9 @@ protected:
 
     // flags bitmask
     struct heliflags_type {
-        uint8_t landing_collective      : 1;    // true if collective is setup for landing which has much higher minimum
-        uint8_t rotor_runup_complete    : 1;    // true if the rotors have had enough time to wind up
-        uint8_t governor_on             : 1;    // true for governor on
+        uint8_t landing_collective      : 1;      // true if collective is setup for landing which has much higher minimum
+        uint8_t rotor_runup_complete    : 1;      // true if the rotors have had enough time to wind up
+        uint8_t governor_on             : 1;      // true for governor on
     } _heliflags;
 
     // parameters
@@ -193,7 +193,7 @@ protected:
     AP_Float        _rsc_governor_droop_response; // governor response to droop under load
     AP_Float        _rsc_governor_tcgain;         // governor throttle curve weighting, range 50-100%
     AP_Float        _rsc_governor_range;          // RPM range +/- governor rpm reference setting where governor is operational
-    AP_Int8         _rsc_mode    ;                // Default throttle control
+    AP_Int8         _rsc_mode;                    // Default throttle control variable
     AP_Int8         _rsc_ramp_time;               // Time in seconds to ramp throttle from ground idle to flight idle
     AP_Int8         _rsc_runup_time;              // Time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time
     AP_Int16        _rsc_critical;                // Rotor speed below which autorotation is no longer possible
@@ -202,7 +202,7 @@ protected:
     AP_Int16        _rsc_slewrate;                // throttle slew rate (percentage per second)
 
     // internal variables
-    float           _collective_mid_pct = 0.0f;      // collective mid parameter value converted to 0 ~ 1 range
+    float           _collective_mid_pct = 0.0f;   // collective mid parameter value converted to 0 ~ 1 range
 
     motor_frame_type _frame_type;
 };

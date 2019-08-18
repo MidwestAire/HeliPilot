@@ -115,7 +115,7 @@ private:
     float           _governor_range;              // RPM range +/- governor rpm reference setting where governor is operational
     float           _governor_reference;          // sets rotor speed for governor
     float           _governor_droop_response;     // governor response to droop under load
-    bool            _governor_engage;             // RSC governor status flag for soft-start
+    bool            _governor_engage;             // governor status flag for soft-start
     float           _governor_tcgain;             // governor throttle curve gain, range 50-100%
 
     // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output

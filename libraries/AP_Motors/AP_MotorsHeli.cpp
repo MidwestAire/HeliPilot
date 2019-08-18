@@ -143,7 +143,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _rsc_thrcrv[0], 0),
+    AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _rsc_thrcrv[0], 20),
 
     // @Param: THROTTLE_P2
     // @DisplayName: Throttle at 25% collective
@@ -151,7 +151,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _rsc_thrcrv[1], 0),
+    AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _rsc_thrcrv[1], 40),
 
     // @Param: THROTTLE_P3
     // @DisplayName: Throttle at 50% collective
@@ -159,7 +159,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _rsc_thrcrv[2], 0),
+    AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _rsc_thrcrv[2], 60),
 
     // @Param: THROTTLE_P4
     // @DisplayName: Throttle at 75% collective
@@ -167,7 +167,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _rsc_thrcrv[3], 0),
+    AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _rsc_thrcrv[3], 80),
 
     // @Param: THROTTLE_P5
     // @DisplayName: Throttle at 100% collective
@@ -175,7 +175,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P5", 18, AP_MotorsHeli, _rsc_thrcrv[4], 0),
+    AP_GROUPINFO("THROTTLE_P5", 18, AP_MotorsHeli, _rsc_thrcrv[4], 100),
 
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
