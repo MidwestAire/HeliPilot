@@ -1,8 +1,8 @@
-# Default setup and tuning parameters for TradHeli - load with MP
+# Default setup and tuning parameters for HeliPilot - load with MP
 # Tunes the PSC, LOIT, NAV and ATC for New Loiter and Auto
-# Stack: ArduPilot
+# Stack: HeliPilot
 # Vehicle: Helicopter
-# Version: 3.6
+# Version: 19.09.01
 ATC_ACCEL_P_MAX, 52000
 ATC_ACCEL_R_MAX, 52000
 ATC_ACCEL_Y_MAX, 20000
