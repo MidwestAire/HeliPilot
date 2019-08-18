@@ -1,8 +1,8 @@
-# Default setup and tuning parameters for TradHeli - load with QGC
+# Default setup and tuning parameters for HeliPilot - load with QGC
 # Tunes the PSC, LOIT, NAV and ATC for New Loiter and Auto
-# Stack: ArduPilot
+# Stack: HeliPilot
 # Vehicle: Helicopter
-# Version: 3.6
+# Version: 19.09.01
 # Vehicle-Id Component-Id Name Value Type
 1	1	ATC_ACCEL_P_MAX	52000	9
 1	1	ATC_ACCEL_R_MAX	52000	9
