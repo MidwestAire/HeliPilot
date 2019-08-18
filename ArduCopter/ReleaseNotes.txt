@@ -1,5 +1,7 @@
 HeliPilot Release Notes:
 ------------------------------------------------------------------
+HeliPilot 19.09.01 Stable Release September 2019
+------------------------------------------------------------------
 HeliPilot 19.08.17 Pre-Release
 Changes from ArduHeli HeliPilot 19.08.11
 1) Remove inverted flight function
