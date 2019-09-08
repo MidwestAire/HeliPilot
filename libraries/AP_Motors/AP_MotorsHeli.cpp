@@ -13,11 +13,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- *       AP_MotorsHeli.cpp - ArduCopter motors library
- *       Code by RandyMackay. DIYDrones.com
- *
- */
 #include <stdlib.h>
 #include <AP_HAL/AP_HAL.h>
 #include "AP_MotorsHeli.h"
@@ -29,7 +24,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: COL_MID
     // @DisplayName: Collective Pitch Mid-Point
-    // @Description: Swash servo position in PWM microseconds corresponding to zero collective pitch (or zero lift for Asymmetrical blades)
+    // @Description: Swash servo position in PWM microseconds corresponding to zero collective pitch (or zero lift for asymmetric blades)
     // @Range: 1000 2000
     // @Units: PWM
     // @Increment: 1
@@ -38,7 +33,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: COL_MIN
     // @DisplayName: Collective Pitch Minimum
-    // @Description: Lowest possible servo position in PWM microseconds for the swashplate
+    // @Description: Minimum blade pitch. Must be set for proper autorotation performance at best autorotation airspeed
     // @Range: 1000 2000
     // @Units: PWM
     // @Increment: 1
@@ -47,7 +42,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: COL_MAX
     // @DisplayName: Collective Pitch Maximum
-    // @Description: Highest possible servo position in PWM microseconds for the swashplate
+    // @Description: Maximum blade pitch. Must be set to correspond with maximum available engine torque at full collective climb at sea level, standard conditions
     // @Range: 1000 2000
     // @Units: PWM
     // @Increment: 1
@@ -73,24 +68,24 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV_DROOP
     // @DisplayName: Governor Droop Response Setting
-    // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or over-run on headspeed when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the gas generator for proper torque response of the N2 spool
+    // @Description: Governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Setting to zero disables the governor. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the Ng for proper torque response of the N2 spool
     // @Range: 0 150
     // @Units: %
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _rsc_governor_droop_response, AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT),
     
-    // @Param: GOV_RANGE
-    // @DisplayName: Governor Operational Range
-    // @Description: RPM range +/- governor rpm reference setting where governor is operational. If speed sensor fails or rpm falls outside of this range, the governor will disengage and return to throttle curve. Recommended range is 100 rpm
+    // @Param: GOV_TORQUE
+    // @DisplayName: Governor Torque Limiter
+    // @Description: Adjusts the torque limit of the governor output based on rpm range of the main rotor. If speed sensor fails or rpm falls outside of this torque limiter range, the governor will disengage and return to throttle curve. Recommended torque limiter range is 120 rpm.
     // @Range: 50 200
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("GOV_RANGE", 7, AP_MotorsHeli, _rsc_governor_range, AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT),
+    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _rsc_governor_range, AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT),
 
     // @Param: GOV_TCGAIN
     // @DisplayName: Governor Throttle Curve Gain
-    // @Description: Percentage of throttle curve gain in governor output. This provides a type of feedforward response to sudden loading or unloading of the engine. If headspeed drops excessively during sudden heavy load, increase the throttle curve gain. If the governor runs with excessive droop more than 15 rpm lower than the speed setting, increase this setting until the governor runs at 8-10 rpm droop from the speed setting. The throttle curve must be properly tuned to fly the helicopter without the governor for this setting to work properly
+    // @Description: Percentage of throttle curve in governor output. This provides a type of feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during over-pitching increase the throttle curve gain. If governor fails to drop Rrpm by 2.5%, or auto-disengages the governor, at Flight Idle (pitch feathered) reduce the throttle curve gain
     // @Range: 50 100
     // @Units: %
     // @Increment: 1
@@ -99,7 +94,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
-    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the green arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than normal in-flight throttle percentage
+    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the warning arc for autorotation. For helicopters without speed sensor should be set to the throttle percentage where flight is no longer possible. With no speed sensor critical should be lower than normal in-flight throttle percentage
     // @Range: 0 90
     // @Units: %
     // @Increment: 1
@@ -116,7 +111,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
-    // @Description: Time in seconds for the main rotor to reach full speed after throttle hold is released. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.
+    // @Description: Time in seconds for the main rotor to reach full speed after throttle hold is released. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.!WARNING! - when measured rotor speed is not used to determine runup, setting rotor runup time to an excessively high value can cause rapid power recovery from throttle hold, resulting in blade lag and potentially destroying the helicopter. With all electric helicopters it is recommended to set rotor runup one second longer than throttle ramp time.
     // @Range: 0 60
     // @Units: s
     // @User: Standard
@@ -130,8 +125,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("SWASH_SETUP", 12, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
     // @Param: THROTTLE_IDLE
-    // @DisplayName: Engine Ground Idle Setting
-    // @Description: FOR COMBUSTION ENGINES. Sets the engine ground idle throttle percentage with clutch disengaged. This must be set to zero for electric helicopters under most situations. If the ESC has an autorotation window this can be set to keep the autorotation window open in the ESC. Consult the operating manual for your ESC to set it properly for this purpose
+    // @DisplayName: Engine Low Idle Setting
+    // @Description: FOR COMBUSTION ENGINES. Sets the engine low idle throttle percentage with clutch disengaged, and for engine start. This must be set to zero for electric helicopters under most situations. If the ESC has an autorotation window this can be set to keep the autorotation window open in the ESC. Consult the operating manual for your ESC to set it properly for this purpose
     // @Range: 0 50
     // @Increment: 1
     // @User: Standard
@@ -139,7 +134,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_P1
     // @DisplayName: Throttle at 0% collective
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative collective pitch position
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position. This setting corresponds to ground idle with the governor switched off. Rotors should be turning at slow speed with clutch fully engaged at this throttle setting. With governor switched on and engaged this setting will correspond to flight idle power, which is the minimum amount of power the helicopter can still fly at. With the governor TCGAIN set correctly this should result in drop of rotor speed by 2.5% from normal flight power.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -179,7 +174,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
-    // @Description: Time in seconds for throttle to ramp from ground idle to flight idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
+    // @Description: Time in seconds for throttle to ramp from low idle to ground idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
     // @Range: 0 60
     // @Units: s
     // @User: Standard
