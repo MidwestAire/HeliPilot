@@ -30,7 +30,7 @@
 // rotor governor defaults
 #define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT       50
 #define AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT      80
-#define AP_MOTORS_HELI_RSC_GOVERNOR_RANGE_DEFAULT       100
+#define AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT      100
 
 // default main rotor ramp up time in seconds
 #define AP_MOTORS_HELI_RSC_RAMP_TIME            5       // 5 seconds to ramp throttle output to throttle curve
