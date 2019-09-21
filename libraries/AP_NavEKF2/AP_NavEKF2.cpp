@@ -413,7 +413,7 @@ const AP_Param::GroupInfo NavEKF2::var_info[] = {
     // @Bitmask: 0:FirstIMU,1:SecondIMU,2:ThirdIMU,3:FourthIMU,4:FifthIMU,5:SixthIMU
     // @User: Advanced
     // @RebootRequired: True
-    AP_GROUPINFO("IMU_MASK",     33, NavEKF2, _imuMask, 3),
+    AP_GROUPINFO("IMU_MASK",     33, NavEKF2, _imuMask, 1),
     
     // @Param: CHECK_SCALE
     // @DisplayName: GPS accuracy check scaler (%)
