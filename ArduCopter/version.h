@@ -6,12 +6,12 @@
 
 #include "ap_version.h"
 
-#define THISFIRMWARE "HeliPilot V19.09.01"
+#define THISFIRMWARE "HeliPilot V19.09.22"
 
 // the following line is parsed by the autotest scripts
-#define FIRMWARE_VERSION 19,9,1,FIRMWARE_VERSION_TYPE_OFFICIAL
+#define FIRMWARE_VERSION 19,9,22,FIRMWARE_VERSION_TYPE_OFFICIAL
 
 #define FW_MAJOR 19
 #define FW_MINOR 9
-#define FW_PATCH 1
+#define FW_PATCH 22
 #define FW_TYPE FIRMWARE_VERSION_TYPE_OFFICIAL
