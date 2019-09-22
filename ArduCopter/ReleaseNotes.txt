@@ -1,6 +1,9 @@
 HeliPilot Release Notes:
 ------------------------------------------------------------------
-HeliPilot 19.09.01 Stable Release September 2019
+HeliPilot 19.09.22 Preliminary Certified Release
+1) Changes to documentation for settings and inspections
+------------------------------------------------------------------
+HeliPilot 19.09.01 Certification Release September 2019
 ------------------------------------------------------------------
 HeliPilot 19.08.17 Pre-Release
 Changes from ArduHeli HeliPilot 19.08.11
