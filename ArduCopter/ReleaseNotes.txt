@@ -1,5 +1,9 @@
 HeliPilot Release Notes:
 ------------------------------------------------------------------
+HeliPilot 19.10.01 Approved Release
+1) Changes to governor torque limiter variables to be consistent with change from
+governor range to governor torque
+------------------------------------------------------------------
 HeliPilot 19.09.22 Preliminary Certified Release
 1) Changes to documentation for settings and inspections
 ------------------------------------------------------------------
