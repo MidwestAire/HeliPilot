@@ -49,7 +49,7 @@ public:
     void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_reference(float governor_reference) { _governor_reference = governor_reference; }
-    void        set_governor_range(float governor_range) { _governor_range = governor_range; }
+    void        set_governor_torque(float governor_torque) { _governor_torque = governor_torque; }
     void        set_governor_tcgain(float governor_tcgain) {_governor_tcgain = governor_tcgain; }
 
     // get_desired_speed
@@ -112,7 +112,7 @@ private:
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
     bool            _governor_on;                 // flag for governor on/off switch
     float           _governor_output;             // governor output for rotor speed control
-    float           _governor_range;              // RPM range +/- governor rpm reference setting where governor is operational
+    float           _governor_torque;             // governor torque limiter variable
     float           _governor_reference;          // sets rotor speed for governor
     float           _governor_droop_response;     // governor response to droop under load
     bool            _governor_engage;             // governor status flag for soft-start

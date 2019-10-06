@@ -91,12 +91,12 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
                 // or throttle curve if governor is out of range or sensor failed
             	float desired_throttle = calculate_desired_throttle(_collective_in);
             	// governor is active if within user-set range from reference speed
-                if ((_rotor_rpm >= (_governor_reference - _governor_range)) && (_rotor_rpm <= (_governor_reference + _governor_range))) {
-            	    float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_range);
+                if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
+            	    float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_torque);
             	    // if rpm has not reached 40% of the operational range from reference speed, governor
             	    // remains in pre-engage status, no reference speed compensation due to droop
             	    // this provides a soft-start function that engages the governor less aggressively
-            	    if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_range * 0.4f))) {
+            	    if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_torque * 0.4f))) {
                         _governor_output = ((_rotor_rpm - _governor_reference) * desired_throttle) * _governor_droop_response * -0.01f;
                     } else {
             	        // normal flight status, governor fully engaged with reference speed compensation for droop
