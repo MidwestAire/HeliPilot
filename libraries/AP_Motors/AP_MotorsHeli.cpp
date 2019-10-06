@@ -77,11 +77,11 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
-    // @Description: Adjusts the torque limit of the governor output based on rpm range of the main rotor. If speed sensor fails or rpm falls outside of this torque limiter range, the governor will disengage and return to throttle curve. Recommended torque limiter range is 120 rpm.
+    // @Description: Adjusts the maximum engine torque output in the governor response to speed droop of the main rotor when the governor is active. If speed sensor fails or torque output exceeds the torque limiter setting, the governor will disengage and return to throttle curve. Recommended torque limiter setting is 100-120 rpm.
     // @Range: 50 200
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _rsc_governor_range, AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT),
+    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _rsc_governor_torque, AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT),
 
     // @Param: GOV_TCGAIN
     // @DisplayName: Governor Throttle Curve Gain

@@ -192,7 +192,7 @@ protected:
     AP_Int16        _rsc_governor_reference;      // sets headspeed for rotor governor, autorotation and runup
     AP_Float        _rsc_governor_droop_response; // governor response to droop under load
     AP_Float        _rsc_governor_tcgain;         // governor throttle curve weighting, range 50-100%
-    AP_Float        _rsc_governor_range;          // RPM range +/- governor rpm reference setting where governor is operational
+    AP_Float        _rsc_governor_torque;         // governor torque limiter variable
     AP_Int8         _rsc_mode;                    // Default throttle control variable
     AP_Int8         _rsc_ramp_time;               // Time in seconds to ramp throttle from ground idle to flight idle
     AP_Int8         _rsc_runup_time;              // Time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time

@@ -150,7 +150,7 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_throttle_curve(thrcrv, (uint16_t)_rsc_slewrate.get());
     _main_rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
     _main_rotor.set_governor_reference(_rsc_governor_reference);
-    _main_rotor.set_governor_range(_rsc_governor_range);
+    _main_rotor.set_governor_torque(_rsc_governor_torque);
     _main_rotor.set_governor_tcgain(_rsc_governor_tcgain*0.01f);
 
     if (_heliflags.governor_on) {
