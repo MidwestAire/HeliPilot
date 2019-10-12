@@ -125,8 +125,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("SWASH_SETUP", 12, AP_MotorsHeli, _servo_mode, SERVO_CONTROL_MODE_AUTOMATED),
 
     // @Param: THROTTLE_IDLE
-    // @DisplayName: Engine Low Idle Setting
-    // @Description: FOR COMBUSTION ENGINES. Sets the engine low idle throttle percentage with clutch disengaged, and for engine start. This must be set to zero for electric helicopters under most situations. If the ESC has an autorotation window this can be set to keep the autorotation window open in the ESC. Consult the operating manual for your ESC to set it properly for this purpose
+    // @DisplayName: Engine Ground Idle Setting
+    // @Description: FOR COMBUSTION ENGINES. Sets the engine Ground Idle throttle percentage with clutch disengaged, and for engine start. This must be set to zero for electric helicopters under most situations. If the ESC has an autorotation window this can be set to keep the autorotation window open in the ESC. Consult the operating manual for your ESC to set it properly for this purpose
     // @Range: 0 50
     // @Increment: 1
     // @User: Standard
@@ -134,7 +134,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_P1
     // @DisplayName: Throttle at 0% collective
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position. This setting corresponds to ground idle with the governor switched off. Rotors should be turning at slow speed with clutch fully engaged at this throttle setting. With governor switched on and engaged this setting will correspond to flight idle power, which is the minimum amount of power the helicopter can still fly at. With the governor TCGAIN set correctly this should result in drop of rotor speed by 2.5% from normal flight power.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position. This setting corresponds to Low Idle with the governor switched off. Rotors should be turning at slow speed with clutch fully engaged at this throttle setting. With governor switched on and engaged this setting will correspond to Flight Idle power, which is the minimum amount of power the helicopter can still fly at. With the governor TCGAIN set correctly this should result in drop of rotor speed by 2.5% from normal flight power.
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -174,7 +174,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
-    // @Description: Time in seconds for throttle to ramp from low idle to ground idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
+    // @Description: Time in seconds for throttle to ramp from Ground Idle to Low Idle power when throttle hold is released. This setting is used primarily by piston and turbine engines to smoothly engage the transmission clutch. However, it can also be used for electric ESC's that do not have an internal soft-start. If used with electric ESC with soft-start it is recommended to set this to 1 second so as to not confuse the ESC's soft-start function
     // @Range: 0 60
     // @Units: s
     // @User: Standard
