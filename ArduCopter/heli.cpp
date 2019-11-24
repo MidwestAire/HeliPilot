@@ -147,6 +147,7 @@ void Copter::heli_update_rotor_speed_targets()
             if (rsc_control_deglitched > 0.0f) {
                 ap.motor_interlock_switch = true;
                 // set rpm from rotor speed sensor
+                motors->set_desired_rotor_speed(rsc_control_deglitched);
                 motors->set_rpm(rpm_sensor.get_rpm(0));
             } else {
                 ap.motor_interlock_switch = false;

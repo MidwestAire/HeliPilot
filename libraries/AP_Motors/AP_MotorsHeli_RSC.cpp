@@ -79,40 +79,39 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
         case ROTOR_CONTROL_ACTIVE:
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
-
-            if (!_governor_on) {
-                // throttle output from throttle curve based on collective position
-                _governor_output = 0.0f;
-                _governor_engage = false;
-                float desired_throttle = calculate_desired_throttle(_collective_in);
-                _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+            // Manual throttle if RC8 signal below 95%
+            if (_desired_speed < 0.95f) {
+                _control_output = constrain_float(0.0f, _idle_output + _desired_speed, 1.0f);
             } else {
-                // governor provides two modes of throttle control - governor engaged
-                // or throttle curve if governor is out of range or sensor failed
-            	float desired_throttle = calculate_desired_throttle(_collective_in);
-            	// governor is active if within user-set range from reference speed
-                if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
-            	    float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_torque);
-            	    // if rpm has not reached 40% of the operational range from reference speed, governor
-            	    // remains in pre-engage status, no reference speed compensation due to droop
-            	    // this provides a soft-start function that engages the governor less aggressively
-            	    if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_torque * 0.4f))) {
-                        _governor_output = ((_rotor_rpm - _governor_reference) * desired_throttle) * _governor_droop_response * -0.01f;
-                    } else {
-            	        // normal flight status, governor fully engaged with reference speed compensation for droop
-            	        _governor_engage = true;
-                        _governor_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor_droop_response * -0.01f;
+                // AutoThrottle with throttle curve and governor at full RC8 signal
+                if (!_governor_on) {
+                    _governor_output = 0.0f;
+                    _governor_engage = false;
+                    float desired_throttle = calculate_desired_throttle(_collective_in);
+                   _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                } else {
+                    // governor operation if governor switch is ON
+            	    float desired_throttle = calculate_desired_throttle(_collective_in);
+                    if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
+            	        float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_torque);
+            	        // if rpm has not reached 40% of the operational range from reference speed, governor
+            	        // remains in pre-engage status, no reference speed droop compensation
+            	        if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_torque * 0.4f))) {
+                            _governor_output = ((_rotor_rpm - _governor_reference) * desired_throttle) * _governor_droop_response * -0.01f;
+                        } else {
+            	            // normal flight status, governor fully engaged with reference speed droop compensation
+            	            _governor_engage = true;
+                            _governor_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor_droop_response * -0.01f;
+                        }
+                        // throttle output constrained from minimum called for from throttle curve to WOT
+            	        _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
+            	    } else {
+            	        // hold governor output at zero, engage status is false and use the throttle curve
+            	        // this is failover for in-flight failure of the speed sensor
+            	        _governor_output = 0.0f;
+            	        _governor_engage = false;
+                        _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                     }
-                    // throttle output with governor on is constrained from minimum called for from throttle curve
-                    // to maximum WOT. This prevents outliers on rpm signal from closing the throttle in flight due
-                    // to rpm sensor failure or bad signal quality
-            	    _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
-            	} else {
-            	    // hold governor output at zero, engage status is false and use the throttle curve
-            	    // this is failover for in-flight failure of the speed sensor
-            	    _governor_output = 0.0f;
-            	    _governor_engage = false;
-                    _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                 }
             }
         break;

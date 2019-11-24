@@ -543,7 +543,7 @@ bool AP_Arming_Copter::arm_checks(bool display_failure, bool arming_from_gcs)
     // skip check in Throw mode which takes control of the motor interlock
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
         #if FRAME_CONFIG == HELI_FRAME
-        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Hold Switch");
+        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Position");
         #else
         check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
         #endif
