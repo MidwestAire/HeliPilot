@@ -45,7 +45,7 @@ bool AP_Arming_Copter::pre_arm_checks(bool display_failure)
     // as state can change at any time.
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
         #if FRAME_CONFIG == HELI_FRAME
-        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Hold Switch");
+        check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Position");
         #else
         check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
         #endif
