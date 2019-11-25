@@ -81,17 +81,16 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             update_rotor_ramp(1.0f, dt);
             // Manual throttle if RC8 signal below 95%
             if (_desired_speed < 0.95f) {
-                _control_output = constrain_float(0.0f, _idle_output + _desired_speed, 1.0f);
+                _control_output = constrain_float((_idle_output + _desired_speed), 0.0f, 1.0f);
             } else {
-                // AutoThrottle with throttle curve and governor at full RC8 signal
+                // AutoThrottle ON at RC8 signal >/= 95%
+                float desired_throttle = calculate_desired_throttle(_collective_in);
                 if (!_governor_on) {
                     _governor_output = 0.0f;
                     _governor_engage = false;
-                    float desired_throttle = calculate_desired_throttle(_collective_in);
                    _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                 } else {
                     // governor operation if governor switch is ON
-            	    float desired_throttle = calculate_desired_throttle(_collective_in);
                     if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
             	        float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_torque);
             	        // if rpm has not reached 40% of the operational range from reference speed, governor
