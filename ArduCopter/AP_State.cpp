@@ -81,10 +81,10 @@ void Copter::set_failsafe_gcs(bool b)
 void Copter::update_using_interlock()
 {
 #if FRAME_CONFIG == HELI_FRAME
-    // helicopters are always using motor interlock
+    // helicopters are always using throttle interlock
     ap.using_interlock = true;
 #else
-    // check if we are using motor interlock control on an aux switch or are in throw mode
+    // check if we are using throttle interlock control on an aux switch or are in throw mode
     // which uses the interlock to stop motors while the copter is being thrown
     ap.using_interlock = check_if_auxsw_mode_used(AUXSW_MOTOR_INTERLOCK);
 #endif

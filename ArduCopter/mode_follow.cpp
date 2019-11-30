@@ -26,7 +26,7 @@ bool Copter::ModeFollow::init(const bool ignore_checks)
 
 void Copter::ModeFollow::run()
 {
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         return;

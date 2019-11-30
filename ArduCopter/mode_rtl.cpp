@@ -130,7 +130,7 @@ void Copter::ModeRTL::return_start()
 //      called by rtl_run at 100hz or more
 void Copter::ModeRTL::climb_return_run()
 {
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         // To-Do: re-initialise wpnav targets
@@ -188,7 +188,7 @@ void Copter::ModeRTL::loiterathome_start()
 //      called by rtl_run at 100hz or more
 void Copter::ModeRTL::loiterathome_run()
 {
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         // To-Do: re-initialise wpnav targets
@@ -261,7 +261,7 @@ void Copter::ModeRTL::descent_run()
     float target_pitch = 0.0f;
     float target_yaw_rate = 0.0f;
 
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         // set target to current position
@@ -353,7 +353,7 @@ bool Copter::ModeRTL::landing_gear_should_be_deployed() const
 //      called by rtl_run at 100hz or more
 void Copter::ModeRTL::land_run(bool disarm_on_land)
 {
-    // if not auto armed or landing completed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or landing completed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || ap.land_complete || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         // set target to current position

@@ -32,14 +32,14 @@ bool AP_Arming_Copter::pre_arm_checks(bool display_failure)
         return true;
     }
 
-    // check if motor interlock and Emergency Stop aux switches are used
+    // check if throttle interlock and Emergency Stop aux switches are used
     // at the same time.  This cannot be allowed.
     if (copter.check_if_auxsw_mode_used(AUXSW_MOTOR_INTERLOCK) && copter.check_if_auxsw_mode_used(AUXSW_MOTOR_ESTOP)){
         check_failed(ARMING_CHECK_NONE, display_failure, "Interlock/E-Stop Conflict");
         return false;
     }
 
-    // check if motor interlock aux switch is in use
+    // check if throttle interlock aux switch is in use
     // if it is, switch needs to be in disabled position to arm
     // otherwise exit immediately.  This check to be repeated,
     // as state can change at any time.
@@ -47,7 +47,7 @@ bool AP_Arming_Copter::pre_arm_checks(bool display_failure)
         #if FRAME_CONFIG == HELI_FRAME
         check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Position");
         #else
-        check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
+        check_failed(ARMING_CHECK_NONE, display_failure, "Throttle Interlock Enabled");
         #endif
     }
 
@@ -539,13 +539,13 @@ bool AP_Arming_Copter::arm_checks(bool display_failure, bool arming_from_gcs)
         return false;
     }
 
-    // if we are using motor interlock switch and it's enabled, fail to arm
-    // skip check in Throw mode which takes control of the motor interlock
+    // if we are using throttle interlock switch and it's enabled, fail to arm
+    // skip check in Throw mode which takes control of the throttle interlock
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
         #if FRAME_CONFIG == HELI_FRAME
         check_failed(ARMING_CHECK_NONE, display_failure, "Check Throttle Position");
         #else
-        check_failed(ARMING_CHECK_NONE, display_failure, "Motor Interlock Enabled");
+        check_failed(ARMING_CHECK_NONE, display_failure, "Throttle Interlock Enabled");
         #endif
         return false;
     }
