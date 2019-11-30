@@ -136,7 +136,7 @@ void Copter::ModePosHold::run()
     pos_control->set_accel_z(g.pilot_accel_z);
     loiter_nav->clear_pilot_desired_acceleration();
 
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         loiter_nav->init_target();
         zero_throttle_and_relax_ac();

@@ -113,7 +113,7 @@ void Copter::init_ardupilot()
     log_init();
 #endif
 
-    // update motor interlock state
+    // update throttle interlock state
     update_using_interlock();
 
 #if FRAME_CONFIG == HELI_FRAME

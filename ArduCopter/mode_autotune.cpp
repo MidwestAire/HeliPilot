@@ -322,7 +322,7 @@ void Copter::ModeAutoTune::run()
     pos_control->set_speed_z(-get_pilot_speed_dn(), g.pilot_speed_up);
     pos_control->set_accel_z(g.pilot_accel_z);
 
-    // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or throttle interlock not enabled set throttle to zero and exit immediately
     // this should not actually be possible because of the init() checks
     if (!motors->armed() || !ap.auto_armed || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();

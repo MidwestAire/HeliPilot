@@ -54,7 +54,7 @@ void Copter::ModeLand::run()
 //      should be called at 100hz or more
 void Copter::ModeLand::gps_run()
 {
-    // if not auto armed or landed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or landed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || ap.land_complete || !motors->get_interlock()) {
         zero_throttle_and_relax_ac();
         loiter_nav->clear_pilot_desired_acceleration();
@@ -107,7 +107,7 @@ void Copter::ModeLand::nogps_run()
         target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
     }
 
-    // if not auto armed or landed or motor interlock not enabled set throttle to zero and exit immediately
+    // if not auto armed or landed or throttle interlock not enabled set throttle to zero and exit immediately
     if (!motors->armed() || !ap.auto_armed || ap.land_complete || !motors->get_interlock()) {
 #if FRAME_CONFIG == HELI_FRAME  // Helicopters always stabilize roll/pitch/yaw
         // call attitude controller
