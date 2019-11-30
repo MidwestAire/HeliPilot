@@ -352,10 +352,10 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
         return false;
     }
 
-    // returns false if critical speed exceeds 90% of rated rotor speed
-    if (_rsc_critical > 90){
+    // returns false if critical speed exceeds 95% of rated rotor speed
+    if (_rsc_critical > 95){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 90 percent");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 95 percent");
         }
         return false;
     }
