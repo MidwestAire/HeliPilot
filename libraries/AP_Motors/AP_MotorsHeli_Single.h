@@ -6,11 +6,12 @@
 #include <AP_Math/AP_Math.h>            // ArduPilot Mega Vector/Matrix math Library
 #include <SRV_Channel/SRV_Channel.h>
 #include "AP_MotorsHeli.h"
-#include "AP_MotorsHeli_RSC.h"
+#include "AP_MotorsHeli_Throttle.h"
 #include "AP_MotorsHeli_Swash.h"
 
-// rsc and extgyro function output channels. 
-#define AP_MOTORS_HELI_SINGLE_RSC                              CH_8
+// engine throttle output channels
+// single engine, or twin-engine throttle, engine #1
+#define AP_MOTORS_HELI_SINGLE_THROTTLE                         CH_8
 
 // maximum number of swashplate servos
 #define AP_MOTORS_HELI_SINGLE_NUM_SWASHPLATE_SERVOS            3
@@ -22,7 +23,7 @@ public:
     AP_MotorsHeli_Single(uint16_t       loop_rate,
                          uint16_t       speed_hz = AP_MOTORS_HELI_SPEED_DEFAULT) :
         AP_MotorsHeli(loop_rate, speed_hz),
-        _main_rotor(SRV_Channel::k_heli_rsc, AP_MOTORS_HELI_SINGLE_RSC),
+        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE),
         _swashplate()
     {
         AP_Param::setup_object_defaults(this, var_info);
@@ -91,8 +92,8 @@ protected:
     void move_yaw(float yaw_out);
 
     // external objects we depend upon
-    AP_MotorsHeli_RSC   _main_rotor;            // main rotor
-    AP_MotorsHeli_Swash _swashplate;            // swashplate
+    AP_MotorsHeli_Throttle    _main_rotor;      // engine throttle
+    AP_MotorsHeli_Swash       _swashplate;      // swashplate
 
     // internal variables
     float _servo1_out = 0.0f;                   // output value sent to motor

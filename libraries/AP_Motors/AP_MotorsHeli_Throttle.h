@@ -18,11 +18,11 @@ enum RotorControlMode {
     ROTOR_CONTROL_MODE_DEFAULT,
 };
 
-class AP_MotorsHeli_RSC {
+class AP_MotorsHeli_Throttle {
 public:
     friend class AP_MotorsHeli_Single;
 
-    AP_MotorsHeli_RSC(SRV_Channel::Aux_servo_function_t aux_fn,
+    AP_MotorsHeli_Throttle(SRV_Channel::Aux_servo_function_t aux_fn,
                       uint8_t default_channel) :
         _aux_fn(aux_fn),
         _default_channel(default_channel)
@@ -53,10 +53,10 @@ public:
     void        set_governor_tcgain(float governor_tcgain) {_governor_tcgain = governor_tcgain; }
 
     // get_desired_speed
-    float       get_desired_speed() const { return _desired_speed; }
+    float       get_desired_speed() const { return _manual_throttle; }
 
     // set_desired_speed
-    void        set_desired_speed(float desired_speed) { _desired_speed = desired_speed; }
+    void        set_desired_speed(float desired_speed) { _manual_throttle = desired_speed; }
 
     // get_control_speed
     float       get_control_output() const { return _control_output; }
@@ -99,14 +99,14 @@ private:
     RotorControlMode _control_mode = ROTOR_CONTROL_MODE_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
-    float           _desired_speed;               // latest desired rotor speed from pilot
+    float           _manual_throttle;             // latest manual throttle input for engine #1
     float           _control_output;              // latest logic controlled output
-    float           _rotor_ramp_output;           // scalar used to ramp rotor speed between _rsc_idle_output and full speed (0.0-1.0f)
+    float           _rotor_ramp_output;           // scalar used to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
-    int8_t          _ramp_time;                   // time in seconds for the output to the main rotor's ESC to reach full speed
-    int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time
+    int8_t          _ramp_time;                   // time in seconds to ramp throttle output
+    int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed
     bool            _runup_complete;              // flag for determining if runup is complete
-    float           _thrcrv_poly[4][4];           // spline polynomials for throttle curve interpolation
+    float           _throttlecurve_poly[4][4];    // spline polynomials for throttle curve interpolation
     uint16_t        _power_slewrate;              // slewrate for throttle (percentage per second)
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
@@ -124,8 +124,8 @@ private:
     // update_rotor_runup - function to slew rotor runup scalar, outputs float scalar to _rotor_runup_ouptut
     void            update_rotor_runup(float dt);
 
-    // write_rsc - outputs pwm onto output rsc channel. servo_out parameter is of the range 0 ~ 1
-    void            write_rsc(float servo_out);
+    // write_throttle - outputs pwm onto output throttle channel. servo_out parameter is of the range 0 ~ 1
+    void            write_throttle(float servo_out);
 
     // calculate_desired_throttle - uses throttle curve and collective input to determine throttle setting
     float           calculate_desired_throttle(float collective_in);

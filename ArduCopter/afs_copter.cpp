@@ -28,8 +28,8 @@ void AP_AdvancedFailsafe_Copter::terminate_vehicle(void)
         copter.init_disarm_motors();
     
         // and set all aux channels
-        SRV_Channels::set_output_limit(SRV_Channel::k_heli_rsc, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
-        SRV_Channels::set_output_limit(SRV_Channel::k_heli_tail_rsc, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
+        SRV_Channels::set_output_limit(SRV_Channel::k_heli_throttle, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
+        SRV_Channels::set_output_limit(SRV_Channel::k_heli_throttle2, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
         SRV_Channels::set_output_limit(SRV_Channel::k_engine_run_enable, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
         SRV_Channels::set_output_limit(SRV_Channel::k_ignition, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
         SRV_Channels::set_output_limit(SRV_Channel::k_none, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
@@ -42,8 +42,8 @@ void AP_AdvancedFailsafe_Copter::terminate_vehicle(void)
 void AP_AdvancedFailsafe_Copter::setup_IO_failsafe(void)
 {
     // setup failsafe for all aux channels
-    SRV_Channels::set_failsafe_limit(SRV_Channel::k_heli_rsc, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
-    SRV_Channels::set_failsafe_limit(SRV_Channel::k_heli_tail_rsc, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
+    SRV_Channels::set_failsafe_limit(SRV_Channel::k_heli_throttle, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
+    SRV_Channels::set_failsafe_limit(SRV_Channel::k_heli_throttle2, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
     SRV_Channels::set_failsafe_limit(SRV_Channel::k_engine_run_enable, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
     SRV_Channels::set_failsafe_limit(SRV_Channel::k_ignition, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);
     SRV_Channels::set_failsafe_limit(SRV_Channel::k_none, SRV_Channel::SRV_CHANNEL_LIMIT_TRIM);

@@ -137,17 +137,17 @@ void Copter::heli_update_rotor_speed_targets()
 
     static bool rotor_runup_complete_last = false;
 
-    // get rotor control method
-    uint8_t rsc_control_mode = motors->get_rsc_mode();
+    // get throttle control method
+    uint8_t throttle_control_mode = motors->get_throttle_mode();
 
-    float rsc_control_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_8)->get_control_in()) * 0.001f;
+    float throttle_control_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_8)->get_control_in()) * 0.001f;
 
-    switch (rsc_control_mode) {
+    switch (throttle_control_mode) {
         case ROTOR_CONTROL_MODE_DEFAULT:
-            if (rsc_control_deglitched > 0.01f) {
+            if (throttle_control_deglitched > 0.01f) {
                 ap.motor_interlock_switch = true;
                 // set rpm from rotor speed sensor
-                motors->set_desired_rotor_speed(rsc_control_deglitched);
+                motors->set_desired_rotor_speed(throttle_control_deglitched);
                 motors->set_rpm(rpm_sensor.get_rpm(0));
             } else {
                 ap.motor_interlock_switch = false;

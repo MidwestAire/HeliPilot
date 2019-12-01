@@ -16,14 +16,14 @@
 #include <stdlib.h>
 #include <AP_HAL/AP_HAL.h>
 
-#include "AP_MotorsHeli_RSC.h"
+#include "AP_MotorsHeli_Throttle.h"
 
 extern const AP_HAL::HAL& hal;  
 
 // init_servo - servo initialization on start-up
-void AP_MotorsHeli_RSC::init_servo()
+void AP_MotorsHeli_Throttle::init_servo()
 {
-    // setup RSC on specified channel by default
+    // setup throttle on specified channel by default
     SRV_Channels::set_aux_channel_default(_aux_fn, _default_channel);
 
     // set servo range 
@@ -33,19 +33,19 @@ void AP_MotorsHeli_RSC::init_servo()
 
 // set_power_output_range
 // TODO: Look at possibly calling this at a slower rate.  Doesn't need to be called every cycle.
-void AP_MotorsHeli_RSC::set_throttle_curve(float thrcrv[5], uint16_t slewrate)
+void AP_MotorsHeli_Throttle::set_throttle_curve(float throttlecurve[5], uint16_t slewrate)
 {
     // Ensure user inputs are within parameter limits
     for (uint8_t i = 0; i < 5; i++) {
-        thrcrv[i] = constrain_float(thrcrv[i], 0.0f, 1.0f);
+        throttlecurve[i] = constrain_float(throttlecurve[i], 0.0f, 1.0f);
     }
     // Calculate the spline polynomials for the throttle curve
-    splinterp5(thrcrv,_thrcrv_poly);
+    splinterp5(throttlecurve, _throttlecurve_poly);
     _power_slewrate = slewrate;
 }
 
 // output - update value to send to ESC/Servo
-void AP_MotorsHeli_RSC::output(RotorControlState state)
+void AP_MotorsHeli_Throttle::output(RotorControlState state)
 {
     float dt;
     uint64_t now = AP_HAL::micros64();
@@ -80,8 +80,8 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
             // Manual throttle if RC8 signal below 95%
-            if (_desired_speed < 0.95f) {
-                _control_output = constrain_float((_idle_output + _desired_speed), 0.0f, 1.0f);
+            if (_manual_throttle < 0.95f) {
+                _control_output = constrain_float((_idle_output + _manual_throttle), 0.0f, 1.0f);
             } else {
                 // AutoThrottle ON at RC8 signal >/= 95%
                 float desired_throttle = calculate_desired_throttle(_collective_in);
@@ -125,12 +125,12 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
         _control_output = constrain_float(_control_output, last_control_output-max_delta, last_control_output+max_delta);
     }
 
-    // output to rsc servo
-    write_rsc(_control_output);
+    // output to throttle servo
+    write_throttle(_control_output);
 }
 
 // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
-void AP_MotorsHeli_RSC::update_rotor_ramp(float rotor_ramp_input, float dt)
+void AP_MotorsHeli_Throttle::update_rotor_ramp(float rotor_ramp_input, float dt)
 {
     // sanity check ramp time
     if (_ramp_time <= 0) {
@@ -155,7 +155,7 @@ void AP_MotorsHeli_RSC::update_rotor_ramp(float rotor_ramp_input, float dt)
 }
 
 // update_rotor_runup - function to slew rotor runup scalar, outputs float scalar to _rotor_runup_ouptut
-void AP_MotorsHeli_RSC::update_rotor_runup(float dt)
+void AP_MotorsHeli_Throttle::update_rotor_runup(float dt)
 {
     // if control mode is disabled, then run-up complete always returns true
     if ( _control_mode == ROTOR_CONTROL_MODE_DISABLED ){
@@ -201,14 +201,14 @@ void AP_MotorsHeli_RSC::update_rotor_runup(float dt)
 }
 
 // get_rotor_speed - gets rotor speed as an estimate when no speed sensor is installed
-float AP_MotorsHeli_RSC::get_rotor_speed() const
+float AP_MotorsHeli_Throttle::get_rotor_speed() const
 {
     return _rotor_runup_output;
 }
 
-// write_rsc - outputs pwm onto output rsc channel
+// write_throttle - outputs pwm onto output throttle channel
 // servo_out parameter is of the range 0 ~ 1
-void AP_MotorsHeli_RSC::write_rsc(float servo_out)
+void AP_MotorsHeli_Throttle::write_throttle(float servo_out)
 {
     if (_control_mode == ROTOR_CONTROL_MODE_DISABLED){
         // do not do servo output to avoid conflicting with other output on the channel
@@ -220,14 +220,14 @@ void AP_MotorsHeli_RSC::write_rsc(float servo_out)
 }
 
     // calculate_desired_throttle - uses throttle curve and collective input to determine throttle setting
-float AP_MotorsHeli_RSC::calculate_desired_throttle(float collective_in)
+float AP_MotorsHeli_Throttle::calculate_desired_throttle(float collective_in)
 {
 
     const float inpt = collective_in * 4.0f + 1.0f;
     uint8_t idx = constrain_int16(int8_t(collective_in * 4), 0, 3);
     const float a = inpt - (idx + 1.0f);
     const float b = (idx + 1.0f) - inpt + 1.0f;
-    float throttle = _thrcrv_poly[idx][0] * a + _thrcrv_poly[idx][1] * b + _thrcrv_poly[idx][2] * (powf(a,3.0f) - a) / 6.0f + _thrcrv_poly[idx][3] * (powf(b,3.0f) - b) / 6.0f;
+    float throttle = _throttlecurve_poly[idx][0] * a + _throttlecurve_poly[idx][1] * b + _throttlecurve_poly[idx][2] * (powf(a,3.0f) - a) / 6.0f + _throttlecurve_poly[idx][3] * (powf(b,3.0f) - b) / 6.0f;
 
     throttle = constrain_float(throttle, 0.0f, 1.0f);
     return throttle;

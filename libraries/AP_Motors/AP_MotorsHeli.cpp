@@ -73,7 +73,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _rsc_governor_droop_response, AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT),
+    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, AP_MOTORS_HELI_GOVERNOR_DROOP_DEFAULT),
     
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
@@ -81,7 +81,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 50 200
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _rsc_governor_torque, AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT),
+    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _governor_torque, AP_MOTORS_HELI_GOVERNOR_TORQUE_DEFAULT),
 
     // @Param: GOV_TCGAIN
     // @DisplayName: Governor Throttle Curve Gain
@@ -90,7 +90,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _rsc_governor_tcgain, AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT),
+    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _governor_tcgain, AP_MOTORS_HELI_GOVERNOR_TCGAIN_DEFAULT),
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
@@ -99,7 +99,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("ROTOR_CRITICAL", 9, AP_MotorsHeli, _rsc_critical, AP_MOTORS_HELI_RSC_CRITICAL),
+    AP_GROUPINFO("ROTOR_CRITICAL", 9, AP_MotorsHeli, _rotor_critical, AP_MOTORS_HELI_ROTOR_CRITICAL),
 
     // @Param: ROTOR_RPM
     // @DisplayName: Headspeed RPM setting
@@ -107,7 +107,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 800 3500
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("ROTOR_RPM", 10, AP_MotorsHeli, _rsc_governor_reference, AP_MOTORS_HELI_RSC_RPM_DEFAULT),
+    AP_GROUPINFO("ROTOR_RPM", 10, AP_MotorsHeli, _governor_reference, AP_MOTORS_HELI_RPM_DEFAULT),
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
@@ -115,7 +115,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 60
     // @Units: s
     // @User: Standard
-    AP_GROUPINFO("ROTOR_RUNUP", 11, AP_MotorsHeli, _rsc_runup_time, AP_MOTORS_HELI_RSC_RUNUP_TIME),
+    AP_GROUPINFO("ROTOR_RUNUP", 11, AP_MotorsHeli, _rotor_runup_time, AP_MOTORS_HELI_ROTOR_RUNUP_TIME),
 
     // @Param: SWASH_SETUP
     // @DisplayName: Swash Setup Mode
@@ -130,7 +130,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 50
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _rsc_idle_output, AP_MOTORS_HELI_RSC_IDLE_DEFAULT),
+    AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _throttle_idle_output, AP_MOTORS_HELI_THROTTLE_IDLE_DEFAULT),
 
     // @Param: THROTTLE_P1
     // @DisplayName: Throttle at 0% collective
@@ -138,7 +138,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _rsc_thrcrv[0], 20),
+    AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _throttlecurve[0], 20),
 
     // @Param: THROTTLE_P2
     // @DisplayName: Throttle at 25% collective
@@ -146,7 +146,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _rsc_thrcrv[1], 40),
+    AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _throttlecurve[1], 40),
 
     // @Param: THROTTLE_P3
     // @DisplayName: Throttle at 50% collective
@@ -154,7 +154,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _rsc_thrcrv[2], 60),
+    AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _throttlecurve[2], 60),
 
     // @Param: THROTTLE_P4
     // @DisplayName: Throttle at 75% collective
@@ -162,7 +162,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _rsc_thrcrv[3], 80),
+    AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _throttlecurve[3], 80),
 
     // @Param: THROTTLE_P5
     // @DisplayName: Throttle at 100% collective
@@ -170,7 +170,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_P5", 18, AP_MotorsHeli, _rsc_thrcrv[4], 100),
+    AP_GROUPINFO("THROTTLE_P5", 18, AP_MotorsHeli, _throttlecurve[4], 100),
 
     // @Param: THROTTLE_RAMP
     // @DisplayName: Throttle Ramp Time
@@ -178,7 +178,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 60
     // @Units: s
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_RAMP", 19, AP_MotorsHeli, _rsc_ramp_time, AP_MOTORS_HELI_RSC_RAMP_TIME),
+    AP_GROUPINFO("THROTTLE_RAMP", 19, AP_MotorsHeli, _throttle_ramp_time, AP_MOTORS_HELI_THROTTLE_RAMP_TIME),
 
     AP_GROUPEND
 };
@@ -191,7 +191,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 void AP_MotorsHeli::init(motor_frame_class frame_class, motor_frame_type frame_type)
 {
     // set throttle control
-    _rsc_mode = ROTOR_CONTROL_MODE_DEFAULT;
+    _throttle_mode = ROTOR_CONTROL_MODE_DEFAULT;
 
     // remember frame type
     _frame_type = frame_type;
@@ -337,7 +337,7 @@ void AP_MotorsHeli::output_disarmed()
 bool AP_MotorsHeli::parameter_check(bool display_msg) const
 {
     // returns false if idle output is higher than critical rotor speed percentage
-    if ( _rsc_idle_output >=  _rsc_critical){
+    if ( _throttle_idle_output >=  _rotor_critical){
         if (display_msg) {
             gcs().send_text(MAV_SEVERITY_CRITICAL, "Engine idle and critical speed misconfigured");
         }
@@ -353,7 +353,7 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     }
 
     // returns false if critical speed exceeds 95% of rated rotor speed
-    if (_rsc_critical > 95){
+    if (_rotor_critical > 95){
         if (display_msg) {
             gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 95 percent");
         }
