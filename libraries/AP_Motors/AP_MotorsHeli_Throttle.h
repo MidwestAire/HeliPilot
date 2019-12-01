@@ -52,13 +52,13 @@ public:
     void        set_governor_torque(float governor_torque) { _governor_torque = governor_torque; }
     void        set_governor_tcgain(float governor_tcgain) {_governor_tcgain = governor_tcgain; }
 
-    // get_desired_speed
+    // get_desired_speed for manual throttle
     float       get_desired_speed() const { return _manual_throttle; }
 
-    // set_desired_speed
+    // set_desired_speed for manual throttle
     void        set_desired_speed(float desired_speed) { _manual_throttle = desired_speed; }
 
-    // get_control_speed
+    // get_control_speed - engine throttle output
     float       get_control_output() const { return _control_output; }
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
@@ -82,7 +82,7 @@ public:
     // set_throttle_curve
     void        set_throttle_curve(float thrcrv[5], uint16_t slewrate);
 
-    // set_collective. collective for throttle curve calculation
+    // set_collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
 
     // output - update value to send to ESC/Servo
@@ -101,7 +101,7 @@ private:
     float           _idle_output;                 // motor output idle speed
     float           _manual_throttle;             // latest manual throttle input for engine #1
     float           _control_output;              // latest logic controlled output
-    float           _rotor_ramp_output;           // scalar used to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
+    float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
     int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed
@@ -109,13 +109,13 @@ private:
     float           _throttlecurve_poly[4][4];    // spline polynomials for throttle curve interpolation
     uint16_t        _power_slewrate;              // slewrate for throttle (percentage per second)
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
-    float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
+    float           _rotor_rpm;                   // rotor rpm from rotor speed sensor
     bool            _governor_on;                 // flag for governor on/off switch
     float           _governor_output;             // governor output for rotor speed control
     float           _governor_torque;             // governor torque limiter variable
     float           _governor_reference;          // sets rotor speed for governor
     float           _governor_droop_response;     // governor response to droop under load
-    bool            _governor_engage;             // governor status flag for soft-start
+    bool            _governor_engage;             // governor status flag
     float           _governor_tcgain;             // governor throttle curve gain, range 50-100%
 
     // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output

@@ -23,8 +23,8 @@ extern const AP_HAL::HAL& hal;
 const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: COL_MID
-    // @DisplayName: Collective Pitch Mid-Point
-    // @Description: Swash servo position in PWM microseconds corresponding to zero collective pitch (or zero lift for asymmetric blades)
+    // @DisplayName: Collective Pitch Zero Thrust
+    // @Description: Swash servo position corresponding to zero collective pitch (or zero thrust for asymmetric blades)
     // @Range: 1000 2000
     // @Units: PWM
     // @Increment: 1
@@ -55,7 +55,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: -10 10
     // @Increment: 0.1
     // @User: Standard
-    AP_GROUPINFO("COL_YAW", 4,  AP_MotorsHeli, _collective_yaw_effect, 3),
+    AP_GROUPINFO("COL_YAW", 4,  AP_MotorsHeli, _collective_yaw_effect, 0),
 
     // @Param: CYCLIC_DEG
     // @DisplayName: Cyclic Degrees Setting
@@ -73,28 +73,28 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, AP_MOTORS_HELI_GOVERNOR_DROOP_DEFAULT),
+    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, 50),
     
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
-    // @Description: Adjusts the maximum engine torque output in the governor response to speed droop of the main rotor when the governor is active. If speed sensor fails or torque output exceeds the torque limiter setting, the governor will disengage and return to throttle curve. Recommended torque limiter setting is 100-120 rpm.
+    // @Description: Adjusts the maximum engine torque output in the governor response to speed droop of the main rotor when the governor is active. If speed sensor fails or torque output exceeds the torque limiter setting, the governor will disengage and return to throttle curve. Recommended torque limiter setting is 100-120% torque.
     // @Range: 50 200
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _governor_torque, AP_MOTORS_HELI_GOVERNOR_TORQUE_DEFAULT),
+    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _governor_torque, 100),
 
     // @Param: GOV_TCGAIN
     // @DisplayName: Governor Throttle Curve Gain
-    // @Description: Percentage of throttle curve in governor output. This provides a type of feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during over-pitching increase the throttle curve gain. If governor fails to drop Rrpm by 2.5%, or auto-disengages the governor, at Flight Idle (pitch feathered) reduce the throttle curve gain
+    // @Description: Percentage of throttle curve in governor output. This provides a feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during full collective climb increase the throttle curve gain. If governor fails to drop Rrpm by 2.5%, or auto-disengages the governor, at Flight Idle (pitch feathered) reduce the throttle curve gain
     // @Range: 50 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _governor_tcgain, AP_MOTORS_HELI_GOVERNOR_TCGAIN_DEFAULT),
+    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _governor_tcgain, 80),
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
-    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the warning arc for autorotation. For helicopters without rotor speed sensor should be set to 50%. Lack of a speed sensor results in using an estimated rotor speed instead of actual and is only marginally accurate.
+    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the warning arc for autorotation. For helicopters without rotor speed sensor leave at 90%. Lack of a speed sensor results in using an estimated rotor speed instead of actual and is only marginally accurate.
     // @Range: 0 90
     // @Units: %
     // @Increment: 1
@@ -103,15 +103,15 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RPM
     // @DisplayName: Headspeed RPM setting
-    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup. For governor operation this should be set 10 rpm higher than the actual desired headspeed to allow for governor droop
+    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup. For governor operation this should be set 8-10 rpm higher than the actual desired headspeed to allow for governor droop
     // @Range: 800 3500
     // @Increment: 10
     // @User: Standard
-    AP_GROUPINFO("ROTOR_RPM", 10, AP_MotorsHeli, _governor_reference, AP_MOTORS_HELI_RPM_DEFAULT),
+    AP_GROUPINFO("ROTOR_RPM", 10, AP_MotorsHeli, _governor_reference, 1500),
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
-    // @Description: Time in seconds for the main rotor to reach full speed after throttle hold is released. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.!WARNING! - when measured rotor speed is not used to determine runup, setting rotor runup time to an excessively high value can cause rapid power recovery from throttle hold, resulting in blade lag and potentially destroying the helicopter. With all electric helicopters it is recommended to set rotor runup one second longer than throttle ramp time.
+    // @Description: Time in seconds for the main rotor to reach full speed on AutoThrottle. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.!WARNING! - when measured rotor speed is not used to determine runup, setting rotor runup time to an excessively high value can cause rapid power recovery from manual throttle, resulting in blade lag and potential rotor imbalance. With all electric helicopters it is recommended to set rotor runup one second longer than throttle ramp time.
     // @Range: 0 60
     // @Units: s
     // @User: Standard
@@ -130,7 +130,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Range: 0 50
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _throttle_idle_output, AP_MOTORS_HELI_THROTTLE_IDLE_DEFAULT),
+    AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _throttle_idle_output, 0),
 
     // @Param: THROTTLE_P1
     // @DisplayName: Throttle at 0% collective
@@ -218,7 +218,7 @@ void AP_MotorsHeli::init(motor_frame_class frame_class, motor_frame_type frame_t
     _flags.initialised_ok = (frame_class == MOTOR_FRAME_HELI);
 }
 
-// set frame class (i.e. quad, hexa, heli) and type (i.e. x, plus)
+// set frame class
 void AP_MotorsHeli::set_frame_class_and_type(motor_frame_class frame_class, motor_frame_type frame_type)
 {
     _flags.initialised_ok = (frame_class == MOTOR_FRAME_HELI);
@@ -260,7 +260,7 @@ void AP_MotorsHeli::output()
 // sends commands to the motors
 void AP_MotorsHeli::output_armed_stabilizing()
 {
-    // if manual override active after arming, deactivate it and reinitialize servos
+    // if swash setup manual override active after arming, deactivate it and reinitialize servos
     if (_servo_mode != SERVO_CONTROL_MODE_AUTOMATED) {
         reset_flight_controls();
     }
@@ -273,7 +273,7 @@ void AP_MotorsHeli::output_armed_stabilizing()
 // output_armed_zero_throttle - sends commands to the motors
 void AP_MotorsHeli::output_armed_zero_throttle()
 {
-    // if manual override active after arming, deactivate it and reinitialize servos
+    // if swash setup manual override active after arming, deactivate it and reinitialize servos
     if (_servo_mode != SERVO_CONTROL_MODE_AUTOMATED) {
         reset_flight_controls();
     }
@@ -287,6 +287,7 @@ void AP_MotorsHeli::output_armed_zero_throttle()
 void AP_MotorsHeli::output_disarmed()
 {
     // manual override (i.e. when setting up swash)
+    //TODO replace reference to throttle with collective
     switch (_servo_mode) {
         case SERVO_CONTROL_MODE_MANUAL_PASSTHROUGH:
             // pass pilot commands straight through to swash
@@ -336,14 +337,6 @@ void AP_MotorsHeli::output_disarmed()
 // parameter_check - check if helicopter specific parameters are sensible
 bool AP_MotorsHeli::parameter_check(bool display_msg) const
 {
-    // returns false if idle output is higher than critical rotor speed percentage
-    if ( _throttle_idle_output >=  _rotor_critical){
-        if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "Engine idle and critical speed misconfigured");
-        }
-        return false;
-    }
-
     // returns false if cyclic pitch is out of range
     if (_cyclic_max > 45){
         if (display_msg) {
@@ -355,7 +348,7 @@ bool AP_MotorsHeli::parameter_check(bool display_msg) const
     // returns false if critical speed exceeds 95% of rated rotor speed
     if (_rotor_critical > 95){
         if (display_msg) {
-            gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed exceeds 95 percent");
+            gcs().send_text(MAV_SEVERITY_CRITICAL, "Rotor critical speed over 95 percent");
         }
         return false;
     }
@@ -383,6 +376,7 @@ void AP_MotorsHeli::reset_swash_servo(SRV_Channel::Aux_servo_function_t function
 }
 
 // update the throttle input filter
+//TODO replace reference to throttle with collective
 void AP_MotorsHeli::update_throttle_filter()
 {
     _throttle_filter.apply(_throttle_in, 1.0f/_loop_rate);

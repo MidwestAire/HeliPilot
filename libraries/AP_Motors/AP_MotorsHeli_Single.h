@@ -13,7 +13,7 @@
 // single engine, or twin-engine throttle, engine #1
 #define AP_MOTORS_HELI_SINGLE_THROTTLE                         CH_8
 
-// maximum number of swashplate servos
+// three swashplate servos for H3_ swashplates
 #define AP_MOTORS_HELI_SINGLE_NUM_SWASHPLATE_SERVOS            3
 
 /// @class      AP_MotorsHeli_Single
@@ -55,7 +55,7 @@ public:
     // get_governor_output
     float get_governor_output() const override { return _main_rotor.get_governor_output(); }
     
-    // get_control_output
+    // get_control_output for engine throttles
     float get_control_output() const override{ return _main_rotor.get_control_output(); }
 
     // calculate_scalars - recalculates various scalars used
@@ -96,10 +96,10 @@ protected:
     AP_MotorsHeli_Swash       _swashplate;      // swashplate
 
     // internal variables
-    float _servo1_out = 0.0f;                   // output value sent to motor
-    float _servo2_out = 0.0f;                   // output value sent to motor
-    float _servo3_out = 0.0f;                   // output value sent to motor
-    float _servo5_out = 0.0f;                   // output value sent to motor
+    float _servo1_out = 0.0f;                   // output value sent to servo
+    float _servo2_out = 0.0f;                   // output value sent to servo
+    float _servo3_out = 0.0f;                   // output value sent to servo
+    float _servo5_out = 0.0f;                   // output value sent to servo
 
     // parameters
     AP_Int8         _flybar_mode;               // Compile for flybar helicopter

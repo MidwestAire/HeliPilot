@@ -31,8 +31,7 @@ void AP_MotorsHeli_Throttle::init_servo()
 
 }
 
-// set_power_output_range
-// TODO: Look at possibly calling this at a slower rate.  Doesn't need to be called every cycle.
+// Throttle curve calculation
 void AP_MotorsHeli_Throttle::set_throttle_curve(float throttlecurve[5], uint16_t slewrate)
 {
     // Ensure user inputs are within parameter limits
@@ -90,23 +89,23 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
                     _governor_engage = false;
                    _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                 } else {
-                    // governor operation if governor switch is ON
+                    // Governor ON if switch is activated
                     if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
             	        float governor_droop = constrain_float(_governor_reference - _rotor_rpm,0.0f,_governor_torque);
-            	        // if rpm has not reached 40% of the operational range from reference speed, governor
-            	        // remains in pre-engage status, no reference speed droop compensation
+            	    // if rpm has not reached 40% of the operational range from reference speed, governor
+            	    // remains in pre-engage status, no reference speed droop compensation
             	        if (_governor_engage && _rotor_rpm < (_governor_reference - (_governor_torque * 0.4f))) {
                             _governor_output = ((_rotor_rpm - _governor_reference) * desired_throttle) * _governor_droop_response * -0.01f;
                         } else {
-            	            // normal flight status, governor fully engaged with reference speed droop compensation
+            	    // normal flight status, governor fully engaged with reference speed droop compensation
             	            _governor_engage = true;
                             _governor_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor_droop_response * -0.01f;
                         }
-                        // throttle output constrained from minimum called for from throttle curve to WOT
+                    // throttle output constrained from minimum called for from throttle curve to WOT
             	        _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
             	    } else {
-            	        // hold governor output at zero, engage status is false and use the throttle curve
-            	        // this is failover for in-flight failure of the speed sensor
+            	    // hold governor output at zero, engage status is false and use the throttle curve
+            	    // this is failover for in-flight failure of the speed sensor
             	        _governor_output = 0.0f;
             	        _governor_engage = false;
                         _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
@@ -212,7 +211,6 @@ void AP_MotorsHeli_Throttle::write_throttle(float servo_out)
 {
     if (_control_mode == ROTOR_CONTROL_MODE_DISABLED){
         // do not do servo output to avoid conflicting with other output on the channel
-        // ToDo: We should probably use RC_Channel_Aux to avoid this problem
         return;
     } else {
         SRV_Channels::set_output_scaled(_aux_fn, (uint16_t) (servo_out * 1000));
