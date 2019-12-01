@@ -165,7 +165,7 @@ public:
         k_param_heli_yaw_ff,        // remove
         k_param_heli_stab_col_min,  // remove
         k_param_heli_stab_col_max,  // remove
-        k_param_heli_servo_rsc,     // 89 = full! - remove
+        k_param_heli_servo_throttle,// 89 = full! - remove
 
         //
         // 90: misc2

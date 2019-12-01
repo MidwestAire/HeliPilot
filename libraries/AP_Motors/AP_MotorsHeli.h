@@ -9,35 +9,35 @@
 #include <RC_Channel/RC_Channel.h>
 #include <SRV_Channel/SRV_Channel.h>
 #include "AP_Motors_Class.h"
-#include "AP_MotorsHeli_RSC.h"
+#include "AP_MotorsHeli_Throttle.h"
 
 // servo output rates
-#define AP_MOTORS_HELI_SPEED_DEFAULT            125     // default servo update rate for helicopters
+#define AP_MOTORS_HELI_SPEED_DEFAULT              125     // default servo update rate for helicopters
 
 // default swash min and max angles and positions
-#define AP_MOTORS_HELI_SWASH_CYCLIC_MAX         25
-#define AP_MOTORS_HELI_COLLECTIVE_MIN           1450
-#define AP_MOTORS_HELI_COLLECTIVE_MAX           1650
-#define AP_MOTORS_HELI_COLLECTIVE_MID           1500
+#define AP_MOTORS_HELI_SWASH_CYCLIC_MAX           25
+#define AP_MOTORS_HELI_COLLECTIVE_MIN             1450
+#define AP_MOTORS_HELI_COLLECTIVE_MAX             1650
+#define AP_MOTORS_HELI_COLLECTIVE_MID             1500
 
 // default main rotor critical speed
-#define AP_MOTORS_HELI_RSC_CRITICAL             50
+#define AP_MOTORS_HELI_ROTOR_CRITICAL             50
 
-// RSC output defaults
-#define AP_MOTORS_HELI_RSC_IDLE_DEFAULT         0
-#define AP_MOTORS_HELI_RSC_RPM_DEFAULT          1500
+// Throttle defaults
+#define AP_MOTORS_HELI_THROTTLE_IDLE_DEFAULT      0
+#define AP_MOTORS_HELI_RPM_DEFAULT                1500
 
 // rotor governor defaults
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT       50
-#define AP_MOTORS_HELI_RSC_GOVERNOR_TCGAIN_DEFAULT      80
-#define AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT      100
+#define AP_MOTORS_HELI_GOVERNOR_DROOP_DEFAULT     50
+#define AP_MOTORS_HELI_GOVERNOR_TCGAIN_DEFAULT    80
+#define AP_MOTORS_HELI_GOVERNOR_TORQUE_DEFAULT    100
 
 // default main rotor ramp up time in seconds
-#define AP_MOTORS_HELI_RSC_RAMP_TIME            5       // 5 seconds to ramp throttle output to throttle curve
-#define AP_MOTORS_HELI_RSC_RUNUP_TIME           10      // 10 seconds for rotor to reach full speed
+#define AP_MOTORS_HELI_THROTTLE_RAMP_TIME         5       // 5 seconds to ramp throttle output to throttle curve
+#define AP_MOTORS_HELI_ROTOR_RUNUP_TIME           10      // 10 seconds for rotor to reach full speed
 
 // flybar types
-#define AP_MOTORS_HELI_NOFLYBAR                 0       // set to 1 to compile for flybar helicopter
+#define AP_MOTORS_HELI_NOFLYBAR                   0       // set to 1 to compile for flybar helicopter
 
 class AP_HeliControls;
 
@@ -87,8 +87,8 @@ public:
     // set_collective_for_landing - limits collective from going too low if we know we are landed
     void set_collective_for_landing(bool landing) { _heliflags.landing_collective = landing; }
 
-    // get_rsc_mode - gets the throttle control method, either throttle curve or governor
-    uint8_t get_rsc_mode() const { return _rsc_mode; }
+    // get_throttle_mode - gets the throttle control method, either throttle curve or governor
+    uint8_t get_throttle_mode() const { return _throttle_mode; }
     
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;
@@ -188,18 +188,18 @@ protected:
     AP_Int16        _collective_max;              // Highest possible servo position for the swashplate
     AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch or zero thrust
     AP_Float        _collective_yaw_effect;       // Feed-forward compensation to automatically add rudder input when collective pitch is increased
-    AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up through mission planner
-    AP_Int16        _rsc_governor_reference;      // sets headspeed for rotor governor, autorotation and runup
-    AP_Float        _rsc_governor_droop_response; // governor response to droop under load
-    AP_Float        _rsc_governor_tcgain;         // governor throttle curve weighting, range 50-100%
-    AP_Float        _rsc_governor_torque;         // governor torque limiter variable
-    AP_Int8         _rsc_mode;                    // Default throttle control variable
-    AP_Int8         _rsc_ramp_time;               // Time in seconds to ramp throttle from ground idle to flight idle
-    AP_Int8         _rsc_runup_time;              // Time in seconds for the main rotor to reach full speed.  Must be longer than _rsc_ramp_time
-    AP_Int16        _rsc_critical;                // Rotor speed below which autorotation is no longer possible
-    AP_Int16        _rsc_idle_output;             // Combustion engine idle speed setting
-    AP_Int16        _rsc_thrcrv[5];               // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective
-    AP_Int16        _rsc_slewrate;                // throttle slew rate (percentage per second)
+    AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up
+    AP_Int16        _governor_reference;          // sets headspeed for rotor governor, autorotation and runup
+    AP_Float        _governor_droop_response;     // governor response to droop under load
+    AP_Float        _governor_tcgain;             // governor throttle curve weighting, range 50-100%
+    AP_Float        _governor_torque;             // governor torque limiter variable
+    AP_Int8         _rotor_runup_time;            // Time in seconds for the main rotor to reach full speed.  Must be longer than _throttle_ramp_time
+    AP_Int16        _rotor_critical;              // Rotor speed below which autorotation is no longer possible
+    AP_Int8         _throttle_mode;               // Default throttle control variable
+    AP_Int8         _throttle_ramp_time;          // Time in seconds to ramp throttle from ground idle to flight idle
+    AP_Int16        _throttle_idle_output;        // Combustion engine idle speed setting
+    AP_Int16        _throttlecurve[5];            // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective
+    AP_Int16        _throttle_slewrate;           // throttle slew rate (percentage per second)
 
     // internal variables
     float           _collective_mid_pct = 0.0f;   // collective mid parameter value converted to 0 ~ 1 range

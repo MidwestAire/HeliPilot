@@ -116,7 +116,7 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
             break;
         case 5:
             // main rotor
-            rc_write(AP_MOTORS_HELI_SINGLE_RSC, pwm);
+            rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE, pwm);
             break;
         default:
             // do nothing
@@ -139,19 +139,19 @@ void AP_MotorsHeli_Single::set_rpm(float rotor_rpm)
 // calculate_scalars - recalculates various scalers used.
 void AP_MotorsHeli_Single::calculate_armed_scalars()
 {
-    float thrcrv[5];
+    float throttlecurve[5];
     for (uint8_t i = 0; i < 5; i++) {
-        thrcrv[i]=_rsc_thrcrv[i]*0.01f;
+        throttlecurve[i] = _throttlecurve[i]*0.01f;
     }
-    _main_rotor.set_ramp_time(_rsc_ramp_time);
-    _main_rotor.set_runup_time(_rsc_runup_time);
-    _main_rotor.set_critical_speed(_rsc_critical*0.01f);
-    _main_rotor.set_idle_output(_rsc_idle_output*0.01f);
-    _main_rotor.set_throttle_curve(thrcrv, (uint16_t)_rsc_slewrate.get());
-    _main_rotor.set_governor_droop_response(_rsc_governor_droop_response*0.01f);
-    _main_rotor.set_governor_reference(_rsc_governor_reference);
-    _main_rotor.set_governor_torque(_rsc_governor_torque);
-    _main_rotor.set_governor_tcgain(_rsc_governor_tcgain*0.01f);
+    _main_rotor.set_ramp_time(_throttle_ramp_time);
+    _main_rotor.set_runup_time(_rotor_runup_time);
+    _main_rotor.set_critical_speed(_rotor_critical*0.01f);
+    _main_rotor.set_idle_output(_throttle_idle_output*0.01f);
+    _main_rotor.set_throttle_curve(throttlecurve, (uint16_t)_throttle_slewrate.get());
+    _main_rotor.set_governor_droop_response(_governor_droop_response*0.01f);
+    _main_rotor.set_governor_reference(_governor_reference);
+    _main_rotor.set_governor_torque(_governor_torque);
+    _main_rotor.set_governor_tcgain(_governor_tcgain*0.01f);
 
     if (_heliflags.governor_on) {
         _main_rotor.set_governor_on(true);
@@ -178,7 +178,7 @@ void AP_MotorsHeli_Single::calculate_scalars()
     _swashplate.calculate_roll_pitch_collective_factors();
 
     // send setpoints to main rotor controller and trigger recalculation of scalars
-    _main_rotor.set_control_mode(static_cast<RotorControlMode>(_rsc_mode.get()));
+    _main_rotor.set_control_mode(static_cast<RotorControlMode>(_throttle_mode.get()));
     calculate_armed_scalars();
 }
 
@@ -186,9 +186,9 @@ void AP_MotorsHeli_Single::calculate_scalars()
 //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
 uint16_t AP_MotorsHeli_Single::get_motor_mask()
 {
-    // heli uses channels 1,2,3,4 and 8
+    // heli uses channels 1,2,3,4 and 8, twin-engine also uses 9
     // setup fast channels
-    uint32_t mask = 1U << 0 | 1U << 1 | 1U << 2 | 1U << 3 | 1U << AP_MOTORS_HELI_SINGLE_RSC;
+    uint32_t mask = 1U << 0 | 1U << 1 | 1U << 2 | 1U << 3 | 1U << AP_MOTORS_HELI_SINGLE_THROTTLE;
 
     if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_90 || _swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_45) {
         mask |= 1U << 4;
