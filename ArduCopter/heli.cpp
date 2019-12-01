@@ -5,21 +5,22 @@
 #if FRAME_CONFIG == HELI_FRAME
 
 #ifndef HELI_DYNAMIC_FLIGHT_SPEED_MIN
- #define HELI_DYNAMIC_FLIGHT_SPEED_MIN      500     // we are in "dynamic flight" when the speed is over 5m/s for 2 seconds
+    // we are in "dynamic flight" when the speed is over 5m/s for 2 seconds
+    #define HELI_DYNAMIC_FLIGHT_SPEED_MIN      500
 #endif
 
 // counter to control dynamic flight profile
 static int8_t heli_dynamic_flight_counter;
 
-// heli_init - perform any special initialisation required for the tradheli
+// heli_init - perform any special initialisation required
 void Copter::heli_init()
 {
-    // pre-load stab col values as mode is initialized as Stabilize, but stabilize_init() function is not run on start-up.
+// pre-load stab col values as mode is initialized as Stabilize, but stabilize_init() function is not run on start-up.
     input_manager.set_use_stab_col(true);
     input_manager.set_stab_col_ramp(1.0);
 }
 
-// heli_check_dynamic_flight - updates the dynamic_flight flag based on our horizontal velocity
+// heli_check_dynamic_flight - updates the dynamic_flight flag based on horizontal velocity
 // should be called at 50hz
 void Copter::check_dynamic_flight(void)
 {
@@ -39,6 +40,7 @@ void Copter::check_dynamic_flight(void)
         moving = (velocity >= HELI_DYNAMIC_FLIGHT_SPEED_MIN);
     }else{
         // with no GPS lock base it on throttle and forward lean angle
+        //TODO replace "throttle with collective here
         moving = (motors->get_throttle() > 0.8f || ahrs.pitch_sensor < -1500);
     }
 

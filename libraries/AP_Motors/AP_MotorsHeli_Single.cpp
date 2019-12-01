@@ -186,7 +186,7 @@ void AP_MotorsHeli_Single::calculate_scalars()
 //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
 uint16_t AP_MotorsHeli_Single::get_motor_mask()
 {
-    // heli uses channels 1,2,3,4 and 8, twin-engine also uses 9
+    // heli uses channels 1,2,3,4 and 8
     // setup fast channels
     uint32_t mask = 1U << 0 | 1U << 1 | 1U << 2 | 1U << 3 | 1U << AP_MOTORS_HELI_SINGLE_THROTTLE;
 
@@ -211,12 +211,11 @@ void AP_MotorsHeli_Single::update_motor_control(RotorControlState state)
         SRV_Channels::set_output_limit(SRV_Channel::k_engine_run_enable, SRV_Channel::SRV_CHANNEL_LIMIT_MAX);
     }
 
-    // Check if both rotors are run-up, tail rotor controller always returns true if not enabled
+    // Check if rotor is ran up
     _heliflags.rotor_runup_complete = ( _main_rotor.is_runup_complete());
 }
 
-//
-// move_actuators - moves swash plate and tail rotor
+// move_actuators - moves swash plate and tail servos
 //                 - expected ranges:
 //                       roll : -1 ~ +1
 //                       pitch: -1 ~ +1
@@ -266,8 +265,7 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     // if servo output not in manual mode, process pre-compensation factors
     if (_servo_mode == SERVO_CONTROL_MODE_AUTOMATED) {
         // rudder feed forward based on collective
-        // the feed-forward is not required when the motor is stopped or at idle, and thus not creating torque
-        // also not required if we are using external gyro
+        //TODO This does not work properly - needs to be looked at
         if (_main_rotor.get_control_output() > _main_rotor.get_idle_output()) {
             // the 4.5 scaling factor is to bring the values in line with previous releases
             yaw_offset = _collective_yaw_effect * fabsf(collective_out - _collective_mid_pct) / 4.5f;
@@ -277,7 +275,6 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     }
 
     // feed power estimate into main rotor controller
-    // ToDo: add main rotor cyclic power?
     _main_rotor.set_collective(fabsf(collective_out));
 
     // scale collective pitch for swashplate servos
@@ -291,7 +288,7 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_90 || _swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_45) {
         _servo5_out = _swashplate.get_servo_out(CH_4,pitch_out,roll_out,collective_out_scaled);
     }
-    // actually move the servos.  PWM is sent based on nominal 1500 center.  servo output shifts center based on trim value.
+    // move the servos. PWM is sent based on nominal 1500 center. Servo output shifts center based on trim value.
     rc_write_swash(AP_MOTORS_MOT_1, _servo1_out);
     rc_write_swash(AP_MOTORS_MOT_2, _servo2_out);
     rc_write_swash(AP_MOTORS_MOT_3, _servo3_out);

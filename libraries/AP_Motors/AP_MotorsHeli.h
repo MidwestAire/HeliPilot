@@ -21,20 +21,11 @@
 #define AP_MOTORS_HELI_COLLECTIVE_MID             1500
 
 // default main rotor critical speed
-#define AP_MOTORS_HELI_ROTOR_CRITICAL             50
-
-// Throttle defaults
-#define AP_MOTORS_HELI_THROTTLE_IDLE_DEFAULT      0
-#define AP_MOTORS_HELI_RPM_DEFAULT                1500
-
-// rotor governor defaults
-#define AP_MOTORS_HELI_GOVERNOR_DROOP_DEFAULT     50
-#define AP_MOTORS_HELI_GOVERNOR_TCGAIN_DEFAULT    80
-#define AP_MOTORS_HELI_GOVERNOR_TORQUE_DEFAULT    100
+#define AP_MOTORS_HELI_ROTOR_CRITICAL             90
 
 // default main rotor ramp up time in seconds
-#define AP_MOTORS_HELI_THROTTLE_RAMP_TIME         5       // 5 seconds to ramp throttle output to throttle curve
-#define AP_MOTORS_HELI_ROTOR_RUNUP_TIME           10      // 10 seconds for rotor to reach full speed
+#define AP_MOTORS_HELI_THROTTLE_RAMP_TIME         5
+#define AP_MOTORS_HELI_ROTOR_RUNUP_TIME           10
 
 // flybar types
 #define AP_MOTORS_HELI_NOFLYBAR                   0       // set to 1 to compile for flybar helicopter
@@ -60,7 +51,7 @@ public:
     // init
     void init(motor_frame_class frame_class, motor_frame_type frame_type);
 
-    // set frame class (i.e. quad, hexa, heli) and type (i.e. x, plus)
+    // set frame class
     void set_frame_class_and_type(motor_frame_class frame_class, motor_frame_type frame_type);
 
     // set update rate to motors - a value in hertz
@@ -87,7 +78,7 @@ public:
     // set_collective_for_landing - limits collective from going too low if we know we are landed
     void set_collective_for_landing(bool landing) { _heliflags.landing_collective = landing; }
 
-    // get_throttle_mode - gets the throttle control method, either throttle curve or governor
+    // get_throttle_mode - gets the throttle control method
     uint8_t get_throttle_mode() const { return _throttle_mode; }
     
     // set_rpm - for rotor speed governor
@@ -183,22 +174,22 @@ protected:
     } _heliflags;
 
     // parameters
-    AP_Int16        _cyclic_max;                  // Maximum cyclic angle of the swash plate in centi-degrees
+    AP_Int16        _cyclic_max;                  // Maximum cyclic angle of the swash plate
     AP_Int16        _collective_min;              // Lowest possible servo position for the swashplate
     AP_Int16        _collective_max;              // Highest possible servo position for the swashplate
-    AP_Int16        _collective_mid;              // Swash servo position corresponding to zero collective pitch or zero thrust
-    AP_Float        _collective_yaw_effect;       // Feed-forward compensation to automatically add rudder input when collective pitch is increased
+    AP_Int16        _collective_mid;              // Swash servo position corresponding to zero thrust
+    AP_Float        _collective_yaw_effect;       // Feed-forward compensation for collective to yaw
     AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up
     AP_Int16        _governor_reference;          // sets headspeed for rotor governor, autorotation and runup
     AP_Float        _governor_droop_response;     // governor response to droop under load
-    AP_Float        _governor_tcgain;             // governor throttle curve weighting, range 50-100%
+    AP_Float        _governor_tcgain;             // governor throttle curve gain, range 50-100%
     AP_Float        _governor_torque;             // governor torque limiter variable
-    AP_Int8         _rotor_runup_time;            // Time in seconds for the main rotor to reach full speed.  Must be longer than _throttle_ramp_time
-    AP_Int16        _rotor_critical;              // Rotor speed below which autorotation is no longer possible
-    AP_Int8         _throttle_mode;               // Default throttle control variable
-    AP_Int8         _throttle_ramp_time;          // Time in seconds to ramp throttle from ground idle to flight idle
+    AP_Int8         _rotor_runup_time;            // time in seconds for the main rotor to reach full speed
+    AP_Int16        _rotor_critical;              // minimum safe rotor speed
+    AP_Int8         _throttle_mode;               // default throttle control variable
+    AP_Int8         _throttle_ramp_time;          // time in seconds to ramp throttle from ground idle to flight idle
     AP_Int16        _throttle_idle_output;        // Combustion engine idle speed setting
-    AP_Int16        _throttlecurve[5];            // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective
+    AP_Int16        _throttlecurve[5];            // throttle values for throttle curve
     AP_Int16        _throttle_slewrate;           // throttle slew rate (percentage per second)
 
     // internal variables

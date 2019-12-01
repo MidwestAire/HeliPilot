@@ -24,7 +24,7 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
 
     // @Param: TYPE
     // @DisplayName: Swashplate Type
-    // @Description: H3_120/H3_140 plates have Motor1 left side, Motor2 right side, Motor3 elevator in rear. HR3_120/HR3_140 have Motor1 right side, Motor2 left side, Motor3 elevator in front - use H3_120/H3_140 and reverse servo and collective directions as necessary. For all H3_90 swashplates use H4_90 and don't use servo output for the missing servo. For H4-90 Motors1&2 are left/right respectively, Motors3&4 are rear/front respectively. For H4-45 Motors1&2 are LF/RF, Motors3&4 are LR/RR 
+    // @Description: H3_120/H3_140 plates have SERVO1 left side, SERVO2 right side, SERVO3 (elevator) in rear. HR3_120/HR3_140 have SERVO1 right side, SERVO2 left side, SERVO3 (elevator) in front. For HR3 style swash use H3_120/H3_140 and reverse servo and collective directions as necessary. For all H3_90 swashplates use H4_90 and don't use servo output for the missing servo. For H4-90 SERVOS1&2 are left/right respectively, SERVOS3&4 are rear/front respectively. For H4-45 SERVOS1&2 are LF/RF, SERVOS3&4 are LR/RR 
     // @Values: 1:H1 non-CPPM,2:H3_140,3:H3_120,4:H4_90,5:H4_45
     // @User: Standard
     AP_GROUPINFO("TYPE", 1, AP_MotorsHeli_Swash, _swashplate_type, SWASHPLATE_TYPE_H3_120),
@@ -76,12 +76,10 @@ void AP_MotorsHeli_Swash::calculate_roll_pitch_collective_factors()
         _collectiveFactor[CH_3] = 1;
     }
         
-        // defined swashplates, servo1 is always left, servo2 is right,
-        // servo3 is elevator
+        // defined swashplates
     if (_swash_type == SWASHPLATE_TYPE_H3_140) {
         // Three-servo roll/pitch mixer for H3-140
         // HR3-140 uses reversed servo and collective direction in heli setup
-        // 1:1 pure input style, phase angle not adjustable
         _rollFactor[CH_1] = 1;
         _rollFactor[CH_2] = -1;
         _rollFactor[CH_3] = 0;
@@ -91,7 +89,6 @@ void AP_MotorsHeli_Swash::calculate_roll_pitch_collective_factors()
     } else if (_swash_type == SWASHPLATE_TYPE_H3_120) {
         // three-servo roll/pitch mixer for H3-120
         // HR3-120 uses reversed servo and collective direction in heli setup
-        // not a pure mixing swashplate, phase angle is adjustable
         _rollFactor[CH_1] = 0.866025f;
         _rollFactor[CH_2] = -0.866025f;
         _rollFactor[CH_3] = 0;
@@ -100,8 +97,6 @@ void AP_MotorsHeli_Swash::calculate_roll_pitch_collective_factors()
         _pitchFactor[CH_3] = -1;
     } else if (_swash_type == SWASHPLATE_TYPE_H4_90) {
         // four-servo roll/pitch mixer for H4-90
-        // 1:1 pure input style, phase angle not adjustable
-        // servos 3 & 7 are elevator
         // can also be used for all versions of 90 deg three-servo swashplates
         _rollFactor[CH_1] = 1; 
         _rollFactor[CH_2] = -1;
@@ -113,8 +108,7 @@ void AP_MotorsHeli_Swash::calculate_roll_pitch_collective_factors()
         _pitchFactor[CH_4] = 1;
     } else if (_swash_type == SWASHPLATE_TYPE_H4_45) {
         // four-servo roll/pitch mixer for H4-45
-        // 1:1 pure input style, phase angle not adjustable
-        // for 45 deg plates servos 1&2 are LF&RF, 3&7 are LR&RR.
+        // for 45 deg plates servos 1&2 are LF&RF, 3&4 are LR&RR.
         _rollFactor[CH_1] = 0.707107f; 
         _rollFactor[CH_2] = -0.707107f;
         _rollFactor[CH_3] = 0.707107f;
