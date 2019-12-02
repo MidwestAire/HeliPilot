@@ -145,7 +145,7 @@ void Copter::heli_update_rotor_speed_targets()
     float throttle_control_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_8)->get_control_in()) * 0.001f;
 
     switch (throttle_control_mode) {
-        case ROTOR_CONTROL_MODE_DEFAULT:
+        case THROTTLE_CONTROL_DEFAULT:
             if (throttle_control_deglitched > 0.01f) {
                 ap.motor_interlock_switch = true;
                 // set rpm from rotor speed sensor
