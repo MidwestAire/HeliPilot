@@ -157,7 +157,7 @@ void AP_MotorsHeli_Throttle::update_rotor_ramp(float rotor_ramp_input, float dt)
 void AP_MotorsHeli_Throttle::update_rotor_runup(float dt)
 {
     // if control mode is disabled, then run-up complete always returns true
-    if ( _control_mode == ROTOR_CONTROL_MODE_DISABLED ){
+    if ( _control_mode == THROTTLE_CONTROL_DISABLED ){
         _runup_complete = true;
         return;
     }
@@ -209,7 +209,7 @@ float AP_MotorsHeli_Throttle::get_rotor_speed() const
 // servo_out parameter is of the range 0 ~ 1
 void AP_MotorsHeli_Throttle::write_throttle(float servo_out)
 {
-    if (_control_mode == ROTOR_CONTROL_MODE_DISABLED){
+    if (_control_mode == THROTTLE_CONTROL_DISABLED){
         // do not do servo output to avoid conflicting with other output on the channel
         return;
     } else {

@@ -12,10 +12,11 @@ enum RotorControlState {
     ROTOR_CONTROL_ACTIVE
 };
 
-// rotor control modes
-enum RotorControlMode {
-    ROTOR_CONTROL_MODE_DISABLED = 0,
-    ROTOR_CONTROL_MODE_DEFAULT,
+// throttle control modes
+enum ThrottleControl {
+    THROTTLE_CONTROL_DISABLED = 0,
+    THROTTLE_CONTROL_DEFAULT,
+    THROTTLE_CONTROL_TWIN
 };
 
 class AP_MotorsHeli_Throttle {
@@ -32,7 +33,7 @@ public:
     void        init_servo();
 
     // set_control_mode - sets control mode
-    void        set_control_mode(RotorControlMode mode) { _control_mode = mode; }
+    void        set_control_mode(ThrottleControl mode) { _control_mode = mode; }
 
     // set_critical_speed
     void        set_critical_speed(float critical_speed) { _critical_speed = critical_speed; }
@@ -96,7 +97,7 @@ private:
     uint8_t         _default_channel;
 
     // internal variables
-    RotorControlMode _control_mode = ROTOR_CONTROL_MODE_DISABLED;   // throttle control mode
+    ThrottleControl _control_mode = THROTTLE_CONTROL_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
     float           _manual_throttle;             // latest manual throttle input for engine #1

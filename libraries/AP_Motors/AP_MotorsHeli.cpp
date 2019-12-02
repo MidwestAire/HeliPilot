@@ -179,6 +179,13 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: s
     // @User: Standard
     AP_GROUPINFO("THROTTLE_RAMP", 19, AP_MotorsHeli, _throttle_ramp_time, AP_MOTORS_HELI_THROTTLE_RAMP_TIME),
+    
+    // @Param: ENGINES
+    // @DisplayName: Number of Engines
+    // @Description: Number of engines the helicopter has, either single-engine, or twin-engine
+    // @Values: 0:Disabled,1:Single Engine,2:Twin Engine
+    // @User: Standard
+    AP_GROUPINFO("ENGINES", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_DEFAULT),
 
     AP_GROUPEND
 };
@@ -190,9 +197,6 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 // init
 void AP_MotorsHeli::init(motor_frame_class frame_class, motor_frame_type frame_type)
 {
-    // set throttle control
-    _throttle_mode = ROTOR_CONTROL_MODE_DEFAULT;
-
     // remember frame type
     _frame_type = frame_type;
 

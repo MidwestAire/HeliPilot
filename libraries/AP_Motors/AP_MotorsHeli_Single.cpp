@@ -68,6 +68,10 @@ bool AP_MotorsHeli_Single::init_outputs()
 
         // initialize main rotor servo
         _main_rotor.init_servo();
+        
+        if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+            _throttle2.init_servo();
+        }
     }
 
     // reset swash servo range and endpoints
@@ -117,6 +121,9 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
         case 5:
             // main rotor
             rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE, pwm);
+            if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+                rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE2, pwm);
+            }
             break;
         default:
             // do nothing
@@ -128,6 +135,7 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
 void AP_MotorsHeli_Single::set_desired_rotor_speed(float desired_speed)
 {
     _main_rotor.set_desired_speed(desired_speed);
+    _throttle2.set_desired_speed(desired_speed);
 }
 
 // set_rotor_rpm - used for governor with speed sensor
@@ -152,6 +160,27 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_governor_reference(_governor_reference);
     _main_rotor.set_governor_torque(_governor_torque);
     _main_rotor.set_governor_tcgain(_governor_tcgain*0.01f);
+    
+    if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+        _throttle2.set_ramp_time(_throttle_ramp_time);
+        _throttle2.set_runup_time(_rotor_runup_time);
+        _throttle2.set_critical_speed(_rotor_critical*0.01f);
+        _throttle2.set_idle_output(_throttle_idle_output*0.01f);
+        _throttle2.set_throttle_curve(throttlecurve, (uint16_t)_throttle_slewrate.get());
+        _throttle2.set_governor_droop_response(_governor_droop_response*0.01f);
+        _throttle2.set_governor_reference(_governor_reference);
+        _throttle2.set_governor_torque(_governor_torque);
+        _throttle2.set_governor_tcgain(_governor_tcgain*0.01f);
+    } else {
+        _throttle2.set_ramp_time(0);
+        _throttle2.set_runup_time(0);
+        _throttle2.set_critical_speed(0);
+        _throttle2.set_idle_output(0);
+        _throttle2.set_governor_droop_response(0);
+        _throttle2.set_governor_reference(0);
+        _throttle2.set_governor_torque(0);
+        _throttle2.set_governor_tcgain(0);
+    } 
 
     if (_heliflags.governor_on) {
         _main_rotor.set_governor_on(true);
@@ -178,7 +207,7 @@ void AP_MotorsHeli_Single::calculate_scalars()
     _swashplate.calculate_roll_pitch_collective_factors();
 
     // send setpoints to main rotor controller and trigger recalculation of scalars
-    _main_rotor.set_control_mode(static_cast<RotorControlMode>(_throttle_mode.get()));
+    _main_rotor.set_control_mode(static_cast<ThrottleControl>(_throttle_mode.get()));
     calculate_armed_scalars();
 }
 
@@ -193,6 +222,10 @@ uint16_t AP_MotorsHeli_Single::get_motor_mask()
     if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_90 || _swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_45) {
         mask |= 1U << 4;
     }
+    
+    if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+        mask |= 1U << AP_MOTORS_HELI_SINGLE_THROTTLE2;
+    }
 
     return rc_map_mask(mask);
 }
@@ -202,6 +235,7 @@ void AP_MotorsHeli_Single::update_motor_control(RotorControlState state)
 {
     // Send state update to motors
     _main_rotor.output(state);
+    _throttle2.output(state);
 
     if (state == ROTOR_CONTROL_STOP){
         // set engine run enable aux output to not run position to kill engine when disarmed
