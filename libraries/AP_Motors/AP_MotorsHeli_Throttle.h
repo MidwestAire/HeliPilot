@@ -61,6 +61,7 @@ public:
 
     // get_control_speed - engine throttle output
     float       get_control_output() const { return _control_output; }
+    float       get_control_output2() const { return _control_output2; }
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
@@ -101,7 +102,8 @@ private:
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
     float           _manual_throttle;             // latest manual throttle input for engine #1
-    float           _control_output;              // latest logic controlled output
+    float           _control_output;              // AutoThrottle Engine #1
+    float           _control_output2;             // AutoThrottle Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output

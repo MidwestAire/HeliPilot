@@ -142,6 +142,7 @@ void AP_MotorsHeli_Single::set_desired_rotor_speed(float desired_speed)
 void AP_MotorsHeli_Single::set_rpm(float rotor_rpm)
 {
     _main_rotor.set_rotor_rpm(rotor_rpm);
+    _throttle2.set_rotor_rpm(rotor_rpm);
 }
 
 // calculate_scalars - recalculates various scalers used.
@@ -184,8 +185,10 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
 
     if (_heliflags.governor_on) {
         _main_rotor.set_governor_on(true);
+        _throttle2.set_governor_on(true);
     } else {
-        _main_rotor.set_governor_on(false);       
+        _main_rotor.set_governor_on(false);
+        _throttle2.set_governor_on(false);
     }
 }
 
@@ -208,6 +211,9 @@ void AP_MotorsHeli_Single::calculate_scalars()
 
     // send setpoints to main rotor controller and trigger recalculation of scalars
     _main_rotor.set_control_mode(static_cast<ThrottleControl>(_throttle_mode.get()));
+    if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+        _throttle2.set_control_mode(static_cast<ThrottleControl>(_throttle_mode.get()));
+    }
     calculate_armed_scalars();
 }
 
