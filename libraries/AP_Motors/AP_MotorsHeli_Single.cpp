@@ -143,6 +143,7 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     for (uint8_t i = 0; i < 5; i++) {
         throttlecurve[i] = _throttlecurve[i]*0.01f;
     }
+    // TODO set a variable in _main_rotor that tells it to use two engines
     _main_rotor.set_ramp_time(_throttle_ramp_time);
     _main_rotor.set_runup_time(_rotor_runup_time);
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
