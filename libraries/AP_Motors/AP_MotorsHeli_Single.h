@@ -12,6 +12,8 @@
 // engine throttle output channels
 // single engine, or twin-engine throttle, engine #1
 #define AP_MOTORS_HELI_SINGLE_THROTTLE                         CH_8
+// twin-engine throttle, engine #2
+#define AP_MOTORS_HELI_SINGLE_THROTTLE_2                       CH_7
 
 // three swashplate servos for H3_ swashplates
 #define AP_MOTORS_HELI_SINGLE_NUM_SWASHPLATE_SERVOS            3
@@ -23,7 +25,7 @@ public:
     AP_MotorsHeli_Single(uint16_t       loop_rate,
                          uint16_t       speed_hz = AP_MOTORS_HELI_SPEED_DEFAULT) :
         AP_MotorsHeli(loop_rate, speed_hz),
-        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE),
+        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE, SRV_Channel::k_heli_throttle2, AP_MOTORS_HELI_SINGLE_THROTTLE_2),
         _swashplate()
     {
         AP_Param::setup_object_defaults(this, var_info);

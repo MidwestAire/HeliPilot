@@ -29,6 +29,20 @@ void AP_MotorsHeli_Throttle::init_servo()
     // set servo range 
     SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn), 1000);
 
+    //TODO add if statement that calls init_servo_2() if the twin engine variable is set.  
+    //  this will keep you from having to have a second call in MotorsHeli_Single.
+
+}
+
+// init_servo - servo initialization on start-up
+void AP_MotorsHeli_Throttle::init_servo_2()
+{
+    // setup throttle on specified channel by default
+    SRV_Channels::set_aux_channel_default(_aux_fn_2, _default_channel_2);
+
+    // set servo range 
+    SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn_2), 1000);
+
 }
 
 // Throttle curve calculation
@@ -143,8 +157,8 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
     }
 
     // output to throttle servo
-    write_throttle(_control_output);
-//    write_throttle(_control_output2);  // comment out until we are ready for servo control
+    write_throttle(_aux_fn, _control_output);
+//    write_throttle(_aux_fn_2, _control_output2);  // comment out until we are ready for servo control
 }
 
 // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
@@ -226,13 +240,13 @@ float AP_MotorsHeli_Throttle::get_rotor_speed() const
 
 // write_throttle - outputs pwm onto output throttle channel
 // servo_out parameter is of the range 0 ~ 1
-void AP_MotorsHeli_Throttle::write_throttle(float servo_out)
+void AP_MotorsHeli_Throttle::write_throttle(SRV_Channel::Aux_servo_function_t aux_function, float servo_out)
 {
     if (_control_mode == THROTTLE_CONTROL_DISABLED){
         // do not do servo output to avoid conflicting with other output on the channel
         return;
     } else {
-        SRV_Channels::set_output_scaled(_aux_fn, (uint16_t) (servo_out * 1000));
+        SRV_Channels::set_output_scaled(aux_function, (uint16_t) (servo_out * 1000));
     }
 }
 

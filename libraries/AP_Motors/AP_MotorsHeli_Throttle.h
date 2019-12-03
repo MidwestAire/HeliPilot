@@ -23,14 +23,17 @@ class AP_MotorsHeli_Throttle {
 public:
     friend class AP_MotorsHeli_Single;
 
-    AP_MotorsHeli_Throttle(SRV_Channel::Aux_servo_function_t aux_fn,
-                      uint8_t default_channel) :
+    AP_MotorsHeli_Throttle(SRV_Channel::Aux_servo_function_t aux_fn, uint8_t default_channel,
+                      SRV_Channel::Aux_servo_function_t aux_fn_2, uint8_t default_channel_2) :
         _aux_fn(aux_fn),
-        _default_channel(default_channel)
+        _default_channel(default_channel),
+        _aux_fn_2(aux_fn_2),
+        _default_channel_2(default_channel_2)
     {};
 
     // init_servo - servo initialization on start-up
     void        init_servo();
+    void        init_servo_2();
 
     // set_control_mode - sets control mode
     void        set_control_mode(ThrottleControl mode) { _control_mode = mode; }
@@ -96,6 +99,8 @@ private:
     // channel setup for aux function
     SRV_Channel::Aux_servo_function_t _aux_fn;
     uint8_t         _default_channel;
+    SRV_Channel::Aux_servo_function_t _aux_fn_2;
+    uint8_t         _default_channel_2;
 
     // internal variables
     ThrottleControl _control_mode = THROTTLE_CONTROL_DISABLED;   // throttle control mode
@@ -128,7 +133,7 @@ private:
     void            update_rotor_runup(float dt);
 
     // write_throttle - outputs pwm onto output throttle channel. servo_out parameter is of the range 0 ~ 1
-    void            write_throttle(float servo_out);
+    void            write_throttle(SRV_Channel::Aux_servo_function_t aux_function, float servo_out);
 
     // calculate_desired_throttle - uses throttle curve and collective input to determine throttle setting
     float           calculate_desired_throttle(float collective_in);
