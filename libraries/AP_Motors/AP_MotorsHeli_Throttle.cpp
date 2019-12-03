@@ -65,6 +65,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
 
             // control output forced to zero
             _control_output = 0.0f;
+            if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = 0.0f;
+                   }
             break;
 
         case ROTOR_CONTROL_IDLE:
@@ -73,6 +76,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
 
             // set rotor control speed to idle speed parameter, this happens instantly and ignore ramping
             _control_output = _idle_output;
+            if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = _idle_output;
+                   }
             break;
 
         case ROTOR_CONTROL_ACTIVE:
@@ -81,6 +87,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             // Manual throttle if RC8 signal below 95%
             if (_manual_throttle < 0.95f) {
                 _control_output = constrain_float((_idle_output + _manual_throttle), 0.0f, 1.0f);
+                if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = _control_output;
+                   }
             } else {
                 // AutoThrottle ON at RC8 signal >/= 95%
                 float desired_throttle = calculate_desired_throttle(_collective_in);
@@ -88,6 +97,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
                     _governor_output = 0.0f;
                     _governor_engage = false;
                    _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                   if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = _control_output;
+                   }
                 } else {
                     // Governor ON if switch is activated
                     if ((_rotor_rpm >= (_governor_reference - _governor_torque)) && (_rotor_rpm <= (_governor_reference + _governor_torque))) {
@@ -109,6 +121,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             	        _governor_output = 0.0f;
             	        _governor_engage = false;
                         _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                        if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = _control_output;
+                   }
                     }
                 }
             }
@@ -122,10 +137,14 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
         // implement slew rate for throttle
         float max_delta = dt * _power_slewrate * 0.01f;
         _control_output = constrain_float(_control_output, last_control_output-max_delta, last_control_output+max_delta);
+        if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                       _control_output2 = constrain_float(_control_output2, last_control_output-max_delta, last_control_output+max_delta);
+        }
     }
 
     // output to throttle servo
     write_throttle(_control_output);
+//    write_throttle(_control_output2);  // comment out until we are ready for servo control
 }
 
 // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output

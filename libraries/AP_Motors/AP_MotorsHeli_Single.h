@@ -59,6 +59,7 @@ public:
     
     // get_control_output for engine throttles
     float get_control_output() const override{ return _main_rotor.get_control_output(); }
+    float get_control_output2() const override{ return _throttle2.get_control_output2(); }
 
     // calculate_scalars - recalculates various scalars used
     void calculate_scalars() override;
