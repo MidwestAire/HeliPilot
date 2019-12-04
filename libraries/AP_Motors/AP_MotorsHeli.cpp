@@ -183,7 +183,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Param: ENGINES
     // @DisplayName: Number of Engines
     // @Description: Number of engines the helicopter has, either single-engine, or twin-engine
-    // @Values: 0:Disabled,1:Single Engine,2:Twin Engine
+    // @Values: 1:Single Engine,2:Twin Engine
     // @User: Standard
     AP_GROUPINFO("ENGINES", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_DEFAULT),
 
