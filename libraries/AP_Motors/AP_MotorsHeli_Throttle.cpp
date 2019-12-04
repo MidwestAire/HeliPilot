@@ -20,7 +20,7 @@
 
 extern const AP_HAL::HAL& hal;  
 
-// init_servo - servo initialization on start-up
+// init_servo - initialize engine #1 throttle on startup
 void AP_MotorsHeli_Throttle::init_servo()
 {
     // setup throttle on specified channel by default
@@ -28,13 +28,13 @@ void AP_MotorsHeli_Throttle::init_servo()
 
     // set servo range 
     SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn), 1000);
-
-    //TODO add if statement that calls init_servo_2() if the twin engine variable is set.  
-    //  this will keep you from having to have a second call in MotorsHeli_Single.
-
+    
+    if (_control_mode == THROTTLE_CONTROL_TWIN) {
+        init_servo_2();
+    }
 }
 
-// init_servo - servo initialization on start-up
+// init_servo_2 - initialize engine #2 throttle on startup
 void AP_MotorsHeli_Throttle::init_servo_2()
 {
     // setup throttle on specified channel by default
@@ -42,7 +42,6 @@ void AP_MotorsHeli_Throttle::init_servo_2()
 
     // set servo range 
     SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn_2), 1000);
-
 }
 
 // Throttle curve calculation
@@ -129,6 +128,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
                         }
                     // throttle output constrained from minimum called for from throttle curve to WOT
             	        _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
+            	        if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                            _control_output2 = _control_output;
+                        }
             	    } else {
             	    // hold governor output at zero, engage status is false and use the throttle curve
             	    // this is failover for in-flight failure of the speed sensor
@@ -158,7 +160,7 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
 
     // output to throttle servo
     write_throttle(_aux_fn, _control_output);
-//    write_throttle(_aux_fn_2, _control_output2);  // comment out until we are ready for servo control
+    write_throttle(_aux_fn_2, _control_output2);
 }
 
 // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
