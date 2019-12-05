@@ -148,12 +148,26 @@ void Copter::heli_update_rotor_speed_targets()
         case THROTTLE_CONTROL_DEFAULT:
             if (throttle_control_deglitched > 0.01f) {
                 ap.motor_interlock_switch = true;
-                // set rpm from rotor speed sensor
                 motors->set_desired_rotor_speed(throttle_control_deglitched);
+                // set rpm from rotor speed sensor
                 motors->set_rpm(rpm_sensor.get_rpm(0));
             } else {
                 ap.motor_interlock_switch = false;
                 motors->set_desired_rotor_speed(0.0f);
+            }
+            break;
+        case THROTTLE_CONTROL_TWIN:
+            float throttle2_control_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_7)->get_control_in()) * 0.001f;
+            if ((throttle_control_deglitched > 0.01f) || (throttle2_control_deglitched > 0.01f)) {
+                ap.motor_interlock_switch = true;
+                motors->set_desired_rotor_speed(throttle_control_deglitched);
+                motors->set_desired_rotor_speed2(throttle2_control_deglitched);
+                // set rpm from rotor speed sensor
+                motors->set_rpm(rpm_sensor.get_rpm(0));
+            } else {
+                ap.motor_interlock_switch = false;
+                motors->set_desired_rotor_speed(0.0f);
+                motors->set_desired_rotor_speed2(0.0f);
             }
             break;
     }

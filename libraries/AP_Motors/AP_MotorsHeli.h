@@ -87,11 +87,13 @@ public:
     // set_governor_on - enables/disables governor
     void set_governor(bool governor) { _heliflags.governor_on = governor; }
 
-    // set_desired_rotor_speed - sets target rotor speed as a number from 0 ~ 1
+    // set_desired_rotor_speed for engine manual throttles
     virtual void set_desired_rotor_speed(float desired_speed) = 0;
+    virtual void set_desired_rotor_speed2(float desired_speed2) = 0;
 
-    // get_desired_rotor_speed - gets target rotor speed as a number from 0 ~ 1
+    // get_desired_rotor_speed for engine manual throttles
     virtual float get_desired_rotor_speed() const = 0;
+    virtual float get_desired_rotor_speed2() const = 0;
 
     // get_main_rotor_speed - estimated rotor speed when no governor or speed sensor used
     virtual float get_main_rotor_speed() const = 0;
@@ -102,11 +104,13 @@ public:
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     virtual bool rotor_speed_above_critical() const = 0;
     
-    //get rotor governor output
+    //get AutoThrottle governor outputs
     virtual float get_governor_output() const = 0;
+    virtual float get_governor2_output() const = 0;
     
-    //get engine throttle output
+    //get engine throttle outputs
     virtual float get_control_output() const = 0;
+    virtual float get_control2_output() const = 0;
 
     // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
@@ -182,7 +186,9 @@ protected:
     AP_Int8         _servo_mode;                  // Pass radio inputs directly to servos during set-up
     AP_Int16        _governor_reference;          // sets headspeed for rotor governor, autorotation and runup
     AP_Float        _governor_droop_response;     // governor response to droop under load
+    AP_Float        _governor2_droop_response;    // governor response for engine #2
     AP_Float        _governor_tcgain;             // governor throttle curve gain, range 50-100%
+    AP_Float        _governor2_tcgain;            // governor throttle curve gain, engine #2
     AP_Float        _governor_torque;             // governor torque limiter variable
     AP_Int8         _rotor_runup_time;            // time in seconds for the main rotor to reach full speed
     AP_Int16        _rotor_critical;              // minimum safe rotor speed

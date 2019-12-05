@@ -48,23 +48,29 @@ public:
     float       get_idle_output() { return _idle_output; }
     void        set_idle_output(float idle_output) { _idle_output = idle_output; }
 
-    // set rotor speed governor parameters
+    // set AutoThrottle governor parameters
     void        set_governor_on(bool governor_on) {_governor_on = (bool)governor_on; }
     void        set_governor_droop_response(float governor_droop_response) { _governor_droop_response = governor_droop_response; }
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_reference(float governor_reference) { _governor_reference = governor_reference; }
     void        set_governor_torque(float governor_torque) { _governor_torque = governor_torque; }
     void        set_governor_tcgain(float governor_tcgain) {_governor_tcgain = governor_tcgain; }
+    // set AutoThrottle governor parameters for engine #2
+    void        set_governor2_droop_response(float governor2_droop_response) { _governor2_droop_response = governor2_droop_response; }
+    void        set_governor2_output(float governor2_output) {_governor2_output = governor2_output; }
+    void        set_governor2_tcgain(float governor2_tcgain) {_governor2_tcgain = governor2_tcgain; }
 
-    // get_desired_speed for manual throttle
+    // get_desired_speed for manual throttles
     float       get_desired_speed() const { return _manual_throttle; }
+    float       get_desired_speed2() const { return _manual_throttle2; }
 
-    // set_desired_speed for manual throttle
+    // set_desired_speed for manual throttles
     void        set_desired_speed(float desired_speed) { _manual_throttle = desired_speed; }
+    void        set_desired_speed2(float desired_speed2) { _manual_throttle2 = desired_speed2; }
 
-    // get_control_speed - engine throttle output
+    // get_control_speed - engine throttle outputs
     float       get_control_output() const { return _control_output; }
-    float       get_control_output2() const { return _control_output2; }
+    float       get_control2_output() const { return _control2_output; }
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
@@ -72,8 +78,9 @@ public:
     // set_rotor_rpm - when speed sensor is available for governor
     void        set_rotor_rpm(float rotor_rpm) {_rotor_rpm = (float)rotor_rpm; }
     
-    // get_governor_output
+    // get AutoThrottle governor_outputs
     float       get_governor_output() const { return _governor_output; }
+    float       get_governor2_output() const { return _governor2_output; }
 
     // is_runup_complete
     bool        is_runup_complete() const { return _runup_complete; }
@@ -107,8 +114,9 @@ private:
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
     float           _manual_throttle;             // latest manual throttle input for engine #1
+    float           _manual_throttle2;            // latest manual throttle input for engine #2
     float           _control_output;              // AutoThrottle Engine #1
-    float           _control_output2;             // AutoThrottle Engine #2
+    float           _control2_output;             // AutoThrottle Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
@@ -119,12 +127,15 @@ private:
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from rotor speed sensor
     bool            _governor_on;                 // flag for governor on/off switch
-    float           _governor_output;             // governor output for rotor speed control
+    float           _governor_output;             // governor output for AutoThrottle
+    float           _governor2_output;            // governor output for engine #2
     float           _governor_torque;             // governor torque limiter variable
     float           _governor_reference;          // sets rotor speed for governor
     float           _governor_droop_response;     // governor response to droop under load
+    float           _governor2_droop_response;    // governor response, engine #2
     bool            _governor_engage;             // governor status flag
     float           _governor_tcgain;             // governor throttle curve gain, range 50-100%
+    float           _governor2_tcgain;            // governor throttle curve gain, engine #2
 
     // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
     void            update_rotor_ramp(float rotor_ramp_input, float dt);
