@@ -124,10 +124,16 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
     }
 }
 
-// set_desired_rotor_speed
+// set_desired_rotor_speed - manual throttle Engine #1
 void AP_MotorsHeli_Single::set_desired_rotor_speed(float desired_speed)
 {
     _main_rotor.set_desired_speed(desired_speed);
+}
+
+// set_desired_rotor_speed2 - manual throttle Engine #2
+void AP_MotorsHeli_Single::set_desired_rotor_speed2(float desired_speed2)
+{
+    _main_rotor.set_desired_speed2(desired_speed2);
 }
 
 // set_rotor_rpm - used for governor with speed sensor
@@ -143,7 +149,6 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     for (uint8_t i = 0; i < 5; i++) {
         throttlecurve[i] = _throttlecurve[i]*0.01f;
     }
-    // TODO set a variable in _main_rotor that tells it to use two engines
     _main_rotor.set_ramp_time(_throttle_ramp_time);
     _main_rotor.set_runup_time(_rotor_runup_time);
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
@@ -153,6 +158,9 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_governor_reference(_governor_reference);
     _main_rotor.set_governor_torque(_governor_torque);
     _main_rotor.set_governor_tcgain(_governor_tcgain*0.01f);
+    // set variables for twin-engine heli's, engine #2
+    _main_rotor.set_governor2_tcgain(_governor2_tcgain*0.01f);
+    _main_rotor.set_governor2_droop_response(_governor2_droop_response*0.01f);
 
     if (_heliflags.governor_on) {
         _main_rotor.set_governor_on(true);

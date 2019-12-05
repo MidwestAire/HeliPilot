@@ -39,8 +39,13 @@ public:
     //  pwm value is an actual pwm value that will be output, normally in the range of 1000 ~ 2000
     void output_test(uint8_t motor_seq, int16_t pwm) override;
 
-    // set_desired_rotor_speed - sets target rotor speed as a number from 0 ~ 1
+    // set_desired_rotor_speed for engine manual throttles
     void set_desired_rotor_speed(float desired_speed) override;
+    void set_desired_rotor_speed2(float desired_speed2) override;
+    
+    // get_desired_rotor_speed for engine manual throttles
+    float get_desired_rotor_speed() const  override { return _main_rotor.get_desired_speed(); }
+    float get_desired_rotor_speed2() const  override { return _main_rotor.get_desired_speed2(); }
 
     // set_rpm - for rotor speed governor
     void set_rpm(float rotor_rpm) override;
@@ -48,17 +53,16 @@ public:
     // get_main_rotor_speed - estimated rotor speed when no speed sensor or governor is used
     float get_main_rotor_speed() const  override { return _main_rotor.get_rotor_speed(); }
 
-    // get_desired_rotor_speed - gets target rotor speed as a number from 0 ~ 1
-    float get_desired_rotor_speed() const  override { return _main_rotor.get_desired_speed(); }
-
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     bool rotor_speed_above_critical() const  override { return _main_rotor.get_rotor_speed() > _main_rotor.get_critical_speed(); }
     
-    // get_governor_output
+    // get AutoThrottle governor outputs
     float get_governor_output() const override { return _main_rotor.get_governor_output(); }
+    float get_governor2_output() const override { return _main_rotor.get_governor2_output(); }
     
     // get_control_output for engine throttles
     float get_control_output() const override{ return _main_rotor.get_control_output(); }
+    float get_control2_output() const override{ return _main_rotor.get_control2_output(); }
 
     // calculate_scalars - recalculates various scalars used
     void calculate_scalars() override;
