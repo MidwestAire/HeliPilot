@@ -99,11 +99,11 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
             // Manual throttle if RC8 signal below 95%
-            if (_manual_throttle < 0.95f) {
-                _control_output = constrain_float((_idle_output + _manual_throttle), 0.0f, 1.0f);
+            if (_throttle_1_input < 0.95f) {
+                _control_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
                 if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                   if (_manual_throttle2 < 0.95f) {
-                       _control2_output = constrain_float((_idle_output + _manual_throttle2), 0.0f, 1.0f);
+                   if (_throttle_2_input < 0.95f) {
+                       _control2_output = constrain_float((_idle_output + _throttle_2_input), 0.0f, 1.0f);
                    }
                 }
             } else {

@@ -125,15 +125,15 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
 }
 
 // set_desired_rotor_speed - manual throttle Engine #1
-void AP_MotorsHeli_Single::set_desired_rotor_speed(float desired_speed)
+void AP_MotorsHeli_Single::set_desired_rotor_speed(float throttle_1_input)
 {
-    _main_rotor.set_desired_speed(desired_speed);
+    _main_rotor.set_throttle_1_input(throttle_1_input);
 }
 
-// set_desired_rotor_speed2 - manual throttle Engine #2
-void AP_MotorsHeli_Single::set_desired_rotor_speed2(float desired_speed2)
+// set_desired_rotor_speed_2 - manual throttle Engine #2
+void AP_MotorsHeli_Single::set_desired_rotor_speed_2(float throttle_2_input)
 {
-    _main_rotor.set_desired_speed2(desired_speed2);
+    _main_rotor.set_throttle_2_input(throttle_2_input);
 }
 
 // set_rotor_rpm - used for governor with speed sensor

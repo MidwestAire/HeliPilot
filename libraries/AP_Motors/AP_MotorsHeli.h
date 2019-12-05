@@ -88,12 +88,12 @@ public:
     void set_governor(bool governor) { _heliflags.governor_on = governor; }
 
     // set_desired_rotor_speed for engine manual throttles
-    virtual void set_desired_rotor_speed(float desired_speed) = 0;
-    virtual void set_desired_rotor_speed2(float desired_speed2) = 0;
+    virtual void set_desired_rotor_speed(float throttle_1_input) = 0;
+    virtual void set_desired_rotor_speed_2(float throttle_2_input) = 0;
 
     // get_desired_rotor_speed for engine manual throttles
     virtual float get_desired_rotor_speed() const = 0;
-    virtual float get_desired_rotor_speed2() const = 0;
+    virtual float get_desired_rotor_speed_2() const = 0;
 
     // get_main_rotor_speed - estimated rotor speed when no governor or speed sensor used
     virtual float get_main_rotor_speed() const = 0;
