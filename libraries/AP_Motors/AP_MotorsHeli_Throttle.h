@@ -60,13 +60,13 @@ public:
     void        set_governor2_output(float governor2_output) {_governor2_output = governor2_output; }
     void        set_governor2_tcgain(float governor2_tcgain) {_governor2_tcgain = governor2_tcgain; }
 
-    // get_desired_speed for manual throttles
-    float       get_desired_speed() const { return _manual_throttle; }
-    float       get_desired_speed2() const { return _manual_throttle2; }
+    // get_throttle_input for manual throttles
+    float       get_throttle_1_input() const { return _throttle_1_input; }
+    float       get_throttle_2_input() const { return _throttle_2_input; }
 
-    // set_desired_speed for manual throttles
-    void        set_desired_speed(float desired_speed) { _manual_throttle = desired_speed; }
-    void        set_desired_speed2(float desired_speed2) { _manual_throttle2 = desired_speed2; }
+    // set_throttle_input for manual throttles
+    void        set_throttle_1_input(float throttle_1_input) { _throttle_1_input = throttle_1_input; }
+    void        set_throttle_2_input(float throttle_2_input) { _throttle_2_input = throttle_2_input; }
 
     // get_control_speed - engine throttle outputs
     float       get_control_output() const { return _control_output; }
@@ -113,8 +113,8 @@ private:
     ThrottleControl _control_mode = THROTTLE_CONTROL_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
-    float           _manual_throttle;             // latest manual throttle input for engine #1
-    float           _manual_throttle2;            // latest manual throttle input for engine #2
+    float           _throttle_1_input;            // latest manual throttle input for engine #1
+    float           _throttle_2_input;            // latest manual throttle input for engine #2
     float           _control_output;              // AutoThrottle Engine #1
     float           _control2_output;             // AutoThrottle Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)

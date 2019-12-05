@@ -40,12 +40,12 @@ public:
     void output_test(uint8_t motor_seq, int16_t pwm) override;
 
     // set_desired_rotor_speed for engine manual throttles
-    void set_desired_rotor_speed(float desired_speed) override;
-    void set_desired_rotor_speed2(float desired_speed2) override;
+    void set_desired_rotor_speed(float throttle_1_input) override;
+    void set_desired_rotor_speed_2(float throttle_2_input) override;
     
     // get_desired_rotor_speed for engine manual throttles
-    float get_desired_rotor_speed() const  override { return _main_rotor.get_desired_speed(); }
-    float get_desired_rotor_speed2() const  override { return _main_rotor.get_desired_speed2(); }
+    float get_desired_rotor_speed() const  override { return _main_rotor.get_throttle_1_input(); }
+    float get_desired_rotor_speed_2() const  override { return _main_rotor.get_throttle_2_input(); }
 
     // set_rpm - for rotor speed governor
     void set_rpm(float rotor_rpm) override;
