@@ -99,6 +99,9 @@ public:
 
     // output - update value to send to ESC/Servo
     void        output(RotorControlState state);
+    
+    // calculate autothrottle output
+    void        calculate_autothrottle();
 
 private:
     uint64_t        _last_update_us;
