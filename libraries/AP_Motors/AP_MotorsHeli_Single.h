@@ -60,9 +60,9 @@ public:
     float get_governor_output() const override { return _main_rotor.get_governor_output(); }
     float get_governor2_output() const override { return _main_rotor.get_governor2_output(); }
     
-    // get_control_output for engine throttles
-    float get_control_output() const override{ return _main_rotor.get_control_output(); }
-    float get_control2_output() const override{ return _main_rotor.get_control2_output(); }
+    // get_throttle_output for engine throttles
+    float get_throttle_1_output() const override{ return _main_rotor.get_throttle_1_output(); }
+    float get_throttle_2_output() const override{ return _main_rotor.get_throttle_2_output(); }
 
     // calculate_scalars - recalculates various scalars used
     void calculate_scalars() override;

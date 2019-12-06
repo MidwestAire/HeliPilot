@@ -61,8 +61,8 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
 {
     float dt;
     uint64_t now = AP_HAL::micros64();
-    float last_control_output = _control_output;
-    float last_control2_output = _control2_output;
+    float last_throttle_1_output = _throttle_1_output;
+    float last_throttle_2_output = _throttle_2_output;
 
     if (_last_update_us == 0) {
         _last_update_us = now;
@@ -78,9 +78,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             update_rotor_ramp(0.0f, dt);
 
             // control output forced to zero
-            _control_output = 0.0f;
+            _throttle_1_output = 0.0f;
             if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                _control2_output = 0.0f;
+                _throttle_2_output = 0.0f;
             }
             break;
 
@@ -89,9 +89,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             update_rotor_ramp(0.0f, dt);
 
             // set rotor control speed to idle speed parameter, this happens instantly and ignore ramping
-            _control_output = _idle_output;
+            _throttle_1_output = _idle_output;
             if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                _control2_output = _idle_output;
+                _throttle_2_output = _idle_output;
             }
             break;
 
@@ -100,10 +100,10 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             update_rotor_ramp(1.0f, dt);
             // Manual throttle if RC8 signal below 95%
             if (_throttle_1_input < 0.95f) {
-                _control_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
+                _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
                 if (_control_mode == THROTTLE_CONTROL_TWIN) {
                    if (_throttle_2_input < 0.95f) {
-                       _control2_output = constrain_float((_idle_output + _throttle_2_input), 0.0f, 1.0f);
+                       _throttle_2_output = constrain_float((_idle_output + _throttle_2_input), 0.0f, 1.0f);
                    }
                 }
             } else {
@@ -113,9 +113,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
                     _governor_output = 0.0f;
                     _governor2_output = 0.0f;
                     _governor_engage = false;
-                   _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                   _throttle_1_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                    if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                       _control2_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                       _throttle_2_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                    }
                 } else {
                     // Governor ON if switch is activated
@@ -133,9 +133,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
                             _governor2_output = ((_rotor_rpm - (_governor_reference + governor_droop)) * desired_throttle) * _governor2_droop_response * -0.01f;
                         }
                     // throttle output constrained from minimum called for from throttle curve to WOT
-            	        _control_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
+            	        _throttle_1_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor_tcgain) + _governor_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor_tcgain)) - _idle_output), 1.0f);
             	        if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                            _control2_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor2_tcgain) + _governor2_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor2_tcgain)) - _idle_output), 1.0f);
+                            _throttle_2_output = constrain_float(_idle_output + (_rotor_ramp_output * (((desired_throttle * _governor2_tcgain) + _governor2_output) - _idle_output)), _idle_output + (_rotor_ramp_output * ((desired_throttle * _governor2_tcgain)) - _idle_output), 1.0f);
                         }
             	    } else {
             	    // hold governor output at zero, engage status is false and use the throttle curve
@@ -143,9 +143,9 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             	        _governor_output = 0.0f;
             	        _governor2_output = 0.0f;
             	        _governor_engage = false;
-                        _control_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                        _throttle_1_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                         if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                            _control2_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
+                            _throttle_2_output = _idle_output + (_rotor_ramp_output * (desired_throttle - _idle_output));
                         }
                     }
                 }
@@ -159,15 +159,15 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
     if (_power_slewrate > 0) {
         // implement slew rate for throttle
         float max_delta = dt * _power_slewrate * 0.01f;
-        _control_output = constrain_float(_control_output, last_control_output-max_delta, last_control_output+max_delta);
+        _throttle_1_output = constrain_float(_throttle_1_output, last_throttle_1_output-max_delta, last_throttle_1_output+max_delta);
         if (_control_mode == THROTTLE_CONTROL_TWIN) {
-            _control2_output = constrain_float(_control2_output, last_control2_output-max_delta, last_control2_output+max_delta);
+            _throttle_2_output = constrain_float(_throttle_2_output, last_throttle_2_output-max_delta, last_throttle_2_output+max_delta);
         }
     }
 
     // output to throttle servo
-    write_throttle(_aux_fn, _control_output);
-    write_throttle(_aux_fn_2, _control2_output);
+    write_throttle(_aux_fn, _throttle_1_output);
+    write_throttle(_aux_fn_2, _throttle_2_output);
 }
 
 // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
