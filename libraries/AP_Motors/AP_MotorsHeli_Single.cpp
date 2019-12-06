@@ -66,8 +66,11 @@ bool AP_MotorsHeli_Single::init_outputs()
         // yaw servo
         add_motor_num(CH_4);
 
-        // initialize main rotor servo
+        // initialize throttle servos
         _main_rotor.init_servo();
+        if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
+            _main_rotor.init_servo_2();
+        }
     }
 
     // reset swash servo range and endpoints
@@ -117,6 +120,7 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
         case 5:
             // main rotor
             rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE, pwm);
+            rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE_2, pwm);
             break;
         default:
             // do nothing
