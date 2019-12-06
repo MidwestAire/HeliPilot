@@ -68,9 +68,9 @@ public:
     void        set_throttle_1_input(float throttle_1_input) { _throttle_1_input = throttle_1_input; }
     void        set_throttle_2_input(float throttle_2_input) { _throttle_2_input = throttle_2_input; }
 
-    // get_control_speed - engine throttle outputs
-    float       get_control_output() const { return _control_output; }
-    float       get_control2_output() const { return _control2_output; }
+    // get engine throttle outputs
+    float       get_throttle_1_output() const { return _throttle_1_output; }
+    float       get_throttle_2_output() const { return _throttle_2_output; }
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
@@ -115,8 +115,8 @@ private:
     float           _idle_output;                 // motor output idle speed
     float           _throttle_1_input;            // latest manual throttle input for engine #1
     float           _throttle_2_input;            // latest manual throttle input for engine #2
-    float           _control_output;              // AutoThrottle Engine #1
-    float           _control2_output;             // AutoThrottle Engine #2
+    float           _throttle_1_output;           // AutoThrottle Engine #1
+    float           _throttle_2_output;           // AutoThrottle Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output

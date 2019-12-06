@@ -109,8 +109,8 @@ public:
     virtual float get_governor2_output() const = 0;
     
     //get engine throttle outputs
-    virtual float get_control_output() const = 0;
-    virtual float get_control2_output() const = 0;
+    virtual float get_throttle_1_output() const = 0;
+    virtual float get_throttle_2_output() const = 0;
 
     // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict

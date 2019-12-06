@@ -401,7 +401,8 @@ struct PACKED log_Heli {
     float    desired_rotor_speed;
     float    main_rotor_speed;
     float    governor_output;
-    float    control_output;
+    float    throttle_1_output;
+    float    throttle_2_output;
 };
 
 #if FRAME_CONFIG == HELI_FRAME
@@ -414,7 +415,7 @@ void Copter::Log_Write_Heli()
         desired_rotor_speed     : motors->get_desired_rotor_speed(),
         main_rotor_speed        : motors->get_main_rotor_speed(),
         governor_output         : motors->get_governor_output(),
-        control_output          : motors->get_control_output(),
+        throttle_1_output       : motors->get_throttle_1_output(),
     };
     DataFlash.WriteBlock(&pkt_heli, sizeof(pkt_heli));
 }

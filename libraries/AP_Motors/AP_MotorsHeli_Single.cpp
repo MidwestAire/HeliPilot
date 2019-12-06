@@ -279,7 +279,7 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     if (_servo_mode == SERVO_CONTROL_MODE_AUTOMATED) {
         // rudder feed forward based on collective
         //TODO This does not work properly - needs to be looked at
-        if (_main_rotor.get_control_output() > _main_rotor.get_idle_output()) {
+        if (_main_rotor.get_throttle_1_output() > _main_rotor.get_idle_output()) {
             // the 4.5 scaling factor is to bring the values in line with previous releases
             yaw_offset = _collective_yaw_effect * fabsf(collective_out - _collective_mid_pct) / 4.5f;
         }
