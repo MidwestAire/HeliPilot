@@ -148,6 +148,6 @@ private:
     // write_throttle - outputs pwm onto output throttle channel. servo_out parameter is of the range 0 ~ 1
     void            write_throttle(SRV_Channel::Aux_servo_function_t aux_function, float servo_out);
 
-    // calculate_desired_throttle - uses throttle curve and collective input to determine throttle setting
-    float           calculate_desired_throttle(float collective_in);
+    // calculate_throttlecurve - uses throttle curve and collective input to determine throttle setting
+    float           calculate_throttlecurve(float collective_in);
 };
