@@ -45,7 +45,7 @@ void AP_MotorsHeli_Throttle::init_servo_2()
 }
 
 // Throttle curve calculation
-void AP_MotorsHeli_Throttle::set_throttle_curve(float throttlecurve[5], uint16_t slewrate)
+void AP_MotorsHeli_Throttle::set_throttle_curve(float throttlecurve[5])
 {
     // Ensure user inputs are within parameter limits
     for (uint8_t i = 0; i < 5; i++) {
@@ -53,7 +53,6 @@ void AP_MotorsHeli_Throttle::set_throttle_curve(float throttlecurve[5], uint16_t
     }
     // Calculate the spline polynomials for the throttle curve
     splinterp5(throttlecurve, _throttlecurve_poly);
-    _power_slewrate = slewrate;
 }
 
 // output - update value to send to ESC/Servo
@@ -61,8 +60,6 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
 {
     float dt;
     uint64_t now = AP_HAL::micros64();
-    float last_throttle_1_output = _throttle_1_output;
-    float last_throttle_2_output = _throttle_2_output;
 
     if (_last_update_us == 0) {
         _last_update_us = now;
@@ -94,42 +91,28 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
         case ROTOR_CONTROL_ACTIVE:
             // set main rotor ramp to increase to full speed
             update_rotor_ramp(1.0f, dt);
-            // Manual throttle if RC8 signal below 95%
-            // engine #1 throttle
-            if (_throttle_1_input < 0.95f) {
-                _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
-            } else {
-                calculate_autothrottle();
-            }
-            
-            // engine #2 throttle
-            if (_control_mode == THROTTLE_CONTROL_TWIN) {
-            float throttle_1_autothrottle_override = 0.0f;
-                if ((_throttle_1_input < 0.95f) && (_throttle_2_input >= 0.95f)) {
-                    throttle_1_autothrottle_override = _throttle_1_output;
+
+            // single-engine throttle controls
+            if (_control_mode == THROTTLE_CONTROL_DEFAULT) {
+                if (_throttle_1_input < 0.95f) {
+                    _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
+                } else {
+                    calculate_autothrottle();
                 }
-                if (_throttle_2_input < 0.95f) {
+            // twin-engine throttle controls
+            } else if (_control_mode == THROTTLE_CONTROL_TWIN) {
+                if ((_throttle_1_input < 0.95f) || (_throttle_2_input < 0.95f)) {
+                    _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
                     _throttle_2_output = constrain_float((_idle_output + _throttle_2_input), 0.0f, 1.0f);
                 } else {
                     calculate_autothrottle();
-                    if (_throttle_1_input < 0.95f) {
-                        _throttle_1_output = throttle_1_autothrottle_override;
-                    }
-                }                
+                }              
             }                
             break;
     }
 
     // update rotor speed run-up estimate
     update_rotor_runup(dt);
-
-    //TODO Remove this - we do not use throttle slewrate in HeliPilot
-    if (_power_slewrate > 0) {
-        // implement slew rate for throttle
-        float max_delta = dt * _power_slewrate * 0.01f;
-        _throttle_1_output = constrain_float(_throttle_1_output, last_throttle_1_output-max_delta, last_throttle_1_output+max_delta);
-        _throttle_2_output = constrain_float(_throttle_2_output, last_throttle_2_output-max_delta, last_throttle_2_output+max_delta);
-    }
     
     // write throttle outputs to servos
     write_throttle(_aux_fn, _throttle_1_output);

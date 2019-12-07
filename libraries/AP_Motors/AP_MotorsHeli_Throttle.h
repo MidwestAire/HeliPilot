@@ -92,7 +92,7 @@ public:
     void        set_runup_time(int8_t runup_time) { _runup_time = runup_time; }
 
     // set_throttle_curve
-    void        set_throttle_curve(float thrcrv[5], uint16_t slewrate);
+    void        set_throttle_curve(float thrcrv[5]);
 
     // set_collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
@@ -126,7 +126,6 @@ private:
     int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed
     bool            _runup_complete;              // flag for determining if runup is complete
     float           _throttlecurve_poly[4][4];    // spline polynomials for throttle curve interpolation
-    uint16_t        _power_slewrate;              // slewrate for throttle (percentage per second)
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from rotor speed sensor
     bool            _governor_on;                 // flag for governor on/off switch

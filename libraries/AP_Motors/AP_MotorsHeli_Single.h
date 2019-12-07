@@ -25,7 +25,7 @@ public:
     AP_MotorsHeli_Single(uint16_t       loop_rate,
                          uint16_t       speed_hz = AP_MOTORS_HELI_SPEED_DEFAULT) :
         AP_MotorsHeli(loop_rate, speed_hz),
-        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE, SRV_Channel::k_heli_throttle2, AP_MOTORS_HELI_SINGLE_THROTTLE_2),
+        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE, SRV_Channel::k_heli_aux_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE_2),
         _swashplate()
     {
         AP_Param::setup_object_defaults(this, var_info);
