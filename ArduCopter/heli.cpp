@@ -142,13 +142,13 @@ void Copter::heli_update_rotor_speed_targets()
     // get throttle control method
     uint8_t throttle_control_mode = motors->get_throttle_mode();
 
-    float throttle_1_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_8)->get_control_in()) * 0.001f;
+    float throttle_1_in = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_8)->get_control_in()) * 0.001f;
 
     switch (throttle_control_mode) {
         case THROTTLE_CONTROL_DEFAULT:
-            if (throttle_1_deglitched > 0.01f) {
+            if (throttle_1_in > 0.01f) {
                 ap.motor_interlock_switch = true;
-                motors->set_desired_rotor_speed(throttle_1_deglitched);
+                motors->set_desired_rotor_speed(throttle_1_in);
                 // set rpm from rotor speed sensor
                 motors->set_rpm(rpm_sensor.get_rpm(0));
             } else {
@@ -157,11 +157,11 @@ void Copter::heli_update_rotor_speed_targets()
             }
             break;
         case THROTTLE_CONTROL_TWIN:
-            float throttle_2_deglitched = rotor_speed_deglitch_filter.apply((float)RC_Channels::rc_channel(CH_7)->get_control_in()) * 0.001f;
-            if ((throttle_1_deglitched > 0.01f) || (throttle_2_deglitched > 0.01f)) {
+            float throttle_2_in = ((float)RC_Channels::rc_channel(CH_7)->get_control_in()) * 0.001f;
+            if ((throttle_1_in > 0.01f) || (throttle_2_in > 0.01f)) {
                 ap.motor_interlock_switch = true;
-                motors->set_desired_rotor_speed(throttle_1_deglitched);
-                motors->set_desired_rotor_speed_2(throttle_2_deglitched);
+                motors->set_desired_rotor_speed(throttle_1_in);
+                motors->set_desired_rotor_speed_2(throttle_2_in);
                 // set rpm from rotor speed sensor
                 motors->set_rpm(rpm_sensor.get_rpm(0));
             } else {
