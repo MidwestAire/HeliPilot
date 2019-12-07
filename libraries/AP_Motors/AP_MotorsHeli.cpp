@@ -183,30 +183,30 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     
     // Index 20 is used for swashplate library. Do not use
     
-    // @Param: GOV2
+    // @Param: ENG_2
     // @DisplayName: Twin Engine Throttle
     // @Description: Enable the throttle controls for Engine #2 on twin-engine helicopters
     // @Values: 1:Single Engine,2:Twin Engine
     // @User: Standard
-    AP_GROUPINFO("ENGINES", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_DEFAULT),
+    AP_GROUPINFO("ENG_2", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_DEFAULT),
     
-    // @Param: GOV2_DROOP
+    // @Param: ENG2_GOV_DROOP
     // @DisplayName: Engine #2 Droop Response
     // @Description: AutoThrottle governor droop response under load for Engine #2, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the Ng for proper torque response of the N2 spool. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
     // @Range: 0 150
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_DROOP", 22, AP_MotorsHeli, _governor2_droop_response, 50),
+    AP_GROUPINFO("ENG2_GOV_DROOP", 22, AP_MotorsHeli, _governor2_droop_response, 50),
     
-    // @Param: GOV2_TCGAIN
+    // @Param: ENG2_GOV_TCGAIN
     // @DisplayName: Engine #2 TCGain
     // @Description: AutoThrottle percentage of throttle curve gain in governor output for Engine #2. For twin-engine helicopters tune the TC Gain so engine #2 has equal power output to engine #1 in static hover. If engine #2 is putting out less power than #1, slightly increase the TC Gain on #2 and slightly decrease on #1. In most instances this will require flying the helicopter on one engine and tuning TC Gain until either engine holds the same headspeed rpm and demonstrates equal response to sudden collective pitch loading
     // @Range: 50 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV2_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 80),
+    AP_GROUPINFO("ENG2_GOV_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 80),
 
     AP_GROUPEND
 };
