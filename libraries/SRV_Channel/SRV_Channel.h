@@ -73,7 +73,7 @@ public:
         k_landing_gear_control  = 29,            ///< landing gear controller
         k_engine_run_enable     = 30,            ///< engine kill switch, used for gas airplanes and helicopters
         k_heli_throttle         = 31,            ///< helicopter engine #1 throttle output
-        k_heli_throttle2        = 32,            ///< helicopter engine #2 throttle output
+        k_heli_aux_throttle     = 32,            ///< helicopter engine #2 throttle output
         k_motor1                = 33,            ///< these allow remapping of copter motors
         k_motor2                = 34,
         k_motor3                = 35,

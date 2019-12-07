@@ -91,7 +91,7 @@ void SRV_Channel::aux_servo_function_setup(void)
         set_range(100);
         break;
     case k_heli_throttle:
-    case k_heli_throttle2:
+    case k_heli_aux_throttle:
     case k_motor_tilt:
     case k_boost_throttle:
         set_range(1000);

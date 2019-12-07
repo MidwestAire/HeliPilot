@@ -157,7 +157,7 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_runup_time(_rotor_runup_time);
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
     _main_rotor.set_idle_output(_throttle_idle_output*0.01f);
-    _main_rotor.set_throttle_curve(throttlecurve, (uint16_t)_throttle_slewrate.get());
+    _main_rotor.set_throttle_curve(throttlecurve);
     _main_rotor.set_governor_droop_response(_governor_droop_response*0.01f);
     _main_rotor.set_governor_reference(_governor_reference);
     _main_rotor.set_governor_torque(_governor_torque);
