@@ -21,6 +21,8 @@
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <AP_HAL/utility/RingBuffer.h>
+#include <AP_RPM/AP_RPM.h>
+
 
 #define FRSKY_TELEM_PAYLOAD_STATUS_CAPACITY          5 // size of the message buffer queue (max number of messages waiting to be sent)
 
@@ -63,6 +65,7 @@ for FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
 // FrSky data IDs
 #define GPS_LONG_LATI_FIRST_ID      0x0800
 #define DIY_FIRST_ID                0x5000
+#define DIY_RPM_ID                  0x50A0
 
 #define START_STOP_SPORT            0x7E
 #define BYTESTUFF_SPORT             0x7D
@@ -108,14 +111,19 @@ for FrSky SPort Passthrough
 #define ATTIANDRNG_PITCH_LIMIT      0x3FF
 #define ATTIANDRNG_PITCH_OFFSET     11
 #define ATTIANDRNG_RNGFND_OFFSET    21
+// for RPM1 and RPM2 
+#define RPM_LIMIT                   0xFFFF
+#define RPM0_OFFSET                 0
+#define RPM1_OFFSET                 16
 // for fair scheduler
-#define TIME_SLOT_MAX               11
+#define TIME_SLOT_MAX               12
 
 
 
 class AP_Frsky_Telem {
 public:
     AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng);
+    AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng, const AP_RPM *rpm_sensor);
 
     /* Do not allow copies */
     AP_Frsky_Telem(const AP_Frsky_Telem &other) = delete;
@@ -151,6 +159,7 @@ private:
     AP_AHRS &_ahrs;
     const AP_BattMonitor &_battery;
     const RangeFinder &_rng;
+    const AP_RPM *_rpm_sensor = nullptr;
     AP_HAL::UARTDriver *_port;                  // UART used to send data to FrSky receiver
     AP_SerialManager::SerialProtocol _protocol; // protocol used - detected using SerialManager's SERIAL#_PROTOCOL parameter
     bool _initialised_uart;
@@ -216,7 +225,8 @@ private:
             500,    //0x5004 home       2Hz
             500,    //0x5008 batt 2     2Hz
             500,    //0x5003 batt 1     2Hz
-            1000   //0x5007 parameters 1Hz
+            1000,   //0x5007 parameters 1Hz
+            280     //0x50A0 RPM        3Hz
         };
     } _sport_config;
     
@@ -277,6 +287,7 @@ private:
     uint32_t calc_home(void);
     uint32_t calc_velandyaw(void);
     uint32_t calc_attiandrng(void);
+    uint32_t calc_rpm(void);
     uint16_t prep_number(int32_t number, uint8_t digits, uint8_t power);
 
     // methods to convert flight controller data to FrSky D or SPort format
