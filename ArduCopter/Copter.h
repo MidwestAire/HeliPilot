@@ -444,7 +444,11 @@ private:
 
 #if FRSKY_TELEM_ENABLED == ENABLED
     // FrSky telemetry support
+#if RPM_ENABLED == ENABLED
+    AP_Frsky_Telem frsky_telemetry{ahrs, battery, rangefinder, &rpm_sensor};
+#else
     AP_Frsky_Telem frsky_telemetry{ahrs, battery, rangefinder};
+#endif
 #endif
 #if DEVO_TELEM_ENABLED == ENABLED
     AP_DEVO_Telem devo_telemetry{ahrs};

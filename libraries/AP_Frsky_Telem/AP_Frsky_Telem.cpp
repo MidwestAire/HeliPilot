@@ -35,6 +35,14 @@ AP_Frsky_Telem::AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, con
     _rng(rng)
     {}
 
+//constructor
+AP_Frsky_Telem::AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng,const AP_RPM *rpm_sensor) :
+    _ahrs(ahrs),
+    _battery(battery),
+    _rng(rng),
+    _rpm_sensor(rpm_sensor)
+    {}
+
 /*
  * init - perform required initialisation
  */
@@ -82,8 +90,7 @@ void AP_Frsky_Telem::init(const AP_SerialManager &serial_manager,
         _passthrough.packet_weight[8] = 1300;  // 0x5008 Battery 2 status
         _passthrough.packet_weight[9] = 1300;  // 0x5003 Battery 1 status
         _passthrough.packet_weight[10] = 1700; // 0x5007 parameters
-        
-
+        _passthrough.packet_weight[11] = 550;  // 0x50A0 rpm
     }
     
     if (_port != nullptr) {
@@ -162,6 +169,13 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(uint8_t prev_byte)
                 case 8:
                     packet_ready = AP::battery().num_instances() > 1;
                     break;
+                case 11:
+                    if (_rpm_sensor == nullptr) {
+                        packet_ready = false;
+                    } else {
+                        packet_ready = (_rpm_sensor->enabled(0) || _rpm_sensor->enabled(1));
+                    }
+                    break;
                 default:
                     packet_ready = true;
                     break;
@@ -219,94 +233,11 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(uint8_t prev_byte)
         case 10: // 0x5007 parameters
             send_uint32(SPORT_DATA_FRAME, DIY_FIRST_ID+7, calc_param());
             break;
-    }
-}
-/**
-void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler_old(uint8_t prev_byte)
-{
-    uint32_t now = AP_HAL::millis();
-    uint8_t max_delay_idx = 0;
-    float max_delay = 0;
-    float delay = 0;
-    bool packet_ready = false;
-
-    // build message queue for sensor_status_flags
-    check_sensor_status_flags();
-    // build message queue for ekf_status
-    check_ekf_status();
-
-    // search the packet with the longest normalized delay after the scheduled time
-    for (int i=0;i<TIME_SLOT_MAX;i++) {
-        //normalize packet delay relative to packet period
-        delay = (now - _passthrough.packet_timer[i])/static_cast<float>(_passthrough.packet_period[i]);
-        // use >= so with equal delays we choose the packet with lowest priority
-        // this is ensured by the packets being sorted by desc frequency 
-        if (delay >= max_delay) {
-            switch (i) {
-                case 0:
-                    packet_ready = !_statustext_queue.empty();
-                    break;
-                case 5:
-                    packet_ready = ((*_ap.valuep) & AP_INITIALIZED_FLAG) > 0;
-                    break;
-                case 8:
-                    packet_ready = AP::battery().num_instances() > 1;
-                    break;
-                default:
-                    packet_ready = true;
-                    break;
-            }
-
-            if (packet_ready) {
-                max_delay = delay;
-                max_delay_idx = i;
-            }
-        }
-    }
-    _passthrough.packet_timer[max_delay_idx] = AP_HAL::millis();
-    // send packet
-    switch (max_delay_idx) {
-        case 0: // 0x5000 status text
-            if (get_next_msg_chunk()) {
-                send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID, _msg_chunk.chunk);
-            }
-            break;
-        case 1: // 0x5006 Attitude and range
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+6, calc_attiandrng());
-            break;
-        case 2: // 0x800 GPS lat
-            send_uint32(SPORT_DATA_FRAME,GPS_LONG_LATI_FIRST_ID, calc_gps_latlng(&_passthrough.send_latitude)); // gps latitude or longitude
-            // force the scheduler to select GPS lon as packet that's been waiting the most
-            // this guarantees that gps coords are sampled at max _passthrough.avg_polling_period time separation
-            _passthrough.packet_timer[3] = _passthrough.packet_timer[2] - 10000;
-            break;
-        case 3: // 0x800 GPS lon
-            send_uint32(SPORT_DATA_FRAME,GPS_LONG_LATI_FIRST_ID, calc_gps_latlng(&_passthrough.send_latitude)); // gps latitude or longitude
-            break;
-        case 4: // 0x5005 Vel and Yaw
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+5, calc_velandyaw());
-            break;
-        case 5: // 0x5001 AP status
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+1, calc_ap_status());
-            break;
-        case 6: // 0x5002 GPS Status
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+2, calc_gps_status());
-            break;
-        case 7: // 0x5004 Home
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+4, calc_home());
-            break;
-        case 8: // 0x5008 Battery 2 status
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+8, calc_batt(1));
-            break;
-        case 9: // 0x5003 Battery 1 status
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+3, calc_batt(0));
-            break;
-        case 10: // 0x5007 parameters
-            send_uint32(SPORT_DATA_FRAME,DIY_FIRST_ID+7, calc_param());
+        case 11: // 0x50A0 RPM
+            send_uint32(SPORT_DATA_FRAME, DIY_RPM_ID, calc_rpm());
             break;
     }
 }
-**/
 
 /*
  * send telemetry data
@@ -956,6 +887,21 @@ uint32_t AP_Frsky_Telem::calc_attiandrng(void)
     return attiandrng;
 }
 
+/*
+ * prepare rpm data
+ * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
+ */
+uint32_t AP_Frsky_Telem::calc_rpm(void)
+{
+    uint32_t rpm = 0;
+    if (_rpm_sensor != nullptr) {
+        if (_rpm_sensor->enabled(0) || _rpm_sensor->enabled(1)) {
+            rpm = ((uint16_t)roundf(_rpm_sensor->get_rpm(0)) & RPM_LIMIT) << RPM0_OFFSET;
+            rpm |= ((uint16_t)roundf(_rpm_sensor->get_rpm(1)) & RPM_LIMIT) << RPM1_OFFSET;
+        }
+    }
+    return rpm;
+}
 /*
  * prepare value for transmission through FrSky link
  * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
