@@ -15,7 +15,7 @@ enum RotorControlState {
 // throttle control modes
 enum ThrottleControl {
     THROTTLE_CONTROL_DISABLED = 0,
-    THROTTLE_CONTROL_DEFAULT,
+    THROTTLE_CONTROL_SINGLE,
     THROTTLE_CONTROL_TWIN
 };
 
