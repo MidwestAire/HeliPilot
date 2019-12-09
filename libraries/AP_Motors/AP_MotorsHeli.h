@@ -195,7 +195,8 @@ protected:
     AP_Int8         _throttle_mode;               // default throttle control variable
     AP_Int8         _throttle_ramp_time;          // time in seconds to ramp throttle from ground idle to flight idle
     AP_Int16        _throttle_idle_output;        // Combustion engine idle speed setting
-    AP_Int16        _throttlecurve[5];            // throttle values for throttle curve
+    AP_Int16        _throttlecurve[5];            // throttle curve, engine #1
+    AP_Int16        _throttlecurve2[5];           // throttle curve, engine #2
 
     // internal variables
     float           _collective_mid_pct = 0.0f;   // collective mid parameter value converted to 0 ~ 1 range

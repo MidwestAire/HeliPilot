@@ -134,23 +134,23 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _throttle_idle_output, 0),
 
     // @Param: THROTTLE_P1
-    // @DisplayName: Throttle at 0% collective
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position. This setting, combined with THROTTLE_P2 corresponds to engine low idle with the AutoThrottle governor switched off. With governor switched on and engaged this setting will correspond to flight idle power
+    // @DisplayName: Throttle1 at 0% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position. This setting, combined with THROTTLE_P2 corresponds to engine flight idle, rotor turning at rated speed with no engine load
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE_P1", 14, AP_MotorsHeli, _throttlecurve[0], 20),
 
     // @Param: THROTTLE_P2
-    // @DisplayName: Throttle at 25% collective
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 25% of it's full collective travel.This may or may not correspond to 25% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 25% of 12 degrees is 3 degrees, so this setting would correspond to +1 degree of positive pitch. This setting, combined with THROTTLE_P1 corresponds to engine low idle with the AutoThrottle governor switched off. With governor switched on and engaged this setting will correspond to flight idle power
+    // @DisplayName: Throttle1 at 25% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 25% of it's full collective travel.This may or may not correspond to 25% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 25% of 12 degrees is 3 degrees, so this setting would correspond to +1 degree of positive pitch. This setting, combined with THROTTLE_P1 corresponds to engine flight idle, rotors turning at rated speed with no engine load
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE_P2", 15, AP_MotorsHeli, _throttlecurve[1], 40),
 
     // @Param: THROTTLE_P3
-    // @DisplayName: Throttle at 50% collective
+    // @DisplayName: Throttle1 at 50% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
     // @Range: 0 100
     // @Increment: 1
@@ -158,7 +158,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("THROTTLE_P3", 16, AP_MotorsHeli, _throttlecurve[2], 60),
 
     // @Param: THROTTLE_P4
-    // @DisplayName: Throttle at 75% collective
+    // @DisplayName: Throttle1 at 75% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
     // @Range: 0 100
     // @Increment: 1
@@ -166,7 +166,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     AP_GROUPINFO("THROTTLE_P4", 17, AP_MotorsHeli, _throttlecurve[3], 80),
 
     // @Param: THROTTLE_P5
-    // @DisplayName: Throttle at 100% collective
+    // @DisplayName: Throttle1 at 100% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel, which is maximum positive pitch.
     // @Range: 0 100
     // @Increment: 1
@@ -183,12 +183,12 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     
     // Index 20 is used for swashplate library. Do not use
     
-    // @Param: GOV2
-    // @DisplayName: Twin Engine Throttle
-    // @Description: Enable the throttle controls for Engine #2 on twin-engine helicopters
+    // @Param: NUM_ENGINES
+    // @DisplayName: Single or Twin Engine
+    // @Description: Set number of active throttle controls for either single-engine or twin-engine helicopters
     // @Values: 1:Single Engine,2:Twin Engine
     // @User: Standard
-    AP_GROUPINFO("GOV2", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_SINGLE),
+    AP_GROUPINFO("NUM_ENGINES", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_SINGLE),
     
     // @Param: GOV2_DROOP
     // @DisplayName: Engine #2 Droop Response
@@ -207,6 +207,46 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("GOV2_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 80),
+    
+    // @Param: THROTTLE2_P1
+    // @DisplayName: Throttle2 at 0% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position for engine #2. This setting, combined with THROTTLE2_P2 corresponds to engine flight idle, rotors turning at rated speed with no engine load
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("THROTTLE2_P1", 24, AP_MotorsHeli, _throttlecurve2[0], 20),
+    
+    // @Param: THROTTLE2_P2
+    // @DisplayName: Throttle2 at 25% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 25% of it's full collective travel for engine #2.This may or may not correspond to 25% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 25% of 12 degrees is 3 degrees, so this setting would correspond to +1 degree of positive pitch. This setting, combined with THROTTLE2_P1 corresponds to engine flight idle, rotors turning at rated speed with no engine load
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("THROTTLE2_P2", 25, AP_MotorsHeli, _throttlecurve2[1], 40),
+    
+    // @Param: THROTTLE2_P3
+    // @DisplayName: Throttle2 at 50% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel for engine #2.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("THROTTLE2_P3", 26, AP_MotorsHeli, _throttlecurve2[2], 60),
+    
+    // @Param: THROTTLE2_P4
+    // @DisplayName: Throttle2 at 75% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel for engine #2.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("THROTTLE2_P4", 27, AP_MotorsHeli, _throttlecurve2[3], 80),
+
+    // @Param: THROTTLE2_P5
+    // @DisplayName: Throttle2 at 100% collective
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel for engine #2, which is maximum positive pitch.
+    // @Range: 0 100
+    // @Increment: 1
+    // @User: Standard
+    AP_GROUPINFO("THROTTLE2_P5", 28, AP_MotorsHeli, _throttlecurve2[4], 100),
 
     AP_GROUPEND
 };
