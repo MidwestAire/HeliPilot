@@ -94,7 +94,7 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             float throttlecurve = calculate_throttlecurve(_collective_in);
 
             // single-engine throttle controls
-            if (_control_mode == THROTTLE_CONTROL_DEFAULT) {
+            if (_control_mode == THROTTLE_CONTROL_SINGLE) {
                 if (_throttle_1_input < throttlecurve) {
                     _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
                 } else {
