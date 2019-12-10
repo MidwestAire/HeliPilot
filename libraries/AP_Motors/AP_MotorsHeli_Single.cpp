@@ -153,6 +153,13 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     for (uint8_t i = 0; i < 5; i++) {
         throttlecurve[i] = _throttlecurve[i]*0.01f;
     }
+    
+    // throttle curve for engine #2
+    float throttlecurve2[5];
+    for (uint8_t i = 0; i < 5; i++) {
+        throttlecurve2[i] = _throttlecurve2[i]*0.01f;
+    }
+    
     _main_rotor.set_ramp_time(_throttle_ramp_time);
     _main_rotor.set_runup_time(_rotor_runup_time);
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
@@ -165,6 +172,7 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     // set variables for twin-engine heli's, engine #2
     _main_rotor.set_governor2_tcgain(_governor2_tcgain*0.01f);
     _main_rotor.set_governor2_droop_response(_governor2_droop_response*0.01f);
+    _main_rotor.set_throttle_curve2(throttlecurve2);
 
     if (_heliflags.governor_on) {
         _main_rotor.set_governor_on(true);
