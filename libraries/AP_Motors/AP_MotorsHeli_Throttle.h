@@ -92,7 +92,8 @@ public:
     void        set_runup_time(int8_t runup_time) { _runup_time = runup_time; }
 
     // set_throttle_curve
-    void        set_throttle_curve(float thrcrv[5]);
+    void        set_throttle_curve(float throttlecurve[5]);
+    void        set_throttle_curve2(float throttlecurve2[5]);
 
     // set_collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
@@ -101,7 +102,8 @@ public:
     void        output(RotorControlState state);
     
     // calculate autothrottle output
-    void        calculate_autothrottle();
+    void        calculate_engine_1_autothrottle();
+    void        calculate_engine_2_autothrottle();
 
 private:
     uint64_t        _last_update_us;
@@ -125,18 +127,20 @@ private:
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
     int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed
     bool            _runup_complete;              // flag for determining if runup is complete
-    float           _throttlecurve_poly[4][4];    // spline polynomials for throttle curve interpolation
+    float           _throttlecurve_poly[4][4];    // spline polynomials for engine #1 throttle curve
+    float           _throttlecurve2_poly[4][4];   // spline polynomials for engine #1 throttle curve
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from rotor speed sensor
     bool            _governor_on;                 // flag for governor on/off switch
-    float           _governor_output;             // governor output for AutoThrottle
+    float           _governor_output;             // governor output for engine #1
     float           _governor2_output;            // governor output for engine #2
     float           _governor_torque;             // governor torque limiter variable
     float           _governor_reference;          // sets rotor speed for governor
-    float           _governor_droop_response;     // governor response to droop under load
+    float           _governor_droop_response;     // governor response, engine #1
     float           _governor2_droop_response;    // governor response, engine #2
-    bool            _governor_engage;             // governor status flag
-    float           _governor_tcgain;             // governor throttle curve gain, range 50-100%
+    bool            _governor_engage;             // governor status flag engine #1
+    bool            _governor2_engage;            // governor status flag engine #2
+    float           _governor_tcgain;             // governor throttle curve gain, engine #1
     float           _governor2_tcgain;            // governor throttle curve gain, engine #2
 
     // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
@@ -148,6 +152,8 @@ private:
     // write_throttle - outputs pwm onto output throttle channel. servo_out parameter is of the range 0 ~ 1
     void            write_throttle(SRV_Channel::Aux_servo_function_t aux_function, float servo_out);
 
-    // calculate_throttlecurve - uses throttle curve and collective input to determine throttle setting
+    // calculate_throttlecurve for both engines
     float           calculate_throttlecurve(float collective_in);
+    float           calculate_throttlecurve2(float collective_in);
+    
 };
