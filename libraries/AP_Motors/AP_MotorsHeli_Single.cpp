@@ -153,13 +153,13 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     for (uint8_t i = 0; i < 5; i++) {
         throttlecurve[i] = _throttlecurve[i]*0.01f;
     }
-    
+
     // throttle curve for engine #2
     float throttlecurve2[5];
     for (uint8_t i = 0; i < 5; i++) {
         throttlecurve2[i] = _throttlecurve2[i]*0.01f;
     }
-    
+
     _main_rotor.set_ramp_time(_throttle_ramp_time);
     _main_rotor.set_runup_time(_rotor_runup_time);
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
@@ -214,7 +214,7 @@ uint16_t AP_MotorsHeli_Single::get_motor_mask()
     if (_swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_90 || _swashplate.get_swash_type() == SWASHPLATE_TYPE_H4_45) {
         mask |= 1U << 4;
     }
-    
+
 //    if (_throttle_mode == THROTTLE_CONTROL_TWIN) {
 //        mask |= 1U << AP_MOTORS_HELI_SINGLE_THROTTLE2;
 //    }
@@ -256,7 +256,7 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     limit.yaw = false;
     limit.throttle_lower = false;
     limit.throttle_upper = false;
- 
+
     // rescale roll_out and pitch_out into the min and max ranges to provide linear motion
     // across the input range instead of stopping when the input hits the constrain value
     // these calculations are based on an assumption of the user specified cyclic_max

@@ -42,7 +42,7 @@ public:
     // set_desired_rotor_speed for engine manual throttles
     void set_desired_rotor_speed(float throttle_1_input) override;
     void set_desired_rotor_speed_2(float throttle_2_input) override;
-    
+
     // get_desired_rotor_speed for engine manual throttles
     float get_desired_rotor_speed() const  override { return _main_rotor.get_throttle_1_input(); }
     float get_desired_rotor_speed_2() const  override { return _main_rotor.get_throttle_2_input(); }
@@ -55,11 +55,11 @@ public:
 
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     bool rotor_speed_above_critical() const  override { return _main_rotor.get_rotor_speed() > _main_rotor.get_critical_speed(); }
-    
+
     // get AutoThrottle governor outputs
     float get_governor_output() const override { return _main_rotor.get_governor_output(); }
     float get_governor2_output() const override { return _main_rotor.get_governor2_output(); }
-    
+
     // get_throttle_output for engine throttles
     float get_throttle_1_output() const override{ return _main_rotor.get_throttle_1_output(); }
     float get_throttle_2_output() const override{ return _main_rotor.get_throttle_2_output(); }
