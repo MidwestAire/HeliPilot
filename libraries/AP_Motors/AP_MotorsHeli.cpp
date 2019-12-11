@@ -74,7 +74,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, 50),
-    
+
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
     // @Description: Adjusts the maximum engine torque output in the AutoThrottle governor response to speed droop of the main rotor when the governor is active. If speed sensor fails or torque output exceeds the torque limiter setting, the governor will disengage and return to throttle curve. Recommended torque limiter setting is 100-120% torque. !!WARNING!! Helicopters where the torque limiter is set to the upper range (over 120%) must be placarded, warning against AutoThrottle governor being switched on by the pilot until flight idle rotor speed has been reached during runup. Failure to heed this warning will result in engine throttle going to 100% at governor engage and could possibly damage the engine or drivetrain, or cause blade lag which can result in damage to the helicopter
@@ -180,16 +180,16 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Units: s
     // @User: Standard
     AP_GROUPINFO("THROTTLE_RAMP", 19, AP_MotorsHeli, _throttle_ramp_time, AP_MOTORS_HELI_THROTTLE_RAMP_TIME),
-    
+
     // Index 20 is used for swashplate library. Do not use
-    
+
     // @Param: NUM_ENGINES
     // @DisplayName: Single or Twin Engine
     // @Description: Set number of active throttle controls for either single-engine or twin-engine helicopters
     // @Values: 1:Single Engine,2:Twin Engine
     // @User: Standard
     AP_GROUPINFO("NUM_ENGINES", 21, AP_MotorsHeli, _throttle_mode, THROTTLE_CONTROL_SINGLE),
-    
+
     // @Param: GOV2_DROOP
     // @DisplayName: Engine #2 Droop Response
     // @Description: AutoThrottle governor droop response under load for Engine #2, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the Ng for proper torque response of the N2 spool. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
@@ -198,7 +198,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("GOV2_DROOP", 22, AP_MotorsHeli, _governor2_droop_response, 50),
-    
+
     // @Param: GOV2_TCGAIN
     // @DisplayName: Engine #2 TCGain
     // @Description: AutoThrottle percentage of throttle curve gain in governor output for Engine #2. For twin-engine helicopters tune the TC Gain so engine #2 has equal power output to engine #1 in static hover. If engine #2 is putting out less power than #1, slightly increase the TC Gain on #2 and slightly decrease on #1. In most instances this will require flying the helicopter on one engine and tuning TC Gain until either engine holds the same headspeed rpm and demonstrates equal response to sudden collective pitch loading
@@ -207,7 +207,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("GOV2_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 80),
-    
+
     // @Param: THROTTLE2_P1
     // @DisplayName: Throttle2 at 0% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate all the way to its maximum negative or low collective pitch position for engine #2. This setting, combined with THROTTLE2_P2 corresponds to engine flight idle, rotors turning at rated speed with no engine load
@@ -215,7 +215,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE2_P1", 24, AP_MotorsHeli, _throttlecurve2[0], 20),
-    
+
     // @Param: THROTTLE2_P2
     // @DisplayName: Throttle2 at 25% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 25% of it's full collective travel for engine #2.This may or may not correspond to 25% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 25% of 12 degrees is 3 degrees, so this setting would correspond to +1 degree of positive pitch. This setting, combined with THROTTLE2_P1 corresponds to engine flight idle, rotors turning at rated speed with no engine load
@@ -223,7 +223,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE2_P2", 25, AP_MotorsHeli, _throttlecurve2[1], 40),
-    
+
     // @Param: THROTTLE2_P3
     // @DisplayName: Throttle2 at 50% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel for engine #2.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
@@ -231,7 +231,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE2_P3", 26, AP_MotorsHeli, _throttlecurve2[2], 60),
-    
+
     // @Param: THROTTLE2_P4
     // @DisplayName: Throttle2 at 75% collective
     // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel for engine #2.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
