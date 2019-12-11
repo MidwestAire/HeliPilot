@@ -74,10 +74,10 @@ public:
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
-    
+
     // set_rotor_rpm - when speed sensor is available for governor
     void        set_rotor_rpm(float rotor_rpm) {_rotor_rpm = (float)rotor_rpm; }
-    
+
     // get AutoThrottle governor_outputs
     float       get_governor_output() const { return _governor_output; }
     float       get_governor2_output() const { return _governor2_output; }
@@ -100,7 +100,7 @@ public:
 
     // output - update value to send to ESC/Servo
     void        output(RotorControlState state);
-    
+
     // calculate autothrottle output
     void        calculate_engine_1_autothrottle();
     void        calculate_engine_2_autothrottle();
@@ -155,5 +155,4 @@ private:
     // calculate_throttlecurve for both engines
     float           calculate_throttlecurve(float collective_in);
     float           calculate_throttlecurve2(float collective_in);
-    
 };

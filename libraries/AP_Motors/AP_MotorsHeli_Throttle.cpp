@@ -18,7 +18,7 @@
 
 #include "AP_MotorsHeli_Throttle.h"
 
-extern const AP_HAL::HAL& hal;  
+extern const AP_HAL::HAL& hal;
 
 // init_servo - initialize engine #1 throttle on startup
 void AP_MotorsHeli_Throttle::init_servo()
@@ -26,9 +26,9 @@ void AP_MotorsHeli_Throttle::init_servo()
     // setup throttle on specified channel by default
     SRV_Channels::set_aux_channel_default(_aux_fn, _default_channel);
 
-    // set servo range 
+    // set servo range
     SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn), 1000);
-    
+
     if (_control_mode == THROTTLE_CONTROL_TWIN) {
         init_servo_2();
     }
@@ -40,7 +40,7 @@ void AP_MotorsHeli_Throttle::init_servo_2()
     // setup throttle on specified channel by default
     SRV_Channels::set_aux_channel_default(_aux_fn_2, _default_channel_2);
 
-    // set servo range 
+    // set servo range
     SRV_Channels::set_range(SRV_Channels::get_motor_function(_aux_fn_2), 1000);
 }
 
@@ -111,13 +111,13 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
             } else if (_control_mode == THROTTLE_CONTROL_TWIN) {
                 calculate_engine_1_autothrottle();
                 calculate_engine_2_autothrottle();
-            }                
+            }
             break;
     }
 
     // update rotor speed run-up estimate
     update_rotor_runup(dt);
-    
+
     // write throttle outputs to servos
     write_throttle(_aux_fn, _throttle_1_output);
     if (_control_mode == THROTTLE_CONTROL_TWIN) {
@@ -226,7 +226,7 @@ float AP_MotorsHeli_Throttle::calculate_throttlecurve(float collective_in)
     throttle = constrain_float(throttle, 0.0f, 1.0f);
     return throttle;
 }
-    
+
 // throttle curve for engine #2
 float AP_MotorsHeli_Throttle::calculate_throttlecurve2(float collective_in)
 {
@@ -243,7 +243,7 @@ float AP_MotorsHeli_Throttle::calculate_throttlecurve2(float collective_in)
 // calculate autothrottle for engine #1
 void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
 {
-    float throttlecurve = calculate_throttlecurve(_collective_in);    
+    float throttlecurve = calculate_throttlecurve(_collective_in);
     if (!_governor_on) {
         _governor_output = 0.0f;
         _governor_engage = false;
@@ -255,7 +255,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
         _throttle_1_output = _idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output));
         }
     }
-    
+
     if (_governor_on) {
         // manual throttle position can override governor for in-flight engine shutdown
         if (_throttle_1_input < throttlecurve) {
@@ -287,7 +287,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
 // calculate autothrottle for engine #2
 void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
 {
-    float throttlecurve2 = calculate_throttlecurve2(_collective_in);    
+    float throttlecurve2 = calculate_throttlecurve2(_collective_in);
     if (!_governor_on) {
         _governor2_output = 0.0f;
         _governor2_engage = false;
@@ -299,7 +299,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
         _throttle_2_output = _idle_output + (_rotor_ramp_output * (throttlecurve2 - _idle_output));
         }
     }
-    
+
     if (_governor_on) {
         // manual throttle position can override governor for in-flight engine shutdown
         if (_throttle_2_input < throttlecurve2) {

@@ -80,7 +80,7 @@ public:
 
     // get_throttle_mode - gets the throttle control method
     uint8_t get_throttle_mode() const { return _throttle_mode; }
-    
+
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;
 
@@ -103,11 +103,11 @@ public:
 
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     virtual bool rotor_speed_above_critical() const = 0;
-    
+
     //get AutoThrottle governor outputs
     virtual float get_governor_output() const = 0;
     virtual float get_governor2_output() const = 0;
-    
+
     //get engine throttle outputs
     virtual float get_throttle_1_output() const = 0;
     virtual float get_throttle_2_output() const = 0;
