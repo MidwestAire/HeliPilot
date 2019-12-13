@@ -24,14 +24,14 @@ const AP_Param::GroupInfo AP_MotorsHeli_Swash::var_info[] = {
 
     // @Param: TYPE
     // @DisplayName: Swashplate Type
-    // @Description: H3_120/H3_140 plates have SERVO1 left side, SERVO2 right side, SERVO3 (elevator) in rear. HR3_120/HR3_140 have SERVO1 right side, SERVO2 left side, SERVO3 (elevator) in front. For HR3 style swash use H3_120/H3_140 and reverse servo and collective directions as necessary. For all H3_90 swashplates use H4_90 and don't use servo output for the missing servo. For H4-90 SERVOS1&2 are left/right respectively, SERVOS3&4 are rear/front respectively. For H4-45 SERVOS1&2 are LF/RF, SERVOS3&4 are LR/RR 
+    // @Description: H3_120/H3_140 plates have SERVO1 left side, SERVO2 right side, SERVO3 (elevator) in rear. HR3_120/HR3_140 have SERVO1 right side, SERVO2 left side, SERVO3 (elevator) in front. For HR3 style swashplate use H3_120/H3_140 and reverse servo and collective directions as necessary. For all H3_90 swashplates use H4_90 and don't use servo output for the missing servo. For H4-90 SERVOS1 and 2 are left/right respectively, SERVOS3 and 4 are rear/front respectively. For H4-45 SERVOS1 and 2 are LF/RF, SERVOS3 and 4 are LR/RR. For four-servo swashplates fourth servo output must be enabled on a SERVO output labeled Cyclic4 
     // @Values: 1:H1 non-CPPM,2:H3_140,3:H3_120,4:H4_90,5:H4_45
     // @User: Standard
     AP_GROUPINFO("TYPE", 1, AP_MotorsHeli_Swash, _swashplate_type, SWASHPLATE_TYPE_H3_120),
 
     // @Param: COLL_DIR
     // @DisplayName: Collective Control Direction
-    // @Description: Direction collective moves for positive pitch. 0 for Normal, 1 for Reversed
+    // @Description: Direction collective moves to increase blade pitch. 0 for Normal, 1 for Reversed
     // @Values: 0:Normal,1:Reversed
     // @User: Standard
     AP_GROUPINFO("COLL_DIR", 2, AP_MotorsHeli_Swash, _swash_collective_direction, COLLECTIVE_DIRECTION_NORMAL),
