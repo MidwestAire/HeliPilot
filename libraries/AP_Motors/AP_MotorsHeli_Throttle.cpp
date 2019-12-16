@@ -257,8 +257,10 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
     }
 
     if (_governor_on) {
-        // manual throttle position can override governor for in-flight engine shutdown
+        // manual throttle position can override governor
         if (_throttle_1_input < throttlecurve) {
+            _governor_output = 0.0f;
+            _governor_engage = false;
             _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
         } else {
             // governor is active - calculate governor droop from torque limiter
@@ -301,8 +303,10 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
     }
 
     if (_governor_on) {
-        // manual throttle position can override governor for in-flight engine shutdown
+        // manual throttle position can override governor
         if (_throttle_2_input < throttlecurve2) {
+            _governor2_output = 0.0f;
+            _governor2_engage = false;
             _throttle_2_output = constrain_float((_idle_output + _throttle_2_input), 0.0f, 1.0f);
         } else {
             // governor is active - calculate governor droop from torque limiter
