@@ -65,7 +65,8 @@ for FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
 // FrSky data IDs
 #define GPS_LONG_LATI_FIRST_ID      0x0800
 #define DIY_FIRST_ID                0x5000
-#define DIY_RPM_ID                  0x50A0
+#define DIY_RPM_ID                  0x50A0 // custom for helipilot
+#define DIY_VFRHUD_ID               0x50F2 // shared with the MavToPT project
 
 #define START_STOP_SPORT            0x7E
 #define BYTESTUFF_SPORT             0x7D
@@ -115,8 +116,12 @@ for FrSky SPort Passthrough
 #define RPM_LIMIT                   0xFFFF
 #define RPM0_OFFSET                 0
 #define RPM1_OFFSET                 16
+// for VFRHUD 
+#define VFRHUD_ASPD_OFFSET          0
+#define VFRHUD_THR_OFFSET           8
+#define VFRHUD_BALT_OFFSET          15
 // for fair scheduler
-#define TIME_SLOT_MAX               12
+#define TIME_SLOT_MAX               13
 
 
 
@@ -226,7 +231,8 @@ private:
             500,    //0x5008 batt 2     2Hz
             500,    //0x5003 batt 1     2Hz
             1000,   //0x5007 parameters 1Hz
-            280     //0x50A0 RPM        3Hz
+            280,     //0x50A0 RPM        3Hz
+            280     //0x50F2 VFRHUD     3Hz
         };
     } _sport_config;
     
@@ -288,6 +294,7 @@ private:
     uint32_t calc_velandyaw(void);
     uint32_t calc_attiandrng(void);
     uint32_t calc_rpm(void);
+    uint32_t calc_vfrhud(void);
     uint16_t prep_number(int32_t number, uint8_t digits, uint8_t power);
 
     // methods to convert flight controller data to FrSky D or SPort format

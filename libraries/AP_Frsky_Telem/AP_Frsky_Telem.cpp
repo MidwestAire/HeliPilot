@@ -21,7 +21,7 @@
 */
 #include "AP_Frsky_Telem.h"
 #include <GCS_MAVLink/GCS.h>
-
+#include <AP_Baro/AP_Baro.h>
 #include <stdio.h>
 
 extern const AP_HAL::HAL& hal;
@@ -90,7 +90,8 @@ void AP_Frsky_Telem::init(const AP_SerialManager &serial_manager,
         _passthrough.packet_weight[8] = 1300;  // 0x5008 Battery 2 status
         _passthrough.packet_weight[9] = 1300;  // 0x5003 Battery 1 status
         _passthrough.packet_weight[10] = 1700; // 0x5007 parameters
-        _passthrough.packet_weight[11] = 550;  // 0x50A0 rpm
+        _passthrough.packet_weight[11] = 500;  // 0x50A0 rpm
+        _passthrough.packet_weight[12] = 500;  // 0x50F2 vfrhud
     }
     
     if (_port != nullptr) {
@@ -236,6 +237,9 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(uint8_t prev_byte)
         case 11: // 0x50A0 RPM
             send_uint32(SPORT_DATA_FRAME, DIY_RPM_ID, calc_rpm());
             break;
+        case 12: // 0x50F2 VFRHUD
+            send_uint32(SPORT_DATA_FRAME, DIY_VFRHUD_ID, calc_vfrhud());
+            break;
     }
 }
 
@@ -257,14 +261,12 @@ void AP_Frsky_Telem::send_SPort_Passthrough(void)
     if (_port->txspace() < 19) {
         return;
     }
-
     // keep only the last two bytes of the data found in the serial buffer, as we shouldn't respond to old poll requests
     uint8_t prev_byte = 0;
     for (int16_t i = 0; i < numc; i++) {
         prev_byte = _passthrough.new_byte;
         _passthrough.new_byte = _port->read();
     }
-
     if (prev_byte == START_STOP_SPORT) { // byte 0x7E is the header of each poll request
         if (_passthrough.new_byte == SENSOR_ID_28) {
             update_avg_packet_rate();
@@ -434,6 +436,7 @@ void AP_Frsky_Telem::loop(void)
     } else {                                                                        // FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
         _port->begin(AP_SERIALMANAGER_FRSKY_SPORT_BAUD, AP_SERIALMANAGER_FRSKY_BUFSIZE_RX, AP_SERIALMANAGER_FRSKY_BUFSIZE_TX);
     }
+
     _port->set_unbuffered_writes(true);
 
     while (true) {
@@ -901,6 +904,27 @@ uint32_t AP_Frsky_Telem::calc_rpm(void)
         }
     }
     return rpm;
+}
+
+/*
+ * prepare vfrhud data
+ * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
+ */
+uint32_t AP_Frsky_Telem::calc_vfrhud(void)
+{
+    uint32_t vfrhud = 0;
+
+    const AP_Airspeed *aspeed = _ahrs.get_airspeed();
+    if (aspeed && aspeed->enabled()) {        
+        vfrhud |= prep_number(roundf(aspeed->get_airspeed() * 10), 2, 1)<<VFRHUD_ASPD_OFFSET;
+    }
+
+    vfrhud |= ((uint8_t)gcs().get_hud_throttle())<<VFRHUD_THR_OFFSET;
+
+    AP_Baro &_baro = AP::baro();
+    vfrhud |= prep_number(roundf(_baro.get_altitude() * 0.1f), 3, 2)<<VFRHUD_BALT_OFFSET;
+
+    return vfrhud;
 }
 /*
  * prepare value for transmission through FrSky link
