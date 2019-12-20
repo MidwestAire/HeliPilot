@@ -68,30 +68,30 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV_DROOP
     // @DisplayName: Engine #1 Droop Response
-    // @Description: AutoThrottle governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the Ng for proper torque response of the Np spool. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
-    // @Range: 0 150
+    // @Description: AutoThrottle governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
+    // @Range: 10 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, 50),
+    AP_GROUPINFO("GOV_DROOP", 6, AP_MotorsHeli, _governor_droop_response, 25),
 
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
-    // @Description: Adjusts the maximum engine torque output in the AutoThrottle governor response to speed droop of the main rotor when the governor is active. If speed sensor fails or torque output exceeds the torque limiter setting, the governor will disengage and return to throttle curve. Recommended torque limiter setting is 100-120% torque. !!WARNING!! Helicopters where the torque limiter is set to the upper range (over 120%) must be placarded, warning against AutoThrottle governor being switched on by the pilot until flight idle rotor speed has been reached during runup. Failure to heed this warning will result in engine throttle going to 100% at governor engage and could possibly damage the engine or drivetrain, or cause blade lag which can result in damage to the helicopter
-    // @Range: 50 200
+    // @Description: Adjusts the maximum engine torque output from the AutoThrottle during governor ramp-up to full engage speed
+    // @Range: 10 100
     // @Units: %
-    // @Increment: 10
+    // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _governor_torque, 100),
+    AP_GROUPINFO("GOV_TORQUE", 7, AP_MotorsHeli, _governor_torque, 30),
 
     // @Param: GOV_TCGAIN
     // @DisplayName: Engine #1 TCGain
-    // @Description: Percentage of throttle curve in governor output. This provides a feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during full collective climb increase the throttle curve gain. If governor auto-disengages at flight idle (pitch feathered) with TC Gain at 100%, then increase the throttle curve setting at feather pitch
+    // @Description: Percentage of throttle curve in governor output. This provides a feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during full collective climb increase the throttle curve gain
     // @Range: 50 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _governor_tcgain, 80),
+    AP_GROUPINFO("GOV_TCGAIN", 8, AP_MotorsHeli, _governor_tcgain, 90),
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
@@ -104,7 +104,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RPM
     // @DisplayName: Headspeed RPM
-    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup. For governor operation this should be set 8-10 rpm higher than the actual desired headspeed to allow for governor droop
+    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup.
     // @Range: 800 3500
     // @Increment: 10
     // @User: Standard
@@ -192,21 +192,21 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV2_DROOP
     // @DisplayName: Engine #2 Droop Response
-    // @Description: AutoThrottle governor droop response under load for Engine #2, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. Setting over 100% is allowable for some two-stage turbine engines to provide scheduling of the Ng for proper torque response of the N2 spool. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
-    // @Range: 0 150
+    // @Description: AutoThrottle governor droop response under load for engine #2, normal settings of 10-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
+    // @Range: 10 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV2_DROOP", 22, AP_MotorsHeli, _governor2_droop_response, 50),
+    AP_GROUPINFO("GOV2_DROOP", 22, AP_MotorsHeli, _governor2_droop_response, 25),
 
     // @Param: GOV2_TCGAIN
     // @DisplayName: Engine #2 TCGain
-    // @Description: AutoThrottle percentage of throttle curve gain in governor output for Engine #2. For twin-engine helicopters tune the TC Gain so engine #2 has equal power output to engine #1 in static hover. If engine #2 is putting out less power than #1, slightly increase the TC Gain on #2 and slightly decrease on #1. In most instances this will require flying the helicopter on one engine and tuning TC Gain until either engine holds the same headspeed rpm and demonstrates equal response to sudden collective pitch loading
+    // @Description: Percentage of throttle curve in governor output for engine #2. This provides a feed-forward response to sudden loading or unloading of the rotor system. If Rrpm drops below Rrpm Low Warning during full collective climb increase the throttle curve gain
     // @Range: 50 100
     // @Units: %
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV2_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 80),
+    AP_GROUPINFO("GOV2_TCGAIN", 23, AP_MotorsHeli, _governor2_tcgain, 90),
 
     // @Param: THROTTLE2_P1
     // @DisplayName: Engine #2 P1
