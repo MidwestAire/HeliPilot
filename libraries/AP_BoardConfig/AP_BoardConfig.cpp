@@ -71,7 +71,7 @@
 # endif
 
 #elif CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
-# define BOARD_SAFETY_ENABLE_DEFAULT 1
+# define BOARD_SAFETY_ENABLE_DEFAULT 0
 #ifndef BOARD_PWM_COUNT_DEFAULT
 # define BOARD_PWM_COUNT_DEFAULT 6
 #endif
@@ -89,7 +89,7 @@
 
 #if AP_FEATURE_SAFETY_BUTTON
 #ifndef BOARD_SAFETY_OPTION_DEFAULT
-#define BOARD_SAFETY_OPTION_DEFAULT (BOARD_SAFETY_OPTION_BUTTON_ACTIVE_SAFETY_OFF|BOARD_SAFETY_OPTION_BUTTON_ACTIVE_SAFETY_ON)
+#define BOARD_SAFETY_OPTION_DEFAULT 0
 #endif
 #endif
 
@@ -99,8 +99,6 @@
 
 #ifndef HAL_BRD_OPTIONS_DEFAULT
 #if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
-#define HAL_BRD_OPTIONS_DEFAULT BOARD_OPTION_WATCHDOG
-#else
 #define HAL_BRD_OPTIONS_DEFAULT 0
 #endif
 #endif
@@ -246,7 +244,7 @@ const AP_Param::GroupInfo AP_BoardConfig::var_info[] = {
     // @Description: Board specific option flags
     // @Bitmask: 0:Enable hardware watchdog
     // @User: Advanced
-    AP_GROUPINFO("OPTIONS", 19, AP_BoardConfig, _options, HAL_BRD_OPTIONS_DEFAULT),
+    AP_GROUPINFO("OPTIONS", 19, AP_BoardConfig, _options, 0),
 
     AP_GROUPEND
 };
