@@ -27,7 +27,7 @@ const AP_Param::GroupInfo AP_RPM::var_info[] = {
     // @Description: What type of RPM sensor is connected
     // @Values: 0:None,1:PX4-PWM,2:AUXPIN
     // @User: Standard
-    AP_GROUPINFO("_TYPE",    0, AP_RPM, _type[0], 0),
+    AP_GROUPINFO("_TYPE",    0, AP_RPM, _type[0], 2),
 
     // @Param: _SCALING
     // @DisplayName: RPM scaling
@@ -41,7 +41,7 @@ const AP_Param::GroupInfo AP_RPM::var_info[] = {
     // @Description: Maximum RPM to report
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("_MAX", 2, AP_RPM, _maximum[0], 100000),
+    AP_GROUPINFO("_MAX", 2, AP_RPM, _maximum[0], 2000),
 
     // @Param: _MIN
     // @DisplayName: Minimum RPM
