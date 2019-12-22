@@ -68,7 +68,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV_DROOP
     // @DisplayName: Engine #1 Droop Response
-    // @Description: AutoThrottle governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
+    // @Description: AutoThrottle governor droop response under load, normal settings of 0-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor hunting is noted, then reduce the setting to where the governor is stable
     // @Range: 10 100
     // @Units: %
     // @Increment: 1
@@ -77,8 +77,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV_TORQUE
     // @DisplayName: Governor Torque Limiter
-    // @Description: Adjusts the maximum engine torque output from the AutoThrottle during governor ramp-up to full engage speed
-    // @Range: 10 100
+    // @Description: Adjusts the engine's torque rise percent on AutoThrottle during governor ramp-up to full engage speed. The torque rise will determine how fast the rotor speed will ramp up when the governor is turned on. 30% torque rise is a good starting setting to adjust the governor ramp-in for piston and turbine engines
+    // @Range: 10 60
     // @Units: %
     // @Increment: 1
     // @User: Standard
@@ -95,8 +95,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_CRITICAL
     // @DisplayName: Critical Rotor Speed
-    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the warning arc for autorotation. For helicopters without rotor speed sensor leave at 90%. Lack of a speed sensor results in using an estimated rotor speed instead of actual and is only marginally accurate.
-    // @Range: 0 90
+    // @Description: Percentage of normal rotor speed where entry to autorotation becomes dangerous. For helicopters with rotor speed sensor should be set to a percentage of the rotor rpm setting. Even if governor is not used when a speed sensor is installed, set the rotor rpm to normal headspeed then set critical to a percentage of normal rpm (usually 90%). This can be considered the bottom of the warning arc for autorotation. For helicopters without rotor speed sensor leave at 90%. Lack of a speed sensor results in using an estimated rotor speed instead of actual and is only marginally accurate
+    // @Range: 0 95
     // @Units: %
     // @Increment: 1
     // @User: Standard
@@ -104,7 +104,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RPM
     // @DisplayName: Headspeed RPM
-    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup.
+    // @Description: Set to the rotor rpm your helicopter runs in flight. When a speed sensor is installed the rotor governor maintains this speed. Also used for autorotation and for runup
     // @Range: 800 3500
     // @Increment: 10
     // @User: Standard
@@ -112,7 +112,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: ROTOR_RUNUP
     // @DisplayName: Rotor Runup Time
-    // @Description: Time in seconds for the main rotor to reach full speed on AutoThrottle. Set to zero to use rotor speed sensor for runup. If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.!WARNING! - when measured rotor speed is not used to determine runup, setting rotor runup time to an excessively high value can cause rapid power recovery from manual throttle, resulting in blade lag and potential rotor imbalance. With all electric helicopters it is recommended to set rotor runup one second longer than throttle ramp time. Piston and turbine helicopters must use a rotor speed sensor with this setting set to zero
+    // @Description: Time in seconds for the main rotor to reach full speed on AutoThrottle. SET TO ZERO TO USE ROTOR SPEED SENSOR FOR RUNUP (recommended). If not using rotor speed sensor the rotor runup must be at least 1 second longer than the throttle ramp time.!WARNING! - when measured rotor speed is not used to determine runup, setting rotor runup time to an excessively high value can cause rapid power recovery from manual throttle, resulting in blade lag and potential rotor imbalance. With all electric helicopters it is recommended to set rotor runup one second longer than throttle ramp time. Piston and turbine helicopters must use a rotor speed sensor with this setting set to zero
     // @Range: 0 60
     // @Units: s
     // @User: Standard
@@ -127,8 +127,8 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_IDLE
     // @DisplayName: Engine Ground Idle
-    // @Description: For piston or turbine engines in single-engine helicopters only. For twin-engine helicopters set the engine ground idle speeds with the RC radio manual throttles. At ground idle the engines should idle with clutch disengaged, and for engine start. !!WARNING!! Using this setting requires disarm of the flight control to shut down engines on either single or twin-engine helicopters. Using this setting for electric helicopters could result in motor start when the flight control system is armed!
-    // @Range: 0 50
+    // @Description: For piston or turbine engines in single-engine helicopters only. Use of manual throttle to set engine idle speed is recommended instead of using this setting. For twin-engine helicopters always set the engine ground idle speeds with the RC radio manual throttles as using this setting will not result in the same idle speed for both engines. At ground idle the engines should idle with clutch disengaged, and for engine start. !!WARNING!! Using this setting requires disarm of the flight control to shut down engines on either single or twin-engine helicopters. Using this setting for electric helicopters could result in motor start when the flight control system is armed. This is a legacy setting, it will be deprecated in future versions of HeliPilot
+    // @Range: 0 55
     // @Increment: 1
     // @User: Standard
     AP_GROUPINFO("THROTTLE_IDLE", 13, AP_MotorsHeli, _throttle_idle_output, 0),
@@ -151,7 +151,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_P3
     // @DisplayName: Engine #1 P3
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -159,7 +159,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_P4
     // @DisplayName: Engine #1 P4
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -167,7 +167,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE_P5
     // @DisplayName: Engine #1 P5
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel, which is maximum positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel, which is maximum positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -192,7 +192,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: GOV2_DROOP
     // @DisplayName: Engine #2 Droop Response
-    // @Description: AutoThrottle governor droop response under load for engine #2, normal settings of 10-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor "hunting" is noted, then reduce the setting to where the governor is stable
+    // @Description: AutoThrottle governor droop response under load for engine #2, normal settings of 10-100%. Higher value is quicker response but may cause surging. Adjust this to be as aggressive as possible without getting surging or Rrpm over-run when the governor engages. For twin-engine helicopters this will normally be tuned in static hover, adjusting the droop response higher on each engine until governor hunting is noted, then reduce the setting to where the governor is stable
     // @Range: 10 100
     // @Units: %
     // @Increment: 1
@@ -226,7 +226,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE2_P3
     // @DisplayName: Engine #2 P3
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel for engine #2.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 50% of it's full collective travel for engine #2.This may or may not correspond to 50% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 50% of 12 degrees is 6 degrees, so this setting would correspond to +4 degrees of positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -234,7 +234,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE2_P4
     // @DisplayName: Engine #2 P4
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel for engine #2.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 75% of it's full collective travel for engine #2.This may or may not correspond to 75% position of the collective stick, depending on the range of negative pitch in the setup. Example: if the setup has -2 degree to +10 degree collective pitch setup, the total range is 12 degrees. 75% of 12 degrees is 9 degrees, so this setting would correspond to +7 degrees of positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
@@ -242,7 +242,7 @@ const AP_Param::GroupInfo AP_MotorsHeli::var_info[] = {
 
     // @Param: THROTTLE2_P5
     // @DisplayName: Engine #2 P5
-    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel for engine #2, which is maximum positive pitch.
+    // @Description: Sets the engine's throttle percent for the throttle curve with the swashplate at 100% of it's full collective travel for engine #2, which is maximum positive pitch
     // @Range: 0 100
     // @Increment: 1
     // @User: Standard
