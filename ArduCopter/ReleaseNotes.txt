@@ -1,5 +1,11 @@
 HeliPilot Release Notes:
 ------------------------------------------------------------------
+HeliPilot 20.01.01 Pre-Release
+1) New governor with torque limiter
+2) New AutoThrottle system with manual throttle controls
+3) Updated FrSky telemetry scheduler with RPM and %torque passthru
+4) Rebase with full support for ChibiOS
+------------------------------------------------------------------
 HeliPilot 19.10.01 Approved Release
 1) Changes to governor torque limiter variables to be consistent with change from
 governor range to governor torque
