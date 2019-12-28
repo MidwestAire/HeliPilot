@@ -165,13 +165,13 @@ void AP_MotorsHeli_Single::calculate_armed_scalars()
     _main_rotor.set_critical_speed(_rotor_critical*0.01f);
     _main_rotor.set_idle_output(_throttle_idle_output*0.01f);
     _main_rotor.set_throttle_curve(throttlecurve);
-    _main_rotor.set_governor_droop_response(_governor_droop_response*0.01f);
+    _main_rotor.set_governor_droop_response(_governor_droop_response*0.0001f);
     _main_rotor.set_governor_reference(_governor_reference);
     _main_rotor.set_governor_torque(_governor_torque*.01f);
     _main_rotor.set_governor_tcgain(_governor_tcgain*0.01f);
     // set variables for twin-engine heli's, engine #2
     _main_rotor.set_governor2_tcgain(_governor2_tcgain*0.01f);
-    _main_rotor.set_governor2_droop_response(_governor2_droop_response*0.01f);
+    _main_rotor.set_governor2_droop_response(_governor2_droop_response*0.0001f);
     _main_rotor.set_throttle_curve2(throttlecurve2);
 
     if (_heliflags.governor_on) {
