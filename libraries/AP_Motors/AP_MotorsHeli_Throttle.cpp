@@ -15,7 +15,7 @@
 
 #include <stdlib.h>
 #include <AP_HAL/AP_HAL.h>
-
+#include <GCS_MAVLink/GCS.h>
 #include "AP_MotorsHeli_Throttle.h"
 
 extern const AP_HAL::HAL& hal;
@@ -254,6 +254,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             _throttle_1_output = constrain_float((_idle_output + (_throttle_1_input - _idle_output)), 0.0f, 1.0f);
         } else {
         // AutoThrottle ON - throttle ramp timer will be used if set to non-zero value
+        gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle ON");
         _throttle_1_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output)), 0.0f, 1.0f);
         }
     }
@@ -264,6 +265,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             _governor_output = 0.0f;
             _throttle_1_torque = 0.0f;
             _governor_engage = false;
+            gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle OFF");
             _throttle_1_output = constrain_float((_idle_output + _throttle_1_input), 0.0f, 1.0f);
         } else {
             // AutoThrottle is active - calculate governor droop and torque limit
@@ -271,6 +273,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             if (_rotor_rpm > (_governor_reference * 0.5f)) {
                 // torque limiter accelerates rotor to the reference speed at constant torque
                 if (!_governor_engage && _rotor_rpm < _governor_reference) {
+                    gcs().send_text(MAV_SEVERITY_INFO, "Governor Torque Limiter");
                     float torque_limit = (_governor_torque * _governor_torque);
                     _governor_output = (_rotor_rpm / _governor_reference) * torque_limit;
                     _throttle_1_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve + _governor_output - _idle_output)), 0.0f, 1.0f);
@@ -282,6 +285,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                         _throttle_1_torque = throttlecurve;
                     }
                     _governor_engage = true;
+                    gcs().send_text(MAV_SEVERITY_INFO, "Governor Engaged");
                     // droop response adjusts governor sensitivity to speed droop
                     float governor_droop = (_governor_reference - _rotor_rpm) * _governor_droop_response;
                     // throttle curve provides feedforward in governor response
@@ -293,6 +297,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                 _governor_output = 0.0f;
                 _throttle_1_torque = 0.0f;
                 _governor_engage = false;
+                gcs().send_text(MAV_SEVERITY_WARNING, "Governor Fault: rotor rpm");
                 _throttle_1_output = _idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output));
             }
         }
