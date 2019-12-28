@@ -88,8 +88,8 @@ public:
     void set_governor(bool governor) { _heliflags.governor_on = governor; }
 
     // set_desired_rotor_speed for engine manual throttles
-    virtual void set_desired_rotor_speed(float throttle_1_input) = 0;
-    virtual void set_desired_rotor_speed_2(float throttle_2_input) = 0;
+    virtual void set_desired_rotor_speed(float throttle_input) = 0;
+    virtual void set_desired_rotor_speed_2(float throttle2_input) = 0;
 
     // get_desired_rotor_speed for engine manual throttles
     virtual float get_desired_rotor_speed() const = 0;
@@ -109,8 +109,8 @@ public:
     virtual float get_governor2_output() const = 0;
 
     //get engine throttle outputs
-    virtual float get_throttle_1_output() const = 0;
-    virtual float get_throttle_2_output() const = 0;
+    virtual float get_throttle_output() const = 0;
+    virtual float get_throttle2_output() const = 0;
 
     // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict

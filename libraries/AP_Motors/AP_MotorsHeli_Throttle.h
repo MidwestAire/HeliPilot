@@ -61,16 +61,16 @@ public:
     void        set_governor2_tcgain(float governor2_tcgain) {_governor2_tcgain = governor2_tcgain; }
 
     // get_throttle_input for manual throttles
-    float       get_throttle_1_input() const { return _throttle_1_input; }
-    float       get_throttle_2_input() const { return _throttle_2_input; }
+    float       get_throttle_input() const { return _throttle_input; }
+    float       get_throttle2_input() const { return _throttle2_input; }
 
     // set_throttle_input for manual throttles
-    void        set_throttle_1_input(float throttle_1_input) { _throttle_1_input = throttle_1_input; }
-    void        set_throttle_2_input(float throttle_2_input) { _throttle_2_input = throttle_2_input; }
+    void        set_throttle_input(float throttle_input) { _throttle_input = throttle_input; }
+    void        set_throttle2_input(float throttle2_input) { _throttle2_input = throttle2_input; }
 
     // get engine throttle outputs
-    float       get_throttle_1_output() const { return _throttle_1_output; }
-    float       get_throttle_2_output() const { return _throttle_2_output; }
+    float       get_throttle_output() const { return _throttle_output; }
+    float       get_throttle2_output() const { return _throttle2_output; }
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
@@ -118,12 +118,14 @@ private:
     ThrottleControl _control_mode = THROTTLE_CONTROL_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
     float           _idle_output;                 // motor output idle speed
-    float           _throttle_1_input;            // latest manual throttle input for engine #1
-    float           _throttle_2_input;            // latest manual throttle input for engine #2
-    float           _throttle_1_output;           // AutoThrottle Engine #1
-    float           _throttle_2_output;           // AutoThrottle Engine #2
-    float           _throttle_1_torque;           // stores throttle torque limit for Engine #1
-    float           _throttle_2_torque;           // stores throttle torque limit for Engine #2
+    float           _throttle_input;              // latest manual throttle input, Engine #1
+    float           _throttle2_input;             // latest manual throttle input, Engine #2
+    float           _throttle_output;             // AutoThrottle output, Engine #1
+    float           _throttle2_output;            // AutoThrottle output, Engine #2
+    float           _throttle_torque;             // throttle torque limit, Engine #1
+    float           _throttle2_torque;            // throttle torque limit. Engine #2
+    bool            _autothrottle_on;             // AutoThrottle status flag, Engine #1
+    bool            _autothrottle2_on;            // AutoThrottle status flag, Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
@@ -134,6 +136,8 @@ private:
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from rotor speed sensor
     bool            _governor_on;                 // flag for governor on/off switch
+    bool            _governor_fault;              // flag for governor fault detection, Engine #1
+    bool            _governor2_fault;             // flag for governor fault detection, Engine #2
     float           _governor_output;             // governor output for engine #1
     float           _governor2_output;            // governor output for engine #2
     float           _governor_torque;             // governor torque limiter variable

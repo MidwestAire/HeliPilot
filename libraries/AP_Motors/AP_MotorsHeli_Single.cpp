@@ -120,7 +120,7 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
         case 5:
             // main rotor
             rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE, pwm);
-            rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE_2, pwm);
+            rc_write(AP_MOTORS_HELI_SINGLE_THROTTLE2, pwm);
             break;
         default:
             // do nothing
@@ -129,15 +129,15 @@ void AP_MotorsHeli_Single::output_test(uint8_t motor_seq, int16_t pwm)
 }
 
 // set_desired_rotor_speed - manual throttle Engine #1
-void AP_MotorsHeli_Single::set_desired_rotor_speed(float throttle_1_input)
+void AP_MotorsHeli_Single::set_desired_rotor_speed(float throttle_input)
 {
-    _main_rotor.set_throttle_1_input(throttle_1_input);
+    _main_rotor.set_throttle_input(throttle_input);
 }
 
 // set_desired_rotor_speed_2 - manual throttle Engine #2
-void AP_MotorsHeli_Single::set_desired_rotor_speed_2(float throttle_2_input)
+void AP_MotorsHeli_Single::set_desired_rotor_speed_2(float throttle2_input)
 {
-    _main_rotor.set_throttle_2_input(throttle_2_input);
+    _main_rotor.set_throttle2_input(throttle2_input);
 }
 
 // set_rotor_rpm - used for governor with speed sensor
@@ -291,7 +291,7 @@ void AP_MotorsHeli_Single::move_actuators(float roll_out, float pitch_out, float
     if (_servo_mode == SERVO_CONTROL_MODE_AUTOMATED) {
         // rudder feed forward based on collective
         //TODO This does not work properly - needs to be looked at
-        if (_main_rotor.get_throttle_1_output() > _main_rotor.get_idle_output()) {
+        if (_main_rotor.get_throttle_output() > _main_rotor.get_idle_output()) {
             // the 4.5 scaling factor is to bring the values in line with previous releases
             yaw_offset = _collective_yaw_effect * fabsf(collective_out - _collective_mid_pct) / 4.5f;
         }
