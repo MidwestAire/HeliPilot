@@ -122,6 +122,8 @@ private:
     float           _throttle_2_input;            // latest manual throttle input for engine #2
     float           _throttle_1_output;           // AutoThrottle Engine #1
     float           _throttle_2_output;           // AutoThrottle Engine #2
+    float           _throttle_1_torque;           // stores throttle torque limit for Engine #1
+    float           _throttle_2_torque;           // stores throttle torque limit for Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
     float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
