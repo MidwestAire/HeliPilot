@@ -13,7 +13,7 @@
 // single engine, or twin-engine throttle, engine #1
 #define AP_MOTORS_HELI_SINGLE_THROTTLE                         CH_8
 // twin-engine throttle, engine #2
-#define AP_MOTORS_HELI_SINGLE_THROTTLE_2                       CH_7
+#define AP_MOTORS_HELI_SINGLE_THROTTLE2                        CH_7
 
 // three swashplate servos for H3_ swashplates
 #define AP_MOTORS_HELI_SINGLE_NUM_SWASHPLATE_SERVOS            3
@@ -25,7 +25,7 @@ public:
     AP_MotorsHeli_Single(uint16_t       loop_rate,
                          uint16_t       speed_hz = AP_MOTORS_HELI_SPEED_DEFAULT) :
         AP_MotorsHeli(loop_rate, speed_hz),
-        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE, SRV_Channel::k_heli_aux_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE_2),
+        _main_rotor(SRV_Channel::k_heli_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE, SRV_Channel::k_heli_aux_throttle, AP_MOTORS_HELI_SINGLE_THROTTLE2),
         _swashplate()
     {
         AP_Param::setup_object_defaults(this, var_info);
@@ -40,12 +40,12 @@ public:
     void output_test(uint8_t motor_seq, int16_t pwm) override;
 
     // set_desired_rotor_speed for engine manual throttles
-    void set_desired_rotor_speed(float throttle_1_input) override;
-    void set_desired_rotor_speed_2(float throttle_2_input) override;
+    void set_desired_rotor_speed(float throttle_input) override;
+    void set_desired_rotor_speed_2(float throttle2_input) override;
 
     // get_desired_rotor_speed for engine manual throttles
-    float get_desired_rotor_speed() const  override { return _main_rotor.get_throttle_1_input(); }
-    float get_desired_rotor_speed_2() const  override { return _main_rotor.get_throttle_2_input(); }
+    float get_desired_rotor_speed() const  override { return _main_rotor.get_throttle_input(); }
+    float get_desired_rotor_speed_2() const  override { return _main_rotor.get_throttle2_input(); }
 
     // set_rpm - for rotor speed governor
     void set_rpm(float rotor_rpm) override;
@@ -61,8 +61,8 @@ public:
     float get_governor2_output() const override { return _main_rotor.get_governor2_output(); }
 
     // get_throttle_output for engine throttles
-    float get_throttle_1_output() const override{ return _main_rotor.get_throttle_1_output(); }
-    float get_throttle_2_output() const override{ return _main_rotor.get_throttle_2_output(); }
+    float get_throttle_output() const override{ return _main_rotor.get_throttle_output(); }
+    float get_throttle2_output() const override{ return _main_rotor.get_throttle2_output(); }
 
     // calculate_scalars - recalculates various scalars used
     void calculate_scalars() override;
