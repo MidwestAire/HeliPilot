@@ -148,6 +148,7 @@ private:
     bool            _governor2_engage;            // governor status flag engine #2
     float           _governor_tcgain;             // governor throttle curve gain, engine #1
     float           _governor2_tcgain;            // governor throttle curve gain, engine #2
+    float           _governor_fault_timer;        // timer variable used to trigger a governor fault
 
     // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
     void            update_rotor_ramp(float rotor_ramp_input, float dt);
