@@ -272,7 +272,7 @@ private:
     // main transmission function when protocol is FrSky D
     void send_D(void);
     // tick - main call to send updates to transmitter (called by scheduler at 1kHz)
-    void loop(void);
+    void tick(void);
 
     // methods related to the nuts-and-bolts of sending data
     void calc_crc(uint8_t byte);
