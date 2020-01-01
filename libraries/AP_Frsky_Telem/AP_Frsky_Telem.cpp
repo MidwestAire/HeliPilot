@@ -95,10 +95,7 @@ void AP_Frsky_Telem::init(const AP_SerialManager &serial_manager,
     }
     
     if (_port != nullptr) {
-        if (!hal.scheduler->thread_create(FUNCTOR_BIND_MEMBER(&AP_Frsky_Telem::loop, void),
-                                        "FrSky",
-                                        1024, AP_HAL::Scheduler::PRIORITY_RCIN, 1)) {
-        }
+        hal.scheduler->register_io_process(FUNCTOR_BIND_MEMBER(&AP_Frsky_Telem::tick, void));
         // we don't want flow control for either protocol
         _port->set_flow_control(AP_HAL::UARTDriver::FLOW_CONTROL_DISABLE);
     }
@@ -426,31 +423,30 @@ void AP_Frsky_Telem::send_D(void)
 }
 
 /*
-  thread to loop handling bytes
+ * tick - main call to send data to the receiver (called by scheduler at 1kHz)
  */
-void AP_Frsky_Telem::loop(void)
+void AP_Frsky_Telem::tick(void)
 {
-    // initialise uart (this must be called from within tick b/c the UART begin must be called from the same thread as it is used from)
-    if (_protocol == AP_SerialManager::SerialProtocol_FrSky_D) {                    // FrSky D protocol (D-receivers)
-        _port->begin(AP_SERIALMANAGER_FRSKY_D_BAUD, AP_SERIALMANAGER_FRSKY_BUFSIZE_RX, AP_SERIALMANAGER_FRSKY_BUFSIZE_TX);
-    } else {                                                                        // FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
-        _port->begin(AP_SERIALMANAGER_FRSKY_SPORT_BAUD, AP_SERIALMANAGER_FRSKY_BUFSIZE_RX, AP_SERIALMANAGER_FRSKY_BUFSIZE_TX);
+    // check UART has been initialised
+    if (!_initialised_uart) {
+        // initialise uart (this must be called from within tick b/c the UART begin must be called from the same thread as it is used from)
+        if (_protocol == AP_SerialManager::SerialProtocol_FrSky_D) {                    // FrSky D protocol (D-receivers)
+            _port->begin(AP_SERIALMANAGER_FRSKY_D_BAUD, AP_SERIALMANAGER_FRSKY_BUFSIZE_RX, AP_SERIALMANAGER_FRSKY_BUFSIZE_TX);
+        } else {                                                                        // FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
+            _port->begin(AP_SERIALMANAGER_FRSKY_SPORT_BAUD, AP_SERIALMANAGER_FRSKY_BUFSIZE_RX, AP_SERIALMANAGER_FRSKY_BUFSIZE_TX);
+        }
+        _port->set_unbuffered_writes(true);
+        _initialised_uart = true;// true when we have detected the protocol and UART has been initialised
     }
 
-    _port->set_unbuffered_writes(true);
-
-    while (true) {
-        hal.scheduler->delay(1);
-        if (_protocol == AP_SerialManager::SerialProtocol_FrSky_D) {                        // FrSky D protocol (D-receivers)
-            send_D();
-        } else if (_protocol == AP_SerialManager::SerialProtocol_FrSky_SPort) {             // FrSky SPort protocol (X-receivers)
-            send_SPort();
-        } else if (_protocol == AP_SerialManager::SerialProtocol_FrSky_SPort_Passthrough) { // FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
-            send_SPort_Passthrough();
-        }
+    if (_protocol == AP_SerialManager::SerialProtocol_FrSky_D) {                        // FrSky D protocol (D-receivers)
+        send_D();
+    } else if (_protocol == AP_SerialManager::SerialProtocol_FrSky_SPort) {             // FrSky SPort protocol (X-receivers)
+        send_SPort();
+    } else if (_protocol == AP_SerialManager::SerialProtocol_FrSky_SPort_Passthrough) { // FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
+        send_SPort_Passthrough();
     }
 }
-
 /* 
  * build up the frame's crc
  * for FrSky SPort protocol (X-receivers)
