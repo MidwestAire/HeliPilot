@@ -168,7 +168,7 @@
 #endif
 
 #ifndef PREARM_DISPLAY_PERIOD
-# define PREARM_DISPLAY_PERIOD 30
+# define PREARM_DISPLAY_PERIOD 150
 #endif
 
 // pre-arm baro vs inertial nav max alt disparity
