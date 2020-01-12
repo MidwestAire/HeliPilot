@@ -529,7 +529,7 @@ const struct LogStructure Copter::log_structure[] = {
       "ERR",   "QBB",         "TimeUS,Subsys,ECode", "s--", "F--" },
 #if FRAME_CONFIG == HELI_FRAME
     { LOG_HELI_MSG, sizeof(log_Heli),
-      "HELI",  "Qffff",        "TimeUS,DRRPM,ERRPM,GOV,THROT", "s----", "F----" },
+      "HELI",  "Qfffff",        "TimeUS,DRRPM,ERRPM,GOV,THROT,THROT2", "s-----", "F-----" },
 #endif
 #if PRECISION_LANDING == ENABLED
     { LOG_PRECLAND_MSG, sizeof(log_Precland),
