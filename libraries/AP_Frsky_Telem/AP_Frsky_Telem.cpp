@@ -29,10 +29,11 @@ extern const AP_HAL::HAL& hal;
 ObjectArray<mavlink_statustext_t> AP_Frsky_Telem::_statustext_queue(FRSKY_TELEM_PAYLOAD_STATUS_CAPACITY);
 
 //constructor
-AP_Frsky_Telem::AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng) :
+AP_Frsky_Telem::AP_Frsky_Telem(AP_AHRS &ahrs,const AP_BattMonitor &battery,const RangeFinder &rng,const AP_RPM &rpm_sensor) :
     _ahrs(ahrs),
     _battery(battery),
-    _rng(rng)
+    _rng(rng),
+    _rpm_sensor(rpm_sensor)
     {}
 
 /*
@@ -208,47 +209,50 @@ void AP_Frsky_Telem::send_SPort(void)
                         case 2:
                             send_uint32(DATA_ID_CURRENT, (uint16_t)roundf(_battery.current_amps() * 10.0f)); // send current consumption
                             break;
+                        case 3:
+                            send_uint32(DATA_ID_RPM, calc_rpm()); // send rpm from rpm library
+                            break;
                     }
-                    if (_SPort.fas_call++ > 2) _SPort.fas_call = 0;
+                    if (_SPort.fas_call++ > 3) _SPort.fas_call = 0;
                     break;
                 case SENSOR_ID_GPS:
                     switch (_SPort.gps_call) {
                         case 0:
                             calc_gps_position(); // gps data is not recalculated until all of it has been sent
-                            send_uint32(DATA_ID_GPS_LAT_BP, _gps.latdddmm); // send gps lattitude degree and minute integer part
+//                            send_uint32(DATA_ID_GPS_LAT_BP, _gps.latdddmm); // send gps lattitude degree and minute integer part
                             break;
+//                        case 1:
+//                            send_uint32(DATA_ID_GPS_LAT_AP, _gps.latmmmm); // send gps lattitude minutes decimal part
+//                            break;
+//                        case 2:
+//                            send_uint32(DATA_ID_GPS_LAT_NS, _gps.lat_ns); // send gps North / South information
+//                            break;
+//                        case 3:
+//                            send_uint32(DATA_ID_GPS_LONG_BP, _gps.londddmm); // send gps longitude degree and minute integer part
+//                            break;
+//                        case 4:
+//                            send_uint32(DATA_ID_GPS_LONG_AP, _gps.lonmmmm); // send gps longitude minutes decimal part
+//                            break;
+//                        case 5:
+//                            send_uint32(DATA_ID_GPS_LONG_EW, _gps.lon_ew); // send gps East / West information
+//                            break;
                         case 1:
-                            send_uint32(DATA_ID_GPS_LAT_AP, _gps.latmmmm); // send gps lattitude minutes decimal part
-                            break;
-                        case 2:
-                            send_uint32(DATA_ID_GPS_LAT_NS, _gps.lat_ns); // send gps North / South information
-                            break;
-                        case 3:
-                            send_uint32(DATA_ID_GPS_LONG_BP, _gps.londddmm); // send gps longitude degree and minute integer part
-                            break;
-                        case 4:
-                            send_uint32(DATA_ID_GPS_LONG_AP, _gps.lonmmmm); // send gps longitude minutes decimal part
-                            break;
-                        case 5:
-                            send_uint32(DATA_ID_GPS_LONG_EW, _gps.lon_ew); // send gps East / West information
-                            break;
-                        case 6:
                             send_uint32(DATA_ID_GPS_SPEED_BP, _gps.speed_in_meter); // send gps speed integer part
                             break;
-                        case 7:
+                        case 2:
                             send_uint32(DATA_ID_GPS_SPEED_AP, _gps.speed_in_centimeter); // send gps speed decimal part
                             break;
-                        case 8:
+                        case 3:
                             send_uint32(DATA_ID_GPS_ALT_BP, _gps.alt_gps_meters); // send gps altitude integer part
                             break;
-                        case 9:
+                        case 4:
                             send_uint32(DATA_ID_GPS_ALT_AP, _gps.alt_gps_cm); // send gps altitude decimals
                             break;
-                        case 10:
+                        case 5:
                             send_uint32(DATA_ID_GPS_COURS_BP, (uint16_t)((_ahrs.yaw_sensor / 100) % 360)); // send heading in degree based on AHRS and not GPS
                             break;
                     }
-                    if (_SPort.gps_call++ > 10) _SPort.gps_call = 0;
+                    if (_SPort.gps_call++ > 5) _SPort.gps_call = 0;
                     break;
                 case SENSOR_ID_VARIO:
                     switch (_SPort.vario_call) {
@@ -299,6 +303,7 @@ void AP_Frsky_Telem::send_D(void)
         calc_nav_alt();
         send_uint16(DATA_ID_BARO_ALT_BP, _gps.alt_nav_meters); // send nav altitude integer part
         send_uint16(DATA_ID_BARO_ALT_AP, _gps.alt_nav_cm); // send nav altitude decimal part
+        send_uint16(DATA_ID_RPM, calc_rpm()); // send rpm from rpm library
     }
     // send frame2 every second
     if (now - _D.last_1000ms_frame >= 1000) {
@@ -306,12 +311,12 @@ void AP_Frsky_Telem::send_D(void)
         send_uint16(DATA_ID_GPS_COURS_BP, (uint16_t)((_ahrs.yaw_sensor / 100) % 360)); // send heading in degree based on AHRS and not GPS
         calc_gps_position();
         if (AP::gps().status() >= 3) {
-            send_uint16(DATA_ID_GPS_LAT_BP, _gps.latdddmm); // send gps lattitude degree and minute integer part
-            send_uint16(DATA_ID_GPS_LAT_AP, _gps.latmmmm); // send gps lattitude minutes decimal part
-            send_uint16(DATA_ID_GPS_LAT_NS, _gps.lat_ns); // send gps North / South information
-            send_uint16(DATA_ID_GPS_LONG_BP, _gps.londddmm); // send gps longitude degree and minute integer part
-            send_uint16(DATA_ID_GPS_LONG_AP, _gps.lonmmmm); // send gps longitude minutes decimal part
-            send_uint16(DATA_ID_GPS_LONG_EW, _gps.lon_ew); // send gps East / West information
+//            send_uint16(DATA_ID_GPS_LAT_BP, _gps.latdddmm); // send gps lattitude degree and minute integer part
+//            send_uint16(DATA_ID_GPS_LAT_AP, _gps.latmmmm); // send gps lattitude minutes decimal part
+//            send_uint16(DATA_ID_GPS_LAT_NS, _gps.lat_ns); // send gps North / South information
+//            send_uint16(DATA_ID_GPS_LONG_BP, _gps.londddmm); // send gps longitude degree and minute integer part
+//            send_uint16(DATA_ID_GPS_LONG_AP, _gps.lonmmmm); // send gps longitude minutes decimal part
+//            send_uint16(DATA_ID_GPS_LONG_EW, _gps.lon_ew); // send gps East / West information
             send_uint16(DATA_ID_GPS_SPEED_BP, _gps.speed_in_meter); // send gps speed integer part
             send_uint16(DATA_ID_GPS_SPEED_AP, _gps.speed_in_centimeter); // send gps speed decimal part
             send_uint16(DATA_ID_GPS_ALT_BP, _gps.alt_gps_meters); // send gps altitude integer part
@@ -903,4 +908,15 @@ void AP_Frsky_Telem::calc_gps_position(void)
         _gps.speed_in_meter = 0;
         _gps.speed_in_centimeter = 0;
     }
+}
+
+/*
+ * prepare heli power data (helicopters only for HeliPilot)
+ * for FrSky D and SPort protocols
+ */
+uint32_t AP_Frsky_Telem::calc_rpm(void)
+{
+    uint16_t rpm = 0;
+    rpm = (uint16_t)roundf(_rpm_sensor.get_rpm(0));   
+    return rpm;
 }

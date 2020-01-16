@@ -21,6 +21,7 @@
 #include <AP_RangeFinder/AP_RangeFinder.h>
 #include <AP_SerialManager/AP_SerialManager.h>
 #include <AP_HAL/utility/RingBuffer.h>
+#include <AP_RPM/AP_RPM.h>
 
 #define FRSKY_TELEM_PAYLOAD_STATUS_CAPACITY          5 // size of the message buffer queue (max number of messages waiting to be sent)
 
@@ -46,6 +47,7 @@ for FrSky D protocol (D-receivers)
 #define DATA_ID_GPS_LAT_NS          0x23
 #define DATA_ID_CURRENT             0x28
 #define DATA_ID_VFAS                0x39
+#define DATA_ID_RPM                 0x050F
 
 #define START_STOP_D                0x5E
 #define BYTESTUFF_D                 0x5D
@@ -57,6 +59,7 @@ for FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
 #define SENSOR_ID_VARIO             0x00 // Sensor ID  0
 #define SENSOR_ID_FAS               0x22 // Sensor ID  2
 #define SENSOR_ID_GPS               0x83 // Sensor ID  3
+#define SENSOR_ID_RPM               0xE4 // Sensor ID  4
 #define SENSOR_ID_SP2UR             0xC6 // Sensor ID  6
 #define SENSOR_ID_28                0x1B // Sensor ID 28
 
@@ -113,7 +116,7 @@ for FrSky SPort Passthrough
 
 class AP_Frsky_Telem {
 public:
-    AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng);
+    AP_Frsky_Telem(AP_AHRS &ahrs, const AP_BattMonitor &battery, const RangeFinder &rng, const AP_RPM &rpm_sensor);
 
     /* Do not allow copies */
     AP_Frsky_Telem(const AP_Frsky_Telem &other) = delete;
@@ -149,6 +152,7 @@ private:
     AP_AHRS &_ahrs;
     const AP_BattMonitor &_battery;
     const RangeFinder &_rng;
+    const AP_RPM &_rpm_sensor;
     AP_HAL::UARTDriver *_port;                  // UART used to send data to FrSky receiver
     AP_SerialManager::SerialProtocol _protocol; // protocol used - detected using SerialManager's SERIAL#_PROTOCOL parameter
     bool _initialised_uart;
@@ -259,4 +263,5 @@ private:
     void calc_nav_alt(void);
     float format_gps(float dec);
     void calc_gps_position(void);
+    uint32_t calc_rpm(void);
 };
