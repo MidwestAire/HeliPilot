@@ -247,6 +247,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
     if (!_governor_on) {
         _governor_output = 0.0f;
         _governor_engage = false;
+        _throttle_torque_reference = 0.0f;
         _governor_fault = false;    //resets a governor hard fault only if governor switch OFF
 
         // AutoThrottle OFF if RC8 input less than throttle curve position
@@ -258,7 +259,6 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             // AutoThrottle ON - throttle ramp timer will be used if set to non-zero value
             if (!_autothrottle_on) {
                 _autothrottle_on = true;
-                gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle: ON");
             }
         _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output)), 0.0f, 1.0f);
         }
@@ -268,8 +268,8 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
         // while governor is still active on the other engine
         if (_throttle_input < throttlecurve) {
             _governor_output = 0.0f;
-            _throttle_torque = 0.0f;
             _governor_engage = false;
+            _throttle_torque_reference = 0.0f;
             _autothrottle_on = false;
             _throttle_output = constrain_float((_idle_output + _throttle_input), 0.0f, 1.0f);
         } else {
@@ -277,7 +277,6 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             // governor requires miminum 50% of normal headspeed to initialize or will go to throttle curve
             if (!_autothrottle_on) {
                 _autothrottle_on = true;
-                gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle: ON");
             }
             if (!_governor_fault && _rotor_rpm > (_governor_reference * 0.5f)) {
                 // torque limiter accelerates rotor to the reference speed at constant torque
@@ -285,12 +284,13 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                     float torque_limit = (_governor_torque * _governor_torque);
                     _governor_output = (_rotor_rpm / _governor_reference) * torque_limit;
                     _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve + _governor_output - _idle_output)), 0.0f, 1.0f);
-                    _throttle_torque = _throttle_output;
+                    // initial torque reference is set at the throttle it takes to reach governor reference speed
+                    _throttle_torque_reference = _throttle_output;
                 } else {
                     // governor engaged status with droop compensator
                     // if governor is engaged in rotor over-speed torque reference is set to current throttle curve position
-                    if (_throttle_torque < 0.2f && !_governor_engage) {
-                        _throttle_torque = throttlecurve;
+                    if (_throttle_torque_reference < 0.2f && !_governor_engage) {
+                        _throttle_torque_reference = throttlecurve;
                     }
                     if (!_governor_engage) {
                         _governor_engage = true;
@@ -311,15 +311,26 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                         // droop response adjusts governor sensitivity to speed droop
                         float governor_droop = (_governor_reference - _rotor_rpm) * _governor_droop_response;
                         // throttle curve provides feedforward in governor response
-                        _governor_output = governor_droop + ((throttlecurve - _throttle_torque) *  _governor_tcgain);
-                        _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle_torque + _governor_output - _idle_output)), 0.20f, 1.0f);
+                        _governor_output = governor_droop + ((throttlecurve - _throttle_torque_reference) *  _governor_tcgain);
+                        // throttle torque reference is captured at governor engage and is governor baseline
+                        // if rotor rpm is low or high by more than 2 rpm, increment the torque reference
+                        // at 1% throttle/second until rotor speed matches governor reference speed,
+                        // at which point governor is in steady-state control
+                        if (_rotor_rpm < (_governor_reference - 2.0f)) {
+                            _throttle_torque_reference += 0.000025f;
+                        } else if (_rotor_rpm > (_governor_reference + 2.0f)) {
+                            _throttle_torque_reference -= 0.000025f;
+                        } else {
+                            _throttle_torque_reference = _throttle_torque_reference;
+                        }
+                        _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle_torque_reference + _governor_output - _idle_output)), throttlecurve * _governor_tcgain, 1.0f);
                     }
                 }
             } else {
                 // governor is inactive due to speed sensor failure or rotor speed too low
                 _governor_output = 0.0f;
-                _throttle_torque = 0.0f;
                 _governor_engage = false;
+                _throttle_torque_reference = 0.0f;
                 _throttle_output = _idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output));
             }
         }
@@ -333,6 +344,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
     if (!_governor_on) {
         _governor2_output = 0.0f;
         _governor2_engage = false;
+        _throttle2_torque_reference = 0.0f;
         _governor2_fault = false;    //resets a governor hard fault only if governor switch OFF
 
         // AutoThrottle OFF if RC7 input less than throttle curve position
@@ -344,7 +356,6 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
             // AutoThrottle ON - throttle ramp timer will be used if set to non-zero value
             if (!_autothrottle2_on) {
                 _autothrottle2_on = true;
-                gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle 2: ON");
             }
             _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve2 - _idle_output)), 0.0f, 1.0f);
         }
@@ -354,8 +365,9 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
         // while governor is still active on the other engine
         if (_throttle2_input < throttlecurve2) {
             _governor2_output = 0.0f;
-            _throttle2_torque = 0.0f;
+            _throttle2_torque_reference = 0.0f;
             _governor2_engage = false;
+            _throttle2_torque_reference = 0.0f;
             _autothrottle2_on = false;
             _throttle2_output = constrain_float((_idle_output + _throttle2_input), 0.0f, 1.0f);
         } else {
@@ -363,7 +375,6 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
             // governor requires miminum 50% of normal headspeed to initialize or will go to throttle curve
             if (!_autothrottle2_on) {
                 _autothrottle2_on = true;
-                gcs().send_text(MAV_SEVERITY_INFO, "AutoThrottle 2: ON");
             }
             if (!_governor_fault && _rotor_rpm > (_governor_reference * 0.5f)) {
                 // torque limiter accelerates rotor to the reference speed at constant torque
@@ -371,16 +382,16 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                     float torque2_limit = (_governor_torque * _governor_torque);
                     _governor2_output = (_rotor_rpm / _governor_reference) * torque2_limit;
                     _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve2 + _governor2_output - _idle_output)), 0.0f, 1.0f);
-                    _throttle2_torque = _throttle2_output;
+                    _throttle2_torque_reference = _throttle2_output;
                 } else {
                     // governor engaged status with droop compensator
                     // if governor is engaged in rotor over-speed torque reference is set to current throttle curve position
-                    if (_throttle2_torque < 0.2f && !_governor2_engage) {
-                        _throttle2_torque = throttlecurve2;
+                    if (_throttle2_torque_reference < 0.2f && !_governor2_engage) {
+                        _throttle2_torque_reference = throttlecurve2;
                     }
                     if (!_governor2_engage) {
                         _governor2_engage = true;
-                        gcs().send_text(MAV_SEVERITY_INFO, "Governor 2: ENGAGED");
+                        gcs().send_text(MAV_SEVERITY_INFO, "Governor Engine2: ENGAGED");
                     }
                     // governor fault detection - must maintain Rrpm +/-3%
                     // the same timer is used for both engines so if a fault does not clear it will disengage
@@ -389,7 +400,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                         _governor_fault_timer += 1.0f;
                         if (_governor_fault_timer > 200.0f) {
                             _governor2_fault = true;
-                            gcs().send_text(MAV_SEVERITY_WARNING, "Governor 2 Fault: RPM Range");
+                            gcs().send_text(MAV_SEVERITY_WARNING, "Governor Engine2 Fault: RPM Range");
                         }
                     } else {
                         _governor_fault_timer = 0.0f;
@@ -398,15 +409,27 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                         // droop response adjusts governor sensitivity to speed droop
                         float governor2_droop = (_governor_reference - _rotor_rpm) * _governor2_droop_response;
                         // throttle curve provides feedforward in governor response
-                        _governor2_output = governor2_droop + ((throttlecurve2 - _throttle2_torque) *  _governor2_tcgain);
-                        _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle2_torque + _governor_output - _idle_output)), 0.20f, 1.0f);
+                        _governor2_output = governor2_droop + ((throttlecurve2 - _throttle2_torque_reference) *  _governor2_tcgain);
+                        // throttle torque reference is captured at governor engage and is governor baseline
+                        // if rotor rpm is low or high by more than 2 rpm, increment the torque reference
+                        // at 1% throttle/second until rotor speed matches governor reference speed,
+                        // at which point governor is in steady-state control
+                        if (_rotor_rpm < (_governor_reference - 2.0f)) {
+                            _throttle2_torque_reference += 0.000025f;
+                        } else if (_rotor_rpm > (_governor_reference + 2.0f)) {
+                            _throttle2_torque_reference -= 0.000025f;
+                        } else {
+                            _throttle2_torque_reference = _throttle2_torque_reference;
+                        }
+                        _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle2_torque_reference + _governor_output - _idle_output)), throttlecurve2 * _governor2_tcgain, 1.0f);
                     }
                 }
             } else {
                 // governor is inactive due to speed sensor failure or rotor speed too low
                 _governor2_output = 0.0f;
-                _throttle2_torque = 0.0f;
+                _throttle2_torque_reference = 0.0f;
                 _governor2_engage = false;
+                _throttle2_torque_reference = 0.0f;
                 _throttle2_output = _idle_output + (_rotor_ramp_output * (throttlecurve2 - _idle_output));
             }
         }
