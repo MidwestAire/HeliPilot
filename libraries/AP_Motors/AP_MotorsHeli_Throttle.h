@@ -122,8 +122,8 @@ private:
     float           _throttle2_input;             // latest manual throttle input, Engine #2
     float           _throttle_output;             // AutoThrottle output, Engine #1
     float           _throttle2_output;            // AutoThrottle output, Engine #2
-    float           _throttle_torque;             // throttle torque limit, Engine #1
-    float           _throttle2_torque;            // throttle torque limit. Engine #2
+    float           _throttle_torque_reference;   // throttle torque reference, Engine #1
+    float           _throttle2_torque_reference;  // throttle torque reference. Engine #2
     bool            _autothrottle_on;             // AutoThrottle status flag, Engine #1
     bool            _autothrottle2_on;            // AutoThrottle status flag, Engine #2
     float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
