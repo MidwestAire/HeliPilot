@@ -287,18 +287,18 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                     // initial torque reference is set at the throttle it takes to reach governor reference speed
                     _throttle_torque_reference = _throttle_output;
                 } else {
-                    // governor engaged status with droop compensator
                     // if governor is engaged in rotor over-speed torque reference is set to current throttle curve position
-                    if (_throttle_torque_reference < 0.2f && !_governor_engage) {
+                    if (!_governor_engage && _throttle_torque_reference < 0.2f) {
                         _throttle_torque_reference = throttlecurve;
                     }
+                    // governor engaged status with droop compensator
                     if (!_governor_engage) {
                         _governor_engage = true;
-                        gcs().send_text(MAV_SEVERITY_INFO, "Governor: ENGAGED");
                     }
-                    // governor fault detection - must maintain Rrpm +/-3%
-                    // rpm fault detector will allow a fault to persist for 500ms before it throws a fault
-                    if ((_rotor_rpm < _governor_reference * 0.97f) || (_rotor_rpm > _governor_reference * 1.03f)) {
+                    // governor fault detection - must maintain Rrpm -3/+1%
+                    // this will lock out governor engage from overspeed in excess of 1%
+                    // rpm fault detector will allow a fault to persist for 500ms
+                    if ((_rotor_rpm < _governor_reference * 0.97f) || (_rotor_rpm > _governor_reference * 1.01f)) {
                         _governor_fault_timer += 1.0f;
                         if (_governor_fault_timer > 200.0f) {
                             _governor_fault = true;
@@ -384,19 +384,18 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                     _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve2 + _governor2_output - _idle_output)), 0.0f, 1.0f);
                     _throttle2_torque_reference = _throttle2_output;
                 } else {
-                    // governor engaged status with droop compensator
                     // if governor is engaged in rotor over-speed torque reference is set to current throttle curve position
-                    if (_throttle2_torque_reference < 0.2f && !_governor2_engage) {
+                    if (!_governor2_engage && _throttle2_torque_reference < 0.2f) {
                         _throttle2_torque_reference = throttlecurve2;
                     }
+                    // governor engaged status with droop compensator
                     if (!_governor2_engage) {
                         _governor2_engage = true;
-                        gcs().send_text(MAV_SEVERITY_INFO, "Governor Engine2: ENGAGED");
                     }
-                    // governor fault detection - must maintain Rrpm +/-3%
+                    // governor fault detection - must maintain Rrpm -3/+1%
                     // the same timer is used for both engines so if a fault does not clear it will disengage
                     // the governor on both engines in 250ms
-                    if ((_rotor_rpm < _governor_reference * 0.97f) || (_rotor_rpm > _governor_reference * 1.03f)) {
+                    if ((_rotor_rpm < _governor_reference * 0.97f) || (_rotor_rpm > _governor_reference * 1.01f)) {
                         _governor_fault_timer += 1.0f;
                         if (_governor_fault_timer > 200.0f) {
                             _governor2_fault = true;
