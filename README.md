@@ -1,7 +1,11 @@
 # HeliPilot Project
 
-HeliPilot is a fork of the ArduPilot project specific to commercially flown unmanned helicopters
-Credit is given below the ArduPilot project's resources, developers and maintainers.
+HeliPilot is a fork of the ArduPilot project specific to commercially flown unmanned helicopters. 
+Release versioning is based on the year and month of release. HeliPilot provides support only for
+single-rotor conventional helicopters with focus on stability and extensive testing of the code 
+for reliability. Testing is conducted on microcontrollers running the NuttX RTOS sub-system and
+autopilots running a linux-based sub-system. Credit is given below to the ArduPilot project's 
+resources, developers and maintainers.
 
 ## License ##
 
