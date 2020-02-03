@@ -2,39 +2,42 @@
 
 # Setup build environment - initialize variables
 # environment variables
-build=~/github/HeliPilot/Tools/firmware-build
 now=$(date +"%m-%d-%Y")
 
 #  must have a github account and token to auto-upload to github
 github_owner=MidwestAire
 github_token=**************************************
 
-#######################################################
+# set the github tag and upload to true to upload to github releases
+github_tag=v21-beta
+github_upload=false
+
+########################################################################
 #  build-spectic variables
 # set this to where you want the binaries to go during the build
-BuildDir=~/Documents/HeliPilot-Firmware-$now
+binary_location=~/Documents/HeliPilot-Firmware
+
+# set to the version, HPv19, HPv20, etc..
 build_version=HPv21-beta
 
-# set this to the path of the root of your github repos
+# set this to the path of the root of your github repo
 path=~/github
 
 # set this to the name of the github repo
 github_repo=HeliPilot
 
-# what branch are we building from
+# what branch are we building from, HeliPilot-v20, etc.
 github_branch=master
-
-# set the github tag and upload to true to upload to github releases
-github_tag=v21-beta
-github_upload=false
 
 # set to what type of binaries to build, true or false
 NuttX_build=true
 Linux_build=false
 ChibiOS_build=false
+########################################################################
+# end of user configs, do not edit below this line..
 
-#######################################################
-
+BuildDir=$binary_location-$now
+build=$path/$github_repo/Tools/firmware-build
 build_path=$path/$github_repo
 # make sure control files and github upload is executable
 chmod 744 $build_path/Tools/firmware-build/controls/* && chmod 744 $build_path/Tools/firmware-build/github-upload
