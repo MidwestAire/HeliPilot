@@ -1,0 +1,20 @@
+#!/bin/bash
+# Pixhawk3 Pro - NuttX
+#
+while getopts r:v:c:d: option
+    do
+        case "${option}"
+        in
+        r) build_path=${OPTARG};;
+        v) version=${OPTARG};;
+        c) control=${OPTARG};;
+        d) BuildDir=${OPTARG};;
+    esac
+done
+
+cd $build_path
+    ./waf configure --board px4-v4pro
+    ./waf heli
+cd ./build/px4-v4pro/bin
+mv arducopter-heli.px4 $version-$control.px4
+mv $version-$control.px4 $BuildDir
