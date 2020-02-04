@@ -7,6 +7,10 @@ for reliability. Testing is conducted on microcontrollers running the NuttX RTOS
 autopilots running a linux-based sub-system. Credit is given below to the ArduPilot project's 
 resources, developers and maintainers.
 
+## Build the Code ##
+
+Please watch this video on building the code https://youtu.be/epF0bM6oUdk
+
 ## License ##
 
 The HeliPilot project is compliant with and licenced under the GNU General Public License, version 3.
