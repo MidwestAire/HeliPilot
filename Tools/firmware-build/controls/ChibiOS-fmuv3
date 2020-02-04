@@ -1,0 +1,20 @@
+#!/bin/bash
+# FMUv3 - ChibiOS
+#
+while getopts r:v:c:d: option
+    do
+        case "${option}"
+        in
+        r) build_path=${OPTARG};;
+        v) version=${OPTARG};;
+        c) control=${OPTARG};;
+        d) BuildDir=${OPTARG};;
+    esac
+done
+
+cd $build_path
+    ./waf configure --board fmuv3
+    ./waf heli
+cd ./build/fmuv3/bin
+mv arducopter-heli.bin $version-$control.bin
+mv $version-$control.bin $BuildDir
