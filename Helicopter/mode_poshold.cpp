@@ -571,7 +571,7 @@ void Copter::ModePosHold::poshold_update_brake_angle_from_velocity(float &brake_
     float brake_rate = g.poshold_brake_rate;
 
     brake_rate /= 4.0f;
-    if (brake_rate <= 0.0f) {
+    if (brake_rate <= 1.0f) {
         brake_rate = 1.0f;
     }
 
