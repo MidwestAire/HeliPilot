@@ -43,30 +43,30 @@ static struct {
 
     // braking related variables
     float brake_gain;                           // gain used during conversion of vehicle's velocity to lean angle during braking (calculated from brake_rate)
-    int16_t brake_roll;                         // target roll angle during braking periods
-    int16_t brake_pitch;                        // target pitch angle during braking periods
+    float brake_roll;                           // target roll angle during braking periods
+    float brake_pitch;                          // target pitch angle during braking periods
     int16_t brake_timeout_roll;                 // number of cycles allowed for the braking to complete, this timeout will be updated at half-braking
     int16_t brake_timeout_pitch;                // number of cycles allowed for the braking to complete, this timeout will be updated at half-braking
-    int16_t brake_angle_max_roll;               // maximum lean angle achieved during braking.  Used to determine when the vehicle has begun to flatten out so that we can re-estimate the braking time
-    int16_t brake_angle_max_pitch;              // maximum lean angle achieved during braking  Used to determine when the vehicle has begun to flatten out so that we can re-estimate the braking time
+    float brake_angle_max_roll;                 // maximum lean angle achieved during braking.  Used to determine when the vehicle has begun to flatten out so that we can re-estimate the braking time
+    float brake_angle_max_pitch;                // maximum lean angle achieved during braking  Used to determine when the vehicle has begun to flatten out so that we can re-estimate the braking time
     int16_t brake_to_loiter_timer;              // cycles to mix brake and loiter controls in POSHOLD_BRAKE_TO_LOITER
 
     // loiter related variables
     int16_t controller_to_pilot_timer_roll;     // cycles to mix controller and pilot controls in POSHOLD_CONTROLLER_TO_PILOT
     int16_t controller_to_pilot_timer_pitch;    // cycles to mix controller and pilot controls in POSHOLD_CONTROLLER_TO_PILOT
-    int16_t controller_final_roll;              // final roll angle from controller as we exit brake or loiter mode (used for mixing with pilot input)
-    int16_t controller_final_pitch;             // final pitch angle from controller as we exit brake or loiter mode (used for mixing with pilot input)
+    float controller_final_roll;                // final roll angle from controller as we exit brake or loiter mode (used for mixing with pilot input)
+    float controller_final_pitch;               // final pitch angle from controller as we exit brake or loiter mode (used for mixing with pilot input)
 
     // wind compensation related variables
     Vector2f wind_comp_ef;                      // wind compensation in earth frame, filtered lean angles from position controller
-    int16_t wind_comp_roll;                     // roll angle to compensate for wind
-    int16_t wind_comp_pitch;                    // pitch angle to compensate for wind
+    float wind_comp_roll;                       // roll angle to compensate for wind
+    float wind_comp_pitch;                      // pitch angle to compensate for wind
     uint16_t wind_comp_start_timer;             // counter to delay start of wind compensation for a short time after loiter is engaged
     int8_t  wind_comp_timer;                    // counter to reduce wind comp roll/pitch lean angle calcs to 10hz
 
     // final output
-    int16_t roll;   // final roll angle sent to attitude controller
-    int16_t pitch;  // final pitch angle sent to attitude controller
+    float roll;     // final roll angle sent to attitude controller
+    float pitch;    // final pitch angle sent to attitude controller
 } poshold;
 
 // poshold_init - initialise PosHold controller
@@ -88,8 +88,8 @@ bool Copter::ModePosHold::init(bool ignore_checks)
     }
 
     // initialise lean angles to current attitude
-    poshold.pilot_roll = 0;
-    poshold.pilot_pitch = 0;
+    poshold.pilot_roll = 0.0f;
+    poshold.pilot_pitch = 0.0f;
 
     // compute brake_gain
     poshold.brake_gain = (15.0f * (float)g.poshold_brake_rate + 95.0f) / 100.0f;
@@ -110,8 +110,8 @@ bool Copter::ModePosHold::init(bool ignore_checks)
 
     // initialise wind_comp each time PosHold is switched on
     poshold.wind_comp_ef.zero();
-    poshold.wind_comp_roll = 0;
-    poshold.wind_comp_pitch = 0;
+    poshold.wind_comp_roll = 0.0f;
+    poshold.wind_comp_pitch = 0.0f;
     poshold.wind_comp_timer = 0;
 
     return true;
@@ -121,11 +121,11 @@ bool Copter::ModePosHold::init(bool ignore_checks)
 // should be called at 100hz or more
 void Copter::ModePosHold::run()
 {
-    float target_roll, target_pitch;  // pilot's roll and pitch angle inputs
-    float target_yaw_rate = 0;          // pilot desired yaw rate in centi-degrees/sec
-    float target_climb_rate = 0;      // pilot desired climb rate in centimeters/sec
-    float takeoff_climb_rate = 0.0f;    // takeoff induced climb rate
-    float brake_to_loiter_mix;          // mix of brake and loiter controls.  0 = fully brake controls, 1 = fully loiter controls
+    float target_roll, target_pitch;       // pilot's roll and pitch angle inputs
+    float target_yaw_rate = 0.0f;          // pilot desired yaw rate in centi-degrees/sec
+    float target_climb_rate = 0.0f;        // pilot desired climb rate in centimeters/sec
+    float takeoff_climb_rate = 0.0f;       // takeoff induced climb rate
+    float brake_to_loiter_mix;             // mix of brake and loiter controls.  0 = fully brake controls, 1 = fully loiter controls
     float controller_to_pilot_roll_mix; // mix of controller and pilot controls.  0 = fully last controller controls, 1 = fully pilot controls
     float controller_to_pilot_pitch_mix;    // mix of controller and pilot controls.  0 = fully last controller controls, 1 = fully pilot controls
     float vel_fw, vel_right;            // vehicle's current velocity in body-frame forward and right directions
@@ -226,8 +226,8 @@ void Copter::ModePosHold::run()
                 if (is_zero(target_roll) && (fabsf(poshold.pilot_roll) < 2 * g.poshold_brake_rate)) {
                     // initialise BRAKE mode
                     poshold.roll_mode = POSHOLD_BRAKE;        // Set brake roll mode
-                    poshold.brake_roll = 0;                  // initialise braking angle to zero
-                    poshold.brake_angle_max_roll = 0;        // reset brake_angle_max so we can detect when vehicle begins to flatten out during braking
+                    poshold.brake_roll = 0.0f;                // initialise braking angle to zero
+                    poshold.brake_angle_max_roll = 0.0f;      // reset brake_angle_max so we can detect when vehicle begins to flatten out during braking
                     poshold.brake_timeout_roll = POSHOLD_BRAKE_TIME_ESTIMATE_MAX; // number of cycles the brake will be applied, updated during braking mode.
                     poshold.braking_time_updated_roll = false;   // flag the braking time can be re-estimated
                 }
@@ -244,11 +244,11 @@ void Copter::ModePosHold::run()
                 // update braking time estimate
                 if (!poshold.braking_time_updated_roll) {
                     // check if brake angle is increasing
-                    if (abs(poshold.brake_roll) >= poshold.brake_angle_max_roll) {
-                        poshold.brake_angle_max_roll = abs(poshold.brake_roll);
+                    if (fabsf(poshold.brake_roll) >= poshold.brake_angle_max_roll) {
+                        poshold.brake_angle_max_roll = fabsf(poshold.brake_roll);
                     } else {
                         // braking angle has started decreasing so re-estimate braking time
-                        poshold.brake_timeout_roll = 1+(uint16_t)(LOOP_RATE_FACTOR*15L*(int32_t)(abs(poshold.brake_roll))/(10L*(int32_t)g.poshold_brake_rate));  // the 1.2 (12/10) factor has to be tuned in flight, here it means 120% of the "normal" time.
+                        poshold.brake_timeout_roll = 1+(uint16_t)(LOOP_RATE_FACTOR*15L*(int32_t)(fabsf(poshold.brake_roll))/(10L*(int32_t)g.poshold_brake_rate));  // the 1.2 (12/10) factor has to be tuned in flight, here it means 120% of the "normal" time.
                         poshold.braking_time_updated_roll = true;
                     }
                 }
@@ -320,8 +320,8 @@ void Copter::ModePosHold::run()
                 if (is_zero(target_pitch) && (fabsf(poshold.pilot_pitch) < 2 * g.poshold_brake_rate)) {
                     // initialise BRAKE mode
                     poshold.pitch_mode = POSHOLD_BRAKE;       // set brake pitch mode
-                    poshold.brake_pitch = 0;                 // initialise braking angle to zero
-                    poshold.brake_angle_max_pitch = 0;       // reset brake_angle_max so we can detect when vehicle begins to flatten out during braking
+                    poshold.brake_pitch = 0.0f;               // initialise braking angle to zero
+                    poshold.brake_angle_max_pitch = 0.0f;     // reset brake_angle_max so we can detect when vehicle begins to flatten out during braking
                     poshold.brake_timeout_pitch = POSHOLD_BRAKE_TIME_ESTIMATE_MAX; // number of cycles the brake will be applied, updated during braking mode.
                     poshold.braking_time_updated_pitch = false;   // flag the braking time can be re-estimated
                 }
@@ -338,11 +338,11 @@ void Copter::ModePosHold::run()
                 // update braking time estimate
                 if (!poshold.braking_time_updated_pitch) {
                     // check if brake angle is increasing
-                    if (abs(poshold.brake_pitch) >= poshold.brake_angle_max_pitch) {
-                        poshold.brake_angle_max_pitch = abs(poshold.brake_pitch);
+                    if (fabsf(poshold.brake_pitch) >= poshold.brake_angle_max_pitch) {
+                        poshold.brake_angle_max_pitch = fabsf(poshold.brake_pitch);
                     } else {
                         // braking angle has started decreasing so re-estimate braking time
-                        poshold.brake_timeout_pitch = 1+(uint16_t)(LOOP_RATE_FACTOR*15L*(int32_t)(abs(poshold.brake_pitch))/(10L*(int32_t)g.poshold_brake_rate));  // the 1.2 (12/10) factor has to be tuned in flight, here it means 120% of the "normal" time.
+                        poshold.brake_timeout_pitch = 1+(uint16_t)(LOOP_RATE_FACTOR*15L*(int32_t)(fabsf(poshold.brake_pitch))/(10L*(int32_t)g.poshold_brake_rate));  // the 1.2 (12/10) factor has to be tuned in flight, here it means 120% of the "normal" time.
                         poshold.braking_time_updated_pitch = true;
                     }
                 }
@@ -491,7 +491,7 @@ void Copter::ModePosHold::run()
                             // switch pitch-mode to brake (but ready to go back to loiter anytime)
                             poshold.pitch_mode = POSHOLD_BRAKE_READY_TO_LOITER;
                             // reset brake_pitch because wind_comp is now different and should give the compensation of the whole previous loiter angle
-                            poshold.brake_pitch = 0;
+                            poshold.brake_pitch = 0.0f;
                         }
                         // if pitch input switch to pilot override for pitch
                         if (!is_zero(target_pitch)) {
@@ -500,7 +500,7 @@ void Copter::ModePosHold::run()
                             // if roll not overriden switch roll-mode to brake (but be ready to go back to loiter any time)
                             if (is_zero(target_roll)) {
                                 poshold.roll_mode = POSHOLD_BRAKE_READY_TO_LOITER;
-                                poshold.brake_roll = 0;
+                                poshold.brake_roll = 0.0f;
                             }
                         }
                     }
@@ -514,8 +514,8 @@ void Copter::ModePosHold::run()
         
         // constrain target pitch/roll angles
         float angle_max = copter.aparm.angle_max;
-        poshold.roll = constrain_int16(poshold.roll, -angle_max, angle_max);
-        poshold.pitch = constrain_int16(poshold.pitch, -angle_max, angle_max);
+        poshold.roll = constrain_float(poshold.roll, -angle_max, angle_max);
+        poshold.pitch = constrain_float(poshold.pitch, -angle_max, angle_max);
 
         // update attitude controller targets
         attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(poshold.roll, poshold.pitch, target_yaw_rate);
@@ -556,23 +556,23 @@ void Copter::ModePosHold::poshold_update_pilot_lean_angle(float &lean_angle_filt
 
 // poshold_mix_controls - mixes two controls based on the mix_ratio
 //  mix_ratio of 1 = use first_control completely, 0 = use second_control completely, 0.5 = mix evenly
-int16_t Copter::ModePosHold::poshold_mix_controls(float mix_ratio, int16_t first_control, int16_t second_control)
+float Copter::ModePosHold::poshold_mix_controls(float mix_ratio, float first_control, float second_control)
 {
     mix_ratio = constrain_float(mix_ratio, 0.0f, 1.0f);
-    return (int16_t)((mix_ratio * first_control) + ((1.0f-mix_ratio)*second_control));
+    return mix_ratio * first_control + (1.0f - mix_ratio) * second_control;
 }
 
 // poshold_update_brake_angle_from_velocity - updates the brake_angle based on the vehicle's velocity and brake_gain
 //  brake_angle is slewed with the wpnav.poshold_brake_rate and constrained by the wpnav.poshold_braking_angle_max
 //  velocity is assumed to be in the same direction as lean angle so for pitch you should provide the velocity backwards (i.e. -ve forward velocity)
-void Copter::ModePosHold::poshold_update_brake_angle_from_velocity(int16_t &brake_angle, float velocity)
+void Copter::ModePosHold::poshold_update_brake_angle_from_velocity(float &brake_angle, float velocity)
 {
     float lean_angle;
-    int16_t brake_rate = g.poshold_brake_rate;
+    float brake_rate = g.poshold_brake_rate;
 
-    brake_rate /= 4;
-    if (brake_rate <= 0) {
-        brake_rate = 1;
+    brake_rate /= 4.0f;
+    if (brake_rate <= 0.0f) {
+        brake_rate = 1.0f;
     }
 
     // calculate velocity-only based lean angle
@@ -583,10 +583,10 @@ void Copter::ModePosHold::poshold_update_brake_angle_from_velocity(int16_t &brak
     }
 
     // do not let lean_angle be too far from brake_angle
-    brake_angle = constrain_int16((int16_t)lean_angle, brake_angle - brake_rate, brake_angle + brake_rate);
+    brake_angle = constrain_float(lean_angle, brake_angle - brake_rate, brake_angle + brake_rate);
 
     // constrain final brake_angle
-    brake_angle = constrain_int16(brake_angle, -g.poshold_brake_angle_max, g.poshold_brake_angle_max);
+    brake_angle = constrain_float(brake_angle, -(float)g.poshold_brake_angle_max, (float)g.poshold_brake_angle_max);
 }
 
 // poshold_update_wind_comp_estimate - updates wind compensation estimate
@@ -627,7 +627,7 @@ void Copter::ModePosHold::poshold_update_wind_comp_estimate()
 
 // poshold_get_wind_comp_lean_angles - retrieve wind compensation angles in body frame roll and pitch angles
 //  should be called at the maximum loop rate
-void Copter::ModePosHold::poshold_get_wind_comp_lean_angles(int16_t &roll_angle, int16_t &pitch_angle)
+void Copter::ModePosHold::poshold_get_wind_comp_lean_angles(float &roll_angle, float &pitch_angle)
 {
     // reduce rate to 10hz
     poshold.wind_comp_timer++;
@@ -637,8 +637,8 @@ void Copter::ModePosHold::poshold_get_wind_comp_lean_angles(int16_t &roll_angle,
     poshold.wind_comp_timer = 0;
 
     // convert earth frame desired accelerations to body frame roll and pitch lean angles
-    roll_angle = atanf((-poshold.wind_comp_ef.x*ahrs.sin_yaw() + poshold.wind_comp_ef.y*ahrs.cos_yaw())/981)*(18000/M_PI);
-    pitch_angle = atanf(-(poshold.wind_comp_ef.x*ahrs.cos_yaw() + poshold.wind_comp_ef.y*ahrs.sin_yaw())/981)*(18000/M_PI);
+    roll_angle = atanf((-poshold.wind_comp_ef.x*ahrs.sin_yaw() + poshold.wind_comp_ef.y*ahrs.cos_yaw())/981.0f)*(18000.0f/M_PI);
+    pitch_angle = atanf(-(poshold.wind_comp_ef.x*ahrs.cos_yaw() + poshold.wind_comp_ef.y*ahrs.sin_yaw())/981.0f)*(18000.0f/M_PI);
 }
 
 // poshold_roll_controller_to_pilot_override - initialises transition from a controller submode (brake or loiter) to a pilot override on roll axis
@@ -647,7 +647,7 @@ void Copter::ModePosHold::poshold_roll_controller_to_pilot_override()
     poshold.roll_mode = POSHOLD_CONTROLLER_TO_PILOT_OVERRIDE;
     poshold.controller_to_pilot_timer_roll = POSHOLD_CONTROLLER_TO_PILOT_MIX_TIMER;
     // initialise pilot_roll to 0, wind_comp will be updated to compensate and poshold_update_pilot_lean_angle function shall not smooth this transition at next iteration. so 0 is the right value
-    poshold.pilot_roll = 0;
+    poshold.pilot_roll = 0.0f;
     // store final controller output for mixing with pilot input
     poshold.controller_final_roll = poshold.roll;
 }
@@ -658,7 +658,7 @@ void Copter::ModePosHold::poshold_pitch_controller_to_pilot_override()
     poshold.pitch_mode = POSHOLD_CONTROLLER_TO_PILOT_OVERRIDE;
     poshold.controller_to_pilot_timer_pitch = POSHOLD_CONTROLLER_TO_PILOT_MIX_TIMER;
     // initialise pilot_pitch to 0, wind_comp will be updated to compensate and poshold_update_pilot_lean_angle function shall not smooth this transition at next iteration. so 0 is the right value
-    poshold.pilot_pitch = 0;
+    poshold.pilot_pitch = 0.0f;
     // store final loiter outputs for mixing with pilot input
     poshold.controller_final_pitch = poshold.pitch;
 }

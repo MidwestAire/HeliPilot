@@ -953,10 +953,10 @@ protected:
 private:
 
     void poshold_update_pilot_lean_angle(float &lean_angle_filtered, float &lean_angle_raw);
-    int16_t poshold_mix_controls(float mix_ratio, int16_t first_control, int16_t second_control);
-    void poshold_update_brake_angle_from_velocity(int16_t &brake_angle, float velocity);
+    float poshold_mix_controls(float mix_ratio, float first_control, float second_control);
+    void poshold_update_brake_angle_from_velocity(float &brake_angle, float velocity);
     void poshold_update_wind_comp_estimate();
-    void poshold_get_wind_comp_lean_angles(int16_t &roll_angle, int16_t &pitch_angle);
+    void poshold_get_wind_comp_lean_angles(float &roll_angle, float &pitch_angle);
     void poshold_roll_controller_to_pilot_override();
     void poshold_pitch_controller_to_pilot_override();
 
