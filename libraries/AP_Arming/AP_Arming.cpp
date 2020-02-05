@@ -26,11 +26,8 @@
 #define AP_ARMING_ACCEL_ERROR_THRESHOLD 0.75f
 #define AP_ARMING_AHRS_GPS_ERROR_MAX    10      // accept up to 10m difference between AHRS and GPS
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
-  #define ARMING_RUDDER_DEFAULT         ARMING_RUDDER_ARMONLY
-#else
-  #define ARMING_RUDDER_DEFAULT         ARMING_RUDDER_DISABLED
-#endif
+#define ARMING_RUDDER_DEFAULT         ARMING_RUDDER_DISABLED
+
 
 extern const AP_HAL::HAL& hal;
 
@@ -563,7 +560,7 @@ bool AP_Arming::board_voltage_checks(bool report)
 
 bool AP_Arming::pre_arm_checks(bool report)
 {
-#if !APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if !APM_BUILD_TYPE(APM_BUILD_HeliPilot)
     if (armed || require == NONE) {
         // if we are already armed or don't need any arming checks
         // then skip the checks
@@ -610,7 +607,7 @@ bool AP_Arming::arm_checks(uint8_t method)
 //returns true if arming occurred successfully
 bool AP_Arming::arm(uint8_t method, const bool do_arming_checks)
 {
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
     // Copter should never use this function
     return false;
 #else
@@ -647,7 +644,7 @@ bool AP_Arming::arm(uint8_t method, const bool do_arming_checks)
 //returns true if disarming occurred successfully
 bool AP_Arming::disarm() 
 {
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
     // Copter should never use this function
     return false;
 #else
