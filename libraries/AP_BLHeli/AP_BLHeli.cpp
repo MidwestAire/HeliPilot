@@ -48,7 +48,7 @@ const AP_Param::GroupInfo AP_BLHeli::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("MASK",  1, AP_BLHeli, channel_mask, 0),
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     // @Param: AUTO
     // @DisplayName: auto-enable for multicopter motors
     // @Description: If set to 1 this auto-enables BLHeli pass-thru support for all multicopter motors
@@ -1237,7 +1237,7 @@ void AP_BLHeli::update(void)
         hal.rcout->set_output_mode(mask, mode);
     }
     
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     /*
       plane and copter can use AP_Motors to get an automatic mask
      */

@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
 #define SCHEDULER_DEFAULT_LOOP_RATE 400
 #else
 #define SCHEDULER_DEFAULT_LOOP_RATE  50

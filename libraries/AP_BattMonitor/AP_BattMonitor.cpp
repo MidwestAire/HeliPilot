@@ -157,7 +157,7 @@ void AP_BattMonitor::convert_params(void) {
     AP_Param::ConversionInfo info;
     info.new_name = param_name;
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     info.old_key = 36;
 #else
     _params[0]._type.save(true);

@@ -95,7 +95,7 @@ void AP_MotorsTailsitter::output_to_motors()
     SRV_Channels::set_output_scaled(SRV_Channel::k_throttleLeft,  throttle_left*THROTTLE_RANGE);
     SRV_Channels::set_output_scaled(SRV_Channel::k_throttleRight, throttle_right*THROTTLE_RANGE);
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     SRV_Channels::calc_pwm();
     SRV_Channels::output_ch_all();
 #endif

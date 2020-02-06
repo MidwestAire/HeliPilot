@@ -22,7 +22,7 @@
   values for example sketches
  */
 
-#define APM_BUILD_HeliPilot      2
+#define APM_BUILD_Helicopter     2
 #define APM_BUILD_AntennaTracker 4
 #define APM_BUILD_UNKNOWN        5
 #define APM_BUILD_Replay         6
