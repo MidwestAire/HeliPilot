@@ -16,5 +16,5 @@ cd $build_path
     ./waf configure --board fmuv3
     ./waf heli
 cd ./build/fmuv3/bin
-mv arducopter-heli.bin $version-$control.bin
+mv firmware-helicopter.bin $version-$control.bin
 mv $version-$control.bin $BuildDir

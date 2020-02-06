@@ -16,5 +16,5 @@ cd $build_path
     ./waf configure --board navio2
     ./waf heli
 cd ./build/navio2/bin
-mv arducopter-heli $version-$control
+mv firmware-helicopter $version-$control
 mv $version-$control $BuildDir

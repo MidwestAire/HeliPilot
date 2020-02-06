@@ -16,5 +16,5 @@ cd $build_path
     ./waf configure --board px4-v4
     ./waf heli
 cd ./build/px4-v4/bin
-mv arducopter-heli.px4 $version-$control.px4
+mv firmware-helicopter.px4 $version-$control.px4
 mv $version-$control.px4 $BuildDir

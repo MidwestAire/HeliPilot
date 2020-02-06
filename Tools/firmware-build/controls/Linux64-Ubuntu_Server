@@ -16,5 +16,5 @@ cd $build_path
     ./waf configure --board linux
     ./waf heli
 cd ./build/linux/bin
-mv arducopter-heli $version-$control
+mv firmware-helicopter $version-$control
 mv $version-$control $BuildDir
