@@ -27,7 +27,7 @@
 
 extern AP_HAL::HAL& hal;
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
 #define COMPASS_LEARN_DEFAULT Compass::LEARN_NONE
 #else
 #define COMPASS_LEARN_DEFAULT Compass::LEARN_INTERNAL

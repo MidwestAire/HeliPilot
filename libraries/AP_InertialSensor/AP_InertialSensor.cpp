@@ -37,7 +37,7 @@
 
 extern const AP_HAL::HAL& hal;
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
 #define DEFAULT_GYRO_FILTER  10
 #define DEFAULT_ACCEL_FILTER 10
 #define DEFAULT_STILL_THRESH 5.0f

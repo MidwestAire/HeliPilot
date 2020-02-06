@@ -8,7 +8,7 @@ extern const AP_HAL::HAL& hal;
 // storage object
 StorageAccess AP_Rally::_storage(StorageManager::StorageRally);
 
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
   #define RALLY_LIMIT_KM_DEFAULT 0.3f
   #define RALLY_INCLUDE_HOME_DEFAULT 1
 #else

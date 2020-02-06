@@ -560,7 +560,7 @@ bool AP_Arming::board_voltage_checks(bool report)
 
 bool AP_Arming::pre_arm_checks(bool report)
 {
-#if !APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if !APM_BUILD_TYPE(APM_BUILD_Helicopter)
     if (armed || require == NONE) {
         // if we are already armed or don't need any arming checks
         // then skip the checks
@@ -607,7 +607,7 @@ bool AP_Arming::arm_checks(uint8_t method)
 //returns true if arming occurred successfully
 bool AP_Arming::arm(uint8_t method, const bool do_arming_checks)
 {
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     // Copter should never use this function
     return false;
 #else
@@ -644,7 +644,7 @@ bool AP_Arming::arm(uint8_t method, const bool do_arming_checks)
 //returns true if disarming occurred successfully
 bool AP_Arming::disarm() 
 {
-#if APM_BUILD_TYPE(APM_BUILD_HeliPilot)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     // Copter should never use this function
     return false;
 #else
