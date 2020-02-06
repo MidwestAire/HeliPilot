@@ -9,7 +9,20 @@ resources, developers and maintainers.
 
 ## Build the Code ##
 
+To set up the build environment and run the simulator change to the HeliPilot directory and run
+the build-setup.sh setup script from your terminal with ./build-setup.sh Follow the prompts in the script.
+
 Please watch this video on building the code https://youtu.be/epF0bM6oUdk
+
+## Running the Simulator ##
+
+After cloning the code and running the build-setup the HeliPilot simulator can be run by changing to
+the HeliPilot directory and run ./sim in your terminal.
+
+There is a locations.txt file located in your home directory in the .config/helipilot folder. This 
+file can be modified to add custom locations for the SIM and have your simulator flight start from 
+a custom location with ./sim -l Default. Change Default to the name of your custom location as entered 
+into the locations.txt file.
 
 ## License ##
 
