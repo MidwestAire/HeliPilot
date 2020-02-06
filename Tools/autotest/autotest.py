@@ -127,7 +127,7 @@ def build_examples():
 def build_parameters():
     """Run the param_parse.py script."""
     print("Running param_parse.py")
-    for vehicle in 'ArduPlane', 'ArduCopter', 'ArduSub', 'APMrover2', 'AntennaTracker':
+    for vehicle in 'ArduPlane', 'Helicopter', 'ArduSub', 'APMrover2', 'AntennaTracker':
         if util.run_cmd([util.reltopdir('Tools/autotest/param_metadata/param_parse.py'), '--vehicle', vehicle], directory=util.reltopdir('.')) != 0:
             print("Failed param_parse.py (%s)" % vehicle)
             return False
@@ -182,11 +182,11 @@ def should_run_step(step):
     return True
 
 __bin_names = {
-    "ArduCopter" : "arducopter",
+    "ArduCopter" : "firmware-multirotor",
     "ArduPlane" : "arduplane",
     "APMrover2" : "ardurover",
     "AntennaTracker" : "antennatracker",
-    "CopterAVC" : "arducopter-heli",
+    "CopterAVC" : "firmware-helicopter",
     "QuadPlane" : "arduplane",
     "ArduSub" : "ardusub"
 }
@@ -239,13 +239,13 @@ def run_step(step):
         vehicle_binary = 'bin/ardurover'
 
     if step == 'build.ArduCopter':
-        vehicle_binary = 'bin/arducopter'
+        vehicle_binary = 'bin/firmware-multirotor'
 
     if step == 'build.AntennaTracker':
         vehicle_binary = 'bin/antennatracker'
 
     if step == 'build.Helicopter':
-        vehicle_binary = 'bin/arducopter-heli'
+        vehicle_binary = 'bin/firmare-helicopter'
 
     if step == 'build.ArduSub':
         vehicle_binary = 'bin/ardusub'
