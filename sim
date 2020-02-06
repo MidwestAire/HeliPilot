@@ -1,0 +1,47 @@
+#!/bin/bash
+# script to run the HeliPilot simulator (SITL)
+
+echo "starting up HeliPilot simulator.................."
+echo ""
+echo "to quit the simulator press Ctl-C"
+echo ""
+
+ASSUME_YES=false
+function maybe_prompt_user() {
+    if $ASSUME_YES; then
+        return 1
+    else
+        read -p "$1"
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            return 1
+        else
+            return 0
+        fi
+    fi
+}
+
+if maybe_prompt_user "Continue with SIM startup [n/Y]?" ; then
+    while getopts l: option
+        do
+        case "${option}"
+        in
+        l) location=${OPTARG};;
+    esac
+done
+
+echo "copying HeliPilot, please wait ............"
+cp -r Helicopter ./ArduCopter
+
+git submodule update --recursive
+if [ -z "$location" ] ; then
+    Tools/autotest/sim_vehicle.py -v ArduCopter -f heli -L Default
+else
+    Tools/autotest/sim_vehicle.py -v ArduCopter -f heli -L $location
+fi
+
+# remove the sim run directory after it is killed
+echo "cleaning up SITL run directory.........."
+rm -rf ArduCopter
+else
+    echo "Shutting down HeliPilot sim.........."
+fi

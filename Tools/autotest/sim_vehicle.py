@@ -413,7 +413,7 @@ def get_user_locations_path():
         os.path.join(os.environ.get('HOME', '.'), '.config'))
 
     user_locations_path = os.path.join(
-        config_dir, 'ardupilot', 'locations.txt')
+        config_dir, 'helipilot', 'locations.txt')
 
     return user_locations_path
 
