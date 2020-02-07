@@ -1,19 +1,29 @@
 #!/bin/bash
 # script to run the HeliPilot simulator (SITL)
-clear
-echo "starting up HeliPilot simulator.................."
-echo ""
-echo "NOTE: TO QUIT THE SIMULATOR press Ctl-C"
-echo ""
+
+function draw_logo() {
+    clear
+    echo -e "\e[1;34m 0  0  0000  0     0 \e[0m\e[1;31m  0 0   0  0      000   0000000 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0  0  0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0000  000   0     0 \e[0m\e[1;31m  0 0   0  0    0     0    0 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0     0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0  0  0000  0000  0 \e[0m\e[1;31m  0     0  0000   000      0 \e[0m"
+    echo -e "\e[1;34m----------------------\e[0m\e[1;31m--------------------------- \e[0m"
+    echo "starting up the simulator.................."
+    echo ""
+}
 
 # check that user locations.txt exists
+draw_logo
 if [ ! -e ~/.config/helipilot/locations.txt ]; then
     mkdir ~/.config/helipilot && touch ~/.config/helipilot/locations.txt
     echo "adding user locations.txt file..........."
     echo "#NAME=latitude,longitude,absolute-altitude,heading" >> ~/.config/helipilot/locations.txt
     echo "Default=45.4175714,-91.7720328,334,282" >> ~/.config/helipilot/locations.txt
 else
-    echo "user locations ok!"
+    echo "user locations ok, startup checks passed - locations.txt is writable!"
+    echo ""
+    echo "TO QUIT THE SIMULATOR AT ANY TIME press Ctl-C"
     echo ""
 fi
 
@@ -31,7 +41,7 @@ function maybe_prompt_user() {
     fi
 }
 
-if maybe_prompt_user "Press Enter to continue SIM startup, or to exit use n [n/Y]?" ; then
+if maybe_prompt_user "Press Enter to continue SIM startup, or Ctl-C to exit" ; then
     while getopts l: option
         do
         case "${option}"
@@ -39,7 +49,16 @@ if maybe_prompt_user "Press Enter to continue SIM startup, or to exit use n [n/Y
         l) location=${OPTARG};;
     esac
 done
-echo ""
+
+draw_logo
+
+if maybe_prompt_user "Dislay MavProxy console and map? This is optional [n/Y]" ; then
+    console="--console"
+    map="--map"
+fi
+
+draw_logo
+
     if [ -z "$location" ] ; then
         if maybe_prompt_user "Enter a new location for this SIM flight [n/Y]?" ; then
             echo ""
@@ -51,19 +70,19 @@ echo ""
             echo "enter the details for $new_location seperated by commas with no spaces in the format:"
             echo "latitude,longitude,altitude,initial-heading"
             echo ""
-            echo "Example: 45.4175714,-91.7720328,23,270 (NOTE: altitude is MSL in meters)"
+            echo "Example: 45.4175714,-91.7720328,334,270 (NOTE: altitude is MSL in meters)"
             echo ""
             read -p 'Details: ' details
             echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
             git submodule update --recursive
-            Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L $new_location
+            Tools/autotest/sim_vehicle.py $console $map -v Helicopter -f heli -L $new_location
         else
             git submodule update --recursive
-            Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L Default
+            Tools/autotest/sim_vehicle.py $console $map -v Helicopter -f heli -L Default
         fi
     else
         git submodule update --recursive
-        Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L $location
+        Tools/autotest/sim_vehicle.py $console $map -v Helicopter -f heli -L $location
     fi
 else
     echo "Shutting down HeliPilot sim.........."
