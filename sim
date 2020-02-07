@@ -56,14 +56,14 @@ echo ""
             read -p 'Details: ' details
             echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
             git submodule update --recursive
-            Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L $new_location
+            Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L $new_location
         else
             git submodule update --recursive
-            Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L Default
+            Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L Default
         fi
     else
         git submodule update --recursive
-        Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L $location
+        Tools/autotest/sim_vehicle.py --console --map -v Helicopter -f heli -L $location
     fi
 else
     echo "Shutting down HeliPilot sim.........."
