@@ -28,20 +28,12 @@ if maybe_prompt_user "Continue with SIM startup [n/Y]?" ; then
         l) location=${OPTARG};;
     esac
 done
-
-echo "copying HeliPilot, please wait ............"
-cp -r Helicopter ./ArduCopter
-
-git submodule update --recursive
-if [ -z "$location" ] ; then
-    Tools/autotest/sim_vehicle.py -v ArduCopter -f heli -L Default
-else
-    Tools/autotest/sim_vehicle.py -v ArduCopter -f heli -L $location
-fi
-
-# remove the sim run directory after it is killed
-echo "cleaning up SITL run directory.........."
-rm -rf ArduCopter
+    git submodule update --recursive
+    if [ -z "$location" ] ; then
+        Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L Default
+    else
+        Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L $location
+    fi
 else
     echo "Shutting down HeliPilot sim.........."
 fi

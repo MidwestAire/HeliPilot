@@ -221,7 +221,7 @@ def kill_tasks():
             'JSBSim',
             'lt-JSBSim',
             'ArduPlane.elf',
-            'ArduCopter.elf',
+            'Helicopter.elf',
             'ArduSub.elf',
             'APMrover2.elf',
             'AntennaTracker.elf',
@@ -975,7 +975,7 @@ if cmd_opts.vehicle not in vinfo.options:
     progress('''
 ** Is (%s) really your vehicle type?
 Perhaps you could try -v %s
-You could also try changing directory to e.g. the ArduCopter subdirectory
+You could also try changing directory to e.g. the Helicopter subdirectory
 ''' % (cmd_opts.vehicle, vehicle_options_string))
     sys.exit(1)
 

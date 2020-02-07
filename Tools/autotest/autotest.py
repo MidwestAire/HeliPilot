@@ -182,7 +182,7 @@ def should_run_step(step):
     return True
 
 __bin_names = {
-    "ArduCopter" : "firmware-multirotor",
+    "Helicopter" : "firmware-multirotor",
     "ArduPlane" : "arduplane",
     "APMrover2" : "ardurover",
     "AntennaTracker" : "antennatracker",
@@ -238,7 +238,7 @@ def run_step(step):
     if step == 'build.APMrover2':
         vehicle_binary = 'bin/ardurover'
 
-    if step == 'build.ArduCopter':
+    if step == 'build.Helicopter':
         vehicle_binary = 'bin/firmware-multirotor'
 
     if step == 'build.AntennaTracker':
@@ -269,7 +269,7 @@ def run_step(step):
     if opts.speedup is not None:
         fly_opts["speedup"] = opts.speedup
 
-    if step == 'fly.ArduCopter':
+    if step == 'fly.Helicopter':
         arducopter = AutoTestCopter(binary, frame=opts.frame, **fly_opts)
         return arducopter.autotest()
 
@@ -392,7 +392,7 @@ def write_fullresults():
     ]
     vehicle_globs = [('{vehicle} log', '{vehicle}-*.BIN'),
     ]
-    for vehicle in 'ArduPlane','ArduCopter','APMrover2','AntennaTracker', 'ArduSub':
+    for vehicle in 'ArduPlane','Helicopter','APMrover2','AntennaTracker', 'ArduSub':
         subs = { 'vehicle': vehicle }
         for vehicle_file in vehicle_files:
             description = vehicle_file[0].format(**subs)
@@ -547,9 +547,9 @@ if __name__ == "__main__":
     'defaults.APMrover2',
     'drive.APMrover2',
 
-    'build.ArduCopter',
-    'defaults.ArduCopter',
-    'fly.ArduCopter',
+    'build.Helicopter',
+    'defaults.Helicopter',
+    'fly.Helicopter',
 
     'build.Helicopter',
     'fly.CopterAVC',

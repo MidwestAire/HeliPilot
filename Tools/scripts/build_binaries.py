@@ -517,17 +517,17 @@ is bob we will attempt to checkout bob-AVR'''
                 "mRoX21",
                 "Pixracer"]
 
-    def build_arducopter(self, tag):
+    def build_Helicopter(self, tag):
         '''build Copter binaries'''
         boards = []
         boards.extend(["skyviper-v2450", "aerofc-v1", "bebop"])
         boards.extend(self.common_boards()[:])
         self.build_vehicle(tag,
-                           "ArduCopter",
+                           "Helicopter",
                            boards,
                            "Copter",
                            "arducopter",
-                           "ArduCopter",
+                           "Helicopter",
                            frames=[None, "heli"])
 
     def build_arduplane(self, tag):

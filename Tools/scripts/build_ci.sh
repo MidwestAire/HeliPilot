@@ -54,7 +54,7 @@ for t in $CI_BUILD_TARGET; do
         (cd modules/mavlink/pymavlink && python setup.py build install --user)
         unset BUILDROOT
         echo "Running SITL QuadCopter test"
-        Tools/autotest/autotest.py build.ArduCopter fly.ArduCopter
+        Tools/autotest/autotest.py build.Helicopter fly.Helicopter
         ccache -s && ccache -z
         continue
     fi
@@ -112,7 +112,7 @@ for t in $CI_BUILD_TARGET; do
     # only do make-based builds for GCC, when target is PX4-v3 or build is launched by a scheduled job and target is a PX4 board or SITL
     if [[ "$cxx_compiler" != "clang++" && ($t == "px4-v3" || (-n ${CI_CRON_JOB+1} && ($t == "px4"* || $t == "sitl"))) ]]; then
         echo "Starting make based build for target ${t}..."
-        for v in "ArduPlane" "ArduCopter" "APMrover2" "ArduSub" "AntennaTracker"; do
+        for v in "ArduPlane" "Helicopter" "APMrover2" "ArduSub" "AntennaTracker"; do
             echo "Building $v for ${t}..."
 
             pushd $v
@@ -148,7 +148,7 @@ done
 
 python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle APMrover2
 python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle AntennaTracker
-python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle ArduCopter
+python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle Helicopter
 python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle ArduPlane
 python Tools/autotest/param_metadata/param_parse.py --no-emit --vehicle ArduSub
 

@@ -9,10 +9,10 @@ export BUILDLOGS=/tmp/buildlogs
 export APMROOT=/vagrant
 export PATH=$APMROOT/Tools/autotest:$PATH
 
-cd $APMROOT/ArduCopter
+cd $APMROOT/Helicopter
 
 echo "Ardupilot environment ready.  Run 'sim_vehicle.py' to start simulating an arducopter instance."
 echo "To build for fmuv2:"
 echo "  cd /vagrant"
 echo "  ./waf configure --board=px4-v2"
-echo "  ./waf build --target=bin/arducopter"
+echo "  ./waf build --target=bin/firmware-multirotor"

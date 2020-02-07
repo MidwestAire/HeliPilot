@@ -7,7 +7,7 @@ class VehicleInfo(object):
         extra_mavlink_cmds: extra parameters that will be passed to mavproxy
         """
         self.options = {
-    "ArduCopter": {
+    "Helicopter": {
         "default_frame": "quad",
         "frames": {
             # COPTER
