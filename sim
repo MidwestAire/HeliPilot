@@ -1,10 +1,21 @@
 #!/bin/bash
 # script to run the HeliPilot simulator (SITL)
-
+clear
 echo "starting up HeliPilot simulator.................."
 echo ""
 echo "NOTE: TO QUIT THE SIMULATOR press Ctl-C"
 echo ""
+
+# check that user locations.txt exists
+if [ ! -e ~/.config/helipilot/locations.txt ]; then
+    mkdir ~/.config/helipilot && touch ~/.config/helipilot/locations.txt
+    echo "adding user locations.txt file..........."
+    echo "#NAME=latitude,longitude,absolute-altitude,heading" >> ~/.config/helipilot/locations.txt
+    echo "Default=45.4175714,-91.7720328,334,282" >> ~/.config/helipilot/locations.txt
+else
+    echo "user locations ok!"
+    echo ""
+fi
 
 ASSUME_YES=false
 function maybe_prompt_user() {

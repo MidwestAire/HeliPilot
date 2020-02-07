@@ -1,12 +1,8 @@
 #!/bin/bash
 
-# Setup build environment and tools to run SIM.
+# Setup build environment and tools to run SIM
 chmod 755 Tools/scripts/install-prereqs-ubuntu.sh
 chmod 755 Tools/firmware-build/firmware-build.sh
-mkdir ~/.config/helipilot && touch ~/.config/helipilot/locations.txt
-echo "adding custom locations.txt file..........."
-echo "#NAME=latitude,longitude,absolute-altitude,heading" >> ~/.config/helipilot/locations.txt
-echo "Default=45.4175714,-91.7720328,23,282" >> ~/.config/helipilot/locations.txt
 
 # run Ubuntu setup script
 Tools/scripts/install-prereqs-ubuntu.sh
