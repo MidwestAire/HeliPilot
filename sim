@@ -3,7 +3,7 @@
 
 echo "starting up HeliPilot simulator.................."
 echo ""
-echo "to quit the simulator press Ctl-C"
+echo "NOTE: TO QUIT THE SIMULATOR press Ctl-C"
 echo ""
 
 ASSUME_YES=false
@@ -20,7 +20,7 @@ function maybe_prompt_user() {
     fi
 }
 
-if maybe_prompt_user "Continue with SIM startup [n/Y]?" ; then
+if maybe_prompt_user "Press Enter to continue SIM startup, or to exit use n [n/Y]?" ; then
     while getopts l: option
         do
         case "${option}"
@@ -28,10 +28,30 @@ if maybe_prompt_user "Continue with SIM startup [n/Y]?" ; then
         l) location=${OPTARG};;
     esac
 done
-    git submodule update --recursive
+echo ""
     if [ -z "$location" ] ; then
-        Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L Default
+        if maybe_prompt_user "Enter a new location for this SIM flight [n/Y]?" ; then
+            echo ""
+            echo "enter what you wish to call this location"
+            echo "Example: Barron"
+            echo ""
+            read -p 'Location: ' new_location
+            echo ""
+            echo "enter the details for $new_location seperated by commas with no spaces in the format:"
+            echo "latitude,longitude,altitude,initial-heading"
+            echo ""
+            echo "Example: 45.4175714,-91.7720328,23,270 (NOTE: altitude is MSL in meters)"
+            echo ""
+            read -p 'Details: ' details
+            echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
+            git submodule update --recursive
+            Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L $new_location
+        else
+            git submodule update --recursive
+            Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L Default
+        fi
     else
+        git submodule update --recursive
         Tools/autotest/sim_vehicle.py -v Helicopter -f heli -L $location
     fi
 else
