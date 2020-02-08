@@ -1,5 +1,6 @@
 #!/bin/bash
 # script to run the HeliPilot simulator (SITL)
+# created by Chris Olson for HeliPilot
 
 function draw_logo() {
     clear
@@ -16,12 +17,14 @@ function draw_logo() {
 # check that user locations.txt exists
 draw_logo
 if [ ! -e ~/.config/helipilot/locations.txt ]; then
-    mkdir ~/.config/helipilot && touch ~/.config/helipilot/locations.txt
+    # we try to create a .config folder for WSL on Windows
+    mkdir -m 755 ~/.config
+    mkdir -m 755 ~/.config/helipilot && (umask 133 ; touch ~/.config/helipilot/locations.txt)
     echo "adding user locations.txt file..........."
     echo "#NAME=latitude,longitude,absolute-altitude,heading" >> ~/.config/helipilot/locations.txt
     echo "Default=45.4175714,-91.7720328,334,282" >> ~/.config/helipilot/locations.txt
 else
-    echo "user locations ok, startup checks passed - locations.txt is writable!"
+    echo "user locations already exists!"
     echo ""
     echo "TO QUIT THE SIMULATOR AT ANY TIME press Ctl-C"
     echo ""

@@ -51,6 +51,8 @@ fi
 echo ""
 echo "creating desktop script for building HeliPilot......."
 if [ ! -e ~/Desktop/HeliPilot-Firmware ]; then
+    # we try to create a Desktop folder for WSL on Windows, since it doesn't exist by default
+    mkdir -m 755 ~/Desktop
     cp Tools/firmware-build/firmware-build.sh ~/Desktop/ && mv ~/Desktop/firmware-build.sh ~/Desktop/HeliPilot-Firmware
 else
     echo ""
