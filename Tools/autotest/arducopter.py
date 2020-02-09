@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Fly ArduCopter in SITL
+# Fly Helicopter in SITL
 from __future__ import print_function
 import math
 import os
@@ -55,7 +55,7 @@ class AutoTestCopter(AutoTest):
         self.speedup = speedup
         self.speedup_default = 10
 
-        self.log_name = "ArduCopter"
+        self.log_name = "Helicopter"
         self.logfile = None
         self.buildlog = None
         self.copy_tlog = False
@@ -73,7 +73,7 @@ class AutoTestCopter(AutoTest):
         return 5
 
     def vehicleinfo_key(self):
-        return 'ArduCopter'
+        return 'Helicopter'
 
     def init(self):
         if self.frame is None:
@@ -96,7 +96,7 @@ class AutoTestCopter(AutoTest):
                                     vicon=True,
                                     wipe=True)
         self.mavproxy = util.start_MAVProxy_SITL(
-            'ArduCopter', options=self.mavproxy_options())
+            'Helicopter', options=self.mavproxy_options())
 
         self.mavproxy.expect('Telemetry log: (\S+)\r\n')
         self.logfile = self.mavproxy.match.group(1)
@@ -1225,7 +1225,7 @@ class AutoTestCopter(AutoTest):
             raise ex
 
     def autotest(self):
-        """Autotest ArduCopter in SITL."""
+        """Autotest Helicopter in SITL."""
         if not self.hasInit:
             self.init()
 
@@ -1410,7 +1410,7 @@ class AutoTestCopter(AutoTest):
             # Download logs
             self.run_test("log download",
                           lambda: self.log_download(
-                              self.buildlogs_path("ArduCopter-log.bin")))
+                              self.buildlogs_path("Helicopter-log.bin")))
 
         except pexpect.TIMEOUT as e:
             self.progress("Failed with timeout")
