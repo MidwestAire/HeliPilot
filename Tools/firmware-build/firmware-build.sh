@@ -1,42 +1,127 @@
 #!/bin/bash
 
+function draw_logo() {
+    clear
+    echo -e "\e[1;34m 0  0  0000  0     0 \e[0m\e[1;31m  0 0   0  0      000   0000000 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0  0  0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0000  000   0     0 \e[0m\e[1;31m  0 0   0  0    0     0    0 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0     0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0  0  0000  0000  0 \e[0m\e[1;31m  0     0  0000   000      0 \e[0m"
+    echo -e "\e[1;34m----------------------\e[0m\e[1;31m--------------------------- \e[0m"
+    echo "building HeliPilot firmware.................."
+    echo ""
+}
+
+ASSUME_YES=false
+function maybe_prompt_user() {
+    if $ASSUME_YES; then
+        return 1
+    else
+        read -p "$1"
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            return 1
+        else
+            return 0
+        fi
+    fi
+}
+
 # Setup build environment - initialize variables
 # environment variables
 now=$(date +"%m-%d-%Y")
 
 #  must have a github account and token to auto-upload to github
 github_owner=MidwestAire
-github_token=**************************************
-
-# set the github tag and upload to true to upload to github releases
+github_token=********************************************
 github_tag=v21-beta
-github_upload=false
+
+draw_logo
+echo ""
+echo "for GitHub release uploads please edit ~/.config/helipilot/firmware-build.sh"
+echo "and enter your GitHub account owner and upload token details......."
+echo ""
+echo "the GitHub upload tag is set to $github_tag"
+echo "if this is ok press Enter, otherwise enter a new tag such as v20.02, etc.."
+read -p "GitHub Tag: " new_tag
+    if [ -z "$new_tag" ] ; then
+        echo "GitHub tag not changed"
+    else
+        github_tag=$new_tag
+    fi
+    
+echo ""
+if maybe_prompt_user "Upload this build to GitHub releases [n/Y]" ; then
+    github_upload=true
+else
+    github_upload=false
+fi
 
 ########################################################################
 #  build-spectic variables
 # set this to where you want the binaries to go during the build
-binary_location=~/Documents/HeliPilot-Firmware
+binary_location=~/Desktop/Firmware
 
-# set to the version, HPv19, HPv20, etc..
-build_version=HPv21-beta
+draw_logo
+echo ""
+echo "the HeliPilot binaries will go to $binary_location"
+echo "if this is ok press Enter, otherwise type in a different location"
+read -p "Binary Destination: " new_location
+    if [ -z "$new_location" ] ; then
+        echo "Destination not changed"
+    else
+        binary_location=$new_location
+    fi
+BuildDir=$binary_location-$now
+mkdir -p $BuildDir && chmod 755 $BuildDir
+echo "build directory" $BuildDir "is writeable................."
 
-# set this to the path of the root of your github repo
+build_version=$github_tag
 path=~/github
-
-# set this to the name of the github repo
 github_repo=HeliPilot
 
-# what branch are we building from, HeliPilot-v20, etc.
 github_branch=master
+echo ""
+echo "build is set to build from $github_branch branch"
+echo "if this is ok press Enter, otherwise type in a different branch (i.e. HeliPilot-v19 or HeliPilot-v20)"
+read -p "Branch: " new_branch
+    if [ -z "$new_branch" ] ; then
+        echo "Build branch set to $github_branch"
+    else
+        github_branch=$new_branch
+        echo "Build branch is set to $github_branch"
+    fi
 
 # set to what type of binaries to build, true or false
-NuttX_build=true
-Linux_build=false
-ChibiOS_build=false
+
+echo ""
+if maybe_prompt_user "Build for NuttX [n/Y]?" ; then
+    NuttX_build=true
+else
+    NuttX_build=false
+fi
+
+echo ""
+if maybe_prompt_user "Build for Linux [n/Y]?" ; then
+    Linux_build=true
+else
+    Linux_build=false
+fi
+
+echo ""
+if maybe_prompt_user "Build for ChibiOS [n/Y]?" ; then
+    ChibiOS_build=true
+else
+    ChibiOS_build=false
+fi
+
+echo "$NuttX_build"
+echo "$Linux_build"
+echo "$ChibiOS_build"
+
 ########################################################################
 # end of user configs, do not edit below this line..
 
-BuildDir=$binary_location-$now
+draw_logo
 build=$path/$github_repo/Tools/firmware-build
 build_path=$path/$github_repo
 # make sure control files and github upload is executable
@@ -45,9 +130,6 @@ chmod 744 $build_path/Tools/firmware-build/controls/* && chmod 744 $build_path/T
 cd $build_path
     git checkout $github_branch  && rm -rf build
     git submodule update --init --recursive
-mkdir $BuildDir && chmod 755 $BuildDir
-echo "build directory" $BuildDir "is writeable................."
-echo "building on repository" $github_repo "branch" $github_branch
 
 ###########   Build Targets for NuttX #################
 if [ "$NuttX_build" == true ]; then

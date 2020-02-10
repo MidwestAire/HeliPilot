@@ -12,7 +12,9 @@ resources, developers and maintainers.
 To set up the build environment and run the simulator change to the HeliPilot directory and run
 the build-setup.sh setup script from your terminal with ./build-setup.sh Follow the prompts in the script.
 
-Please watch this video on building the code https://youtu.be/epF0bM6oUdk
+On Unbuntu 18.04 LTS and newer desktop systems, an icon will be created on the desktop to launch the 
+build for HeliPilot. All other systems must run the firmware-build.sh script from the Tools/firmare-build
+directory in terminal.
 
 ## Running the Simulator ##
 
@@ -23,6 +25,9 @@ There is a locations.txt file located in your home directory in the .config/heli
 file can be modified to add custom locations for the SIM and have your simulator flight start from 
 a custom location with ./sim -l Default. Change Default to the name of your custom location as entered 
 into the locations.txt file.
+
+On Unbuntu 18.04 LTS and newer desktop systems, an icon will be created on the desktop to launch the HeliPilot 
+simulator. All other systems must run the sim program from the HeliPilot root directory in terminal.
 
 ## License ##
 
