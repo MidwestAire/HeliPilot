@@ -44,81 +44,75 @@ function maybe_prompt_user() {
     fi
 }
 
-if maybe_prompt_user "Press Enter to continue SIM startup, or Ctl-C to exit" ; then
-    while getopts l: option
-        do
-        case "${option}"
-        in
-        l) location=${OPTARG};;
-    esac
-done
+echo "###############################################################"
+cat ~/.config/helipilot/locations.txt
+echo "###############################################################"
+echo "Enter the location name of your flight. Must exist in your stored locations listed above"
+echo "Otherwise you can enter in a new location before we start the sim by leaving this blank"
+read -p "Location :" location
+draw_logo
+if maybe_prompt_user "Dislay MavProxy console and map? This is optional [n/Y]" ; then
+    console="--console"
+    map="--map"
+fi
 
-    draw_logo
-    if maybe_prompt_user "Dislay MavProxy console and map? This is optional [n/Y]" ; then
-        console="--console"
-        map="--map"
-    fi
+draw_logo
+branch="master"
+echo ""
+echo "The SIM will run on $branch by default. Enter a different branch to run the"
+echo "sim, i.e. HeliPilot-v20, HeliPilot-v19 or another custom branch"
+echo ""
+read -p "Branch : " new_branch
+if [ "$new_branch" == "HeliPilot-v20" ]; then
+    vehicle_type="ArduCopter"
+    cd ~/github/HeliPilot
+    git checkout $new_branch
+    git submodule update --init --recursive
+elif [ "$new_branch" == "HeliPilot-v19" ]; then
+    vehicle_type="ArduCopter"
+    cd ~/github/HeliPilot
+    git checkout $new_branch
+    git submodule update --init --recursive
+elif [ "$new_branch" != "$branch" ]; then
+    vehicle_type="Helicopter"
+    cd ~/github/HeliPilot
+    git checkout $branch
+    git submodule update --init --recursive
+else
+    vehicle_type="Helicopter"
+    cd ~/github/HeliPilot
+    git checkout $branch
+    git submodule update --init --recursive
+    echo ""
+fi
+    
+echo "The SIM will run on $branch"
+    
+# for compatibility with V20 and v19 branches we create and ardupilot directory
+mkdir ~/.config/ardupilot
+# then we create a symlink to locations.txt
+ln -s ~/.config/helipilot/locations.txt ~/.config/ardupilot/locations.txt
 
-    draw_logo
-    branch="master"
-    echo ""
-    echo "The SIM will run on $branch by default. Enter a different branch to run the"
-    echo "sim, i.e. HeliPilot-v20, HeliPilot-v19 or another custom branch"
-    echo ""
-    read -p "Branch : " new_branch
-    if [ "$new_branch" == "HeliPilot-v20" ]; then
-        vehicle_type="ArduCopter"
-        cd ~/github/HeliPilot
-        git checkout $new_branch
-        git submodule update --init --recursive
-    elif [ "$new_branch" == "HeliPilot-v19" ]; then
-        vehicle_type="ArduCopter"
-        cd ~/github/HeliPilot
-        git checkout $new_branch
-        git submodule update --init --recursive
-    elif [ "$new_branch" != "$branch" ]; then
-        vehicle_type="Helicopter"
-        cd ~/github/HeliPilot
-        git checkout $branch
-        git submodule update --init --recursive
-    else
-        vehicle_type="Helicopter"
-        cd ~/github/HeliPilot
-        git checkout $branch
-        git submodule update --init --recursive
+draw_logo
+if [ -z "$location" ] ; then
+    if maybe_prompt_user "Enter a new location for this SIM flight [n/Y]?" ; then
         echo ""
-    fi
-    
-    echo "The SIM will run on $branch"
-    
-    # for compatibility with V20 and v19 branches we create and ardupilot directory
-    mkdir ~/.config/ardupilot
-    # then we create a symlink to locations.txt
-    ln -s ~/.config/helipilot/locations.txt ~/.config/ardupilot/locations.txt
-
-    draw_logo
-    if [ -z "$location" ] ; then
-        if maybe_prompt_user "Enter a new location for this SIM flight [n/Y]?" ; then
-            echo ""
-            echo "enter what you wish to call this location"
-            echo "Example: Barron"
-            echo ""
-            read -p 'Location: ' new_location
-            echo ""
-            echo "enter the details for $new_location seperated by commas with no spaces in the format:"
-            echo "latitude,longitude,altitude,initial-heading"
-            echo ""
-            echo "Example: 45.4175714,-91.7720328,334,270 (NOTE: altitude is MSL in meters)"
-            echo ""
-            read -p 'Details: ' details
-            echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
-            Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $new_location
-        else
-            Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L Default
-        fi
+        echo "enter what you wish to call this location"
+        echo "Example: Barron"
+        echo ""
+        read -p 'Location: ' new_location
+        echo ""
+        echo "enter the details for $new_location seperated by commas with no spaces in the format:"
+        echo "latitude,longitude,altitude,initial-heading"
+        echo ""
+        echo "Example: 45.4175714,-91.7720328,334,270 (NOTE: altitude is MSL in meters)"
+        echo ""
+        read -p 'Details: ' details
+        echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
+        Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $new_location
     else
-        Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $location
+        Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L Default
     fi
 else
-    echo "Shutting down HeliPilot sim.........."
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $location
 fi

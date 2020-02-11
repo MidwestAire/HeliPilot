@@ -48,18 +48,32 @@ else
     echo "Skipping 64-bit linux autopilot tools install........"
 fi
 
-# install Ubuntu Launchers for Desktop Systems
+# install Firmware Builder for Ubuntu Desktop Systems
 echo ""
-echo "creating Application Launcher for HeliPilot-Build......."
+echo "Installing the HeliPilot Firmware Builder and Dock Launcher....."
+if [ -e ~/.local/bin/firmware-build.sh ]; then
+    if maybe_prompt_user "Firmware Builder already installed. Upgrade to latest version [N/y]?" ; then
+        cp Tools/firmware-build/firmware-build.sh ~/.local/bin/firmware-build.sh
+        chmod 755 ~/.local/bin/firmware-build.sh
+    else
+        echo ""
+        echo "Skipping Firmware Builder upgrade"
+    fi
+fi
+    
 if [ ! -e ~/.local/bin/firmware-build.sh ]; then
     # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
     mkdir -m 755 ~/.local/bin
+    sudo mkdir -m 755 /usr/share/icons/helipilot
+    sudo cp -r Tools/firmware-build/icons/ /usr/share/icons/helipilot/
     cp Tools/firmware-build/firmware-build.sh ~/.local/bin/firmware-build.sh
     chmod 755 ~/.local/bin/firmware-build.sh
-    sudo mkdir /usr/share/icons/helipilot
-    sudo chmod 755 /usr/share/icons/helipilot
-    sudo cp -r Tools/firmware-build/icons/ /usr/share/icons/helipilot/
-    # create Application Launcher
+fi
+
+# create Application Launcher
+if [ ! -e ~/.local/share/applications/HeliPilot-Build.desktop ]; then
+    # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
+    mkdir -m 755 ~/.local/share/applications
     touch ~/.local/share/applications/HeliPilot-Build.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Build.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Build.desktop
@@ -103,14 +117,26 @@ else
     echo "Skipping installation of desktop Launcher.........."
 fi
 
+# install Simulator for Ubuntu Desktop Systems
 echo ""
-echo "creating Application Launcher for the HeliPilot simulator......."
+echo "Installing the HeliPilot Simulator and Dock Launcher....."
+if [ -e ~/.local/bin/sim ]; then
+    if maybe_prompt_user "Simulator already installed. Upgrade to latest version [N/y]?" ; then
+        cp ./sim ~/.local/bin/sim
+        chmod 755 ~/.local/bin/sim
+    else
+        echo ""
+        echo "Skipping Simulator upgrade"
+    fi
+fi
+
 if [ ! -e ~/.local/bin/sim ]; then
-    # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
-    mkdir -m 755 ~/.local/bin
     cp ./sim ~/.local/bin/sim
     chmod 755 ~/.local/bin/sim
-    # create Application Launcher
+fi
+
+# create Application Launcher
+if [ ! -e ~/.local/share/applications/HeliPilot-Simulator.desktop ]; then
     touch ~/.local/share/applications/HeliPilot-Simulator.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
@@ -156,5 +182,4 @@ fi
 echo ""
 echo "DONE!"
 echo ""
-echo "Please log out, then log back in to register your application paths and launchers"
 
