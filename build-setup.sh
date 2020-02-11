@@ -48,50 +48,113 @@ else
     echo "Skipping 64-bit linux autopilot tools install........"
 fi
 
+# install Ubuntu Launchers for Desktop Systems
 echo ""
-echo "creating desktop icon for building HeliPilot......."
-if [ ! -e ~/.config/helipilot/firmware-build.sh ]; then
+echo "creating Application Launcher for HeliPilot-Build......."
+if [ ! -e ~/.local/bin/firmware-build.sh ]; then
     # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
-    mkdir -m 755 ~/Desktop
-    mkdir -m 755 ~/.config
-    cp Tools/firmware-build/firmware-build.sh ~/.config/helipilot/firmware-build.sh
-    chmod 755 ~/.config/helipilot/firmware-build.sh
+    mkdir -m 755 ~/.local/bin
+    cp Tools/firmware-build/firmware-build.sh ~/.local/bin/firmware-build.sh
+    chmod 755 ~/.local/bin/firmware-build.sh
     sudo mkdir /usr/share/icons/helipilot
+    sudo chmod 755 /usr/share/icons/helipilot
     sudo cp -r Tools/firmware-build/icons/ /usr/share/icons/helipilot/
-    touch ~/Desktop/Build-HeliPilot.desktop && chmod 755 ~/Desktop/Build-HeliPilot.desktop
-    echo "[Desktop Entry]" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Encoding=UTF-8" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Name=Build-HeliPilot" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Comment=HeliPilot Build Launcher" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Exec=gnome-terminal -e .config/helipilot/firmware-build.sh" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Icon=/usr/share/icons/helipilot/icons/systembuild.png" >> ~/Desktop/Build-HeliPilot.desktop
-    echo "Type=Application" >> ~/Desktop/Build-HeliPilot.desktop
+    # create Application Launcher
+    touch ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Name=HeliPilot-Build" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Comment=HeliPilot Build Launcher" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Exec=gnome-terminal -e .local/bin/firmware-build.sh" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Icon=/usr/share/icons/helipilot/icons/systembuild.png" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    echo "Type=Application" >> ~/.local/share/applications/HeliPilot-Build.desktop
+    chmod 755 ~/.local/share/applications/HeliPilot-Build.desktop
+    echo ""
+    echo "Application Launcher Installed........"
 else
     echo ""
-    echo "nothing to do - file exists!"
+    echo "nothing to do - application launcher already exists!"
 fi
 
 echo ""
-echo "creating desktop icon for running the HeliPilot simulator......."
-if [ ! -e ~/.config/helipilot/sim ]; then
-    # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
-    mkdir -m 755 ~/Desktop
-    mkdir -m 755 ~/.config
-    cp ./sim ~/.config/helipilot/sim && chmod 755 ~/.config/helipilot/sim
-    touch ~/Desktop/Simulator.desktop && chmod 755 ~/Desktop/Simulator.desktop
-    echo "[Desktop Entry]" >> ~/Desktop/Simulator.desktop
-    echo "Encoding=UTF-8" >> ~/Desktop/Simulator.desktop
-    echo "Name=Simulator" >> ~/Desktop/Simulator.desktop
-    echo "Comment=HeliPilot Simulator Launcher" >> ~/Desktop/Simulator.desktop
-    echo "Exec=gnome-terminal -e .config/helipilot/sim" >> ~/Desktop/Simulator.desktop
-    echo "Icon=/usr/share/icons/helipilot/icons/simulator.png" >> ~/Desktop/Simulator.desktop
-    echo "Type=Application" >> ~/Desktop/Simulator.desktop
+echo "Firmware Build application launcher for the Dock is installed......"
+if maybe_prompt_user "Do you want a desktop launcher too [N/y]?" ; then
+    echo ""
+    echo "creating desktop icon for building HeliPilot......."
+    if [ ! -e ~/Desktop/HeliPilot-Build.desktop ]; then
+        # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
+        mkdir -m 755 ~/Desktop
+        # create Application Launcher
+        touch ~/Desktop/HeliPilot-Build.desktop
+        echo "[Desktop Entry]" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Encoding=UTF-8" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Name=HeliPilot-Build" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Comment=HeliPilot Build Launcher" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Exec=gnome-terminal -e .local/bin/firmware-build.sh" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Icon=/usr/share/icons/helipilot/icons/systembuild.png" >> ~/Desktop/HeliPilot-Build.desktop
+        echo "Type=Application" >> ~/Desktop/HeliPilot-Build.desktop
+        chmod 755 ~/Desktop/HeliPilot-Build.desktop
+    else
+        echo ""
+        echo "nothing to do - application launcher already exists!"
+    fi
 else
     echo ""
-    echo "nothing to do - file exists!"
+    echo "Skipping installation of desktop Launcher.........."
+fi
+
+echo ""
+echo "creating Application Launcher for the HeliPilot simulator......."
+if [ ! -e ~/.local/bin/sim ]; then
+    # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
+    mkdir -m 755 ~/.local/bin
+    cp ./sim ~/.local/bin/sim
+    chmod 755 ~/.local/bin/sim
+    # create Application Launcher
+    touch ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Name=HeliPilot-Simulator" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Comment=HeliPilot Simulator Launcher" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Exec=gnome-terminal -e .local/bin/sim" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Icon=/usr/share/icons/helipilot/icons/simulator.png" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    echo "Type=Application" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
+    chmod 755 ~/.local/share/applications/HeliPilot-Simulator.desktop
+else
+    echo ""
+    echo "nothing to do - application launcher already exists!"
+fi
+
+echo ""
+echo "Simulator application launcher for the Dock is installed......"
+if maybe_prompt_user "Do you want a desktop launcher too [N/y]?" ; then
+    echo ""
+    echo "creating desktop icon for running the HeliPilot simulator......."
+    if [ ! -e ~/Desktop/HeliPilot-Simulator.desktop ]; then
+        # we try to create the directory structure for WSL on Windows, since it doesn't exist by default
+        mkdir -m 755 ~/Desktop
+        # create Application Launcher
+        touch ~/Desktop/HeliPilot-Simulator.desktop
+        echo "[Desktop Entry]" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Encoding=UTF-8" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Name=HeliPilot-Simulator" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Comment=HeliPilot Simulator Launcher" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Exec=gnome-terminal -e .local/bin/sim" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Icon=/usr/share/icons/helipilot/icons/simulator.png" >> ~/Desktop/HeliPilot-Simulator.desktop
+        echo "Type=Application" >> ~/Desktop/HeliPilot-Simulator.desktop
+        chmod 755 ~/Desktop/HeliPilot-Simulator.desktop
+    else
+        echo ""
+        echo "nothing to do - application launcher already exists!"
+    fi
+else
+    echo ""
+    echo "Skipping installation of desktop Launcher.........."
 fi
 
 . ~/.profile
 echo ""
 echo "DONE!"
+echo ""
+echo "Please log out, then log back in to register your application paths and launchers"
 
