@@ -112,6 +112,14 @@ mkdir ~/.config/ardupilot
 ln -s ~/.config/helipilot/locations.txt ~/.config/ardupilot/locations.txt
 
 draw_logo
+echo ""
+echo "Add IP addresses to run the SIM on HeliPilot-QGC on a remote device(s) such as a tablet?"
+echo "Enter IP's separated by a space such as 192.168.0.1 192.168.0.2 - you can enter up to 8 IP addresses"
+echo "If just running on localhost leave this blank"
+echo ""
+read -p "IP Address of remote device(s) : " address1 address2 address3 address4 address5 address6 address7 address8
+
+draw_logo
 if [ -z "$location" ] ; then
     if maybe_prompt_user "Enter a new location for this SIM flight [n/Y]?" ; then
         echo ""
@@ -127,10 +135,30 @@ if [ -z "$location" ] ; then
         echo ""
         read -p 'Details: ' details
         echo "$new_location=$details" >> ~/.config/helipilot/locations.txt
-        Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $new_location
+        sim_location="$new_location"
     else
-        Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L Default
+        sim_location="Default"
     fi
 else
-    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $location
+    sim_location="$location"
+fi
+
+if [ -z "$address1" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location
+elif [ -z "$address2" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550
+elif [ -z "$address3" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550
+elif [ -z "$address4" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550
+elif [ -z "$address5" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550 --out $address4:14550
+elif [ -z "$address6" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550 --out $address4:14550 --out $address5:14550
+elif [ -z "$address7" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550 --out $address4:14550 --out $address5:14550 --out $address6:14550
+elif [ -z "$address8" ] ; then
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550 --out $address4:14550 --out $address5:14550 --out $address6:14550 --out $address7:14550
+else
+    Tools/autotest/sim_vehicle.py $console $map -v $vehicle_type -f heli -L $sim_location --out $address1:14550 --out $address2:14550 --out $address3:14550 --out $address4:14550 --out $address5:14550 --out $address6:14550 --out $address7:14550 --out $address8:14550
 fi
