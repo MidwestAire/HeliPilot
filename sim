@@ -24,10 +24,28 @@ if [ ! -e ~/.config/helipilot/locations.txt ]; then
     echo "#NAME=latitude,longitude,absolute-altitude,heading" >> ~/.config/helipilot/locations.txt
     echo "Default=45.4175714,-91.7720328,334,282" >> ~/.config/helipilot/locations.txt
 else
-    echo "user locations already exists!"
+    echo "user locations exists!"
     echo ""
     echo "TO QUIT THE SIMULATOR AT ANY TIME press Ctl-C"
     echo ""
+fi
+
+# check that HeliPilot repo exists
+if [ ! -e ~/github/HeliPilot/sim ]; then
+    if [ ! -e ~/.config/helipilot/helipilot_path.txt ]; then
+        echo ""
+        echo -e "\e[1;31m The HeliPilot code repo was not found........... \e[0m"
+        echo ""
+        echo "Please run HeliPilot Setup to fix this. You can obtain the HeliPilot Setup"
+        echo "program by downloading it from github at"
+        echo "https://github.com/MidwestAire/HeliPilot/releases/tag/v21-beta"
+        echo ""
+        read -p "Program will not run - press Ctl-C to exit" die
+    else
+        helipilot_path=$( cat ~/.config/helipilot/helipilot_path.txt )
+    fi
+else
+    helipilot_path="github/HeliPilot"
 fi
 
 ASSUME_YES=false
@@ -65,22 +83,22 @@ echo ""
 read -p "Branch : " new_branch
 if [ "$new_branch" == "HeliPilot-v20" ]; then
     vehicle_type="ArduCopter"
-    cd ~/github/HeliPilot
+    cd ~/$helipilot_path
     git checkout $new_branch
     git submodule update --init --recursive
 elif [ "$new_branch" == "HeliPilot-v19" ]; then
     vehicle_type="ArduCopter"
-    cd ~/github/HeliPilot
+    cd ~/$helipilot_path
     git checkout $new_branch
     git submodule update --init --recursive
 elif [ "$new_branch" != "$branch" ]; then
     vehicle_type="Helicopter"
-    cd ~/github/HeliPilot
+    cd ~/$helipilot_path
     git checkout $branch
     git submodule update --init --recursive
 else
     vehicle_type="Helicopter"
-    cd ~/github/HeliPilot
+    cd ~/$helipilot_path
     git checkout $branch
     git submodule update --init --recursive
     echo ""
@@ -88,7 +106,7 @@ fi
     
 echo "The SIM will run on $branch"
     
-# for compatibility with V20 and v19 branches we create and ardupilot directory
+# for compatibility with V20 and v19 branches we create an ardupilot directory
 mkdir ~/.config/ardupilot
 # then we create a symlink to locations.txt
 ln -s ~/.config/helipilot/locations.txt ~/.config/ardupilot/locations.txt

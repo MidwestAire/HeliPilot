@@ -26,6 +26,25 @@ function maybe_prompt_user() {
     fi
 }
 
+draw_logo
+# check that HeliPilot repo exists
+if [ ! -e ~/github/HeliPilot/Tools/firmware-build/firmware-build.sh ]; then
+    if [ ! -e ~/.config/helipilot/helipilot_path.txt ]; then
+        echo ""
+        echo -e "\e[1;31m The HeliPilot code repo was not found........... \e[0m"
+        echo ""
+        echo "Please run HeliPilot Setup to fix this. You can download the HeliPilot Setup"
+        echo "program by downloading it from github at"
+        echo "https://github.com/MidwestAire/HeliPilot/releases/tag/v21-beta"
+        echo ""
+        read -p "Program will not run - press Ctl-C to exit" die
+    else
+        helipilot_path=$( cat ~/.config/helipilot/helipilot_path.txt )
+    fi
+else
+    helipilot_path="github/HeliPilot"
+fi
+
 # Setup build environment - initialize variables
 # environment variables
 now=$(date +"%m-%d-%Y")
@@ -72,14 +91,12 @@ read -p "Binary Destination: " new_location
         binary_location=$new_location
     fi
 BuildDir=$binary_location-$now
-mkdir -p $BuildDir && chmod 755 $BuildDir
+mkdir -m 755 $BuildDir
 echo "build directory" $BuildDir "is writeable................."
 
 build_version=$github_tag
-path=~/github
-github_repo=HeliPilot
-
 github_branch=master
+
 echo ""
 echo "build is set to build from $github_branch branch"
 echo "if this is ok press Enter, otherwise type in a different branch (i.e. HeliPilot-v19 or HeliPilot-v20)"
@@ -122,8 +139,8 @@ echo "$ChibiOS_build"
 # end of user configs, do not edit below this line..
 
 draw_logo
-build=$path/$github_repo/Tools/firmware-build
-build_path=$path/$github_repo
+build=~/$helipilot_path/Tools/firmware-build
+build_path=~/$helipilot_path
 # make sure control files and github upload is executable
 chmod 744 $build_path/Tools/firmware-build/controls/* && chmod 744 $build_path/Tools/firmware-build/github-upload
 
