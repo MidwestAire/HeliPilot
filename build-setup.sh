@@ -82,7 +82,6 @@ fi
 if [ ! -e ~/.local/share/applications/HeliPilot-Build.desktop ]; then
     mkdir -p ~/.local/share/applications
     touch ~/.local/share/applications/HeliPilot-Build.desktop
-    chmod 755 ~/.local/share/applications/HeliPilot-Build.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Build.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Build.desktop
     echo "Name=HeliPilot-Build" >> ~/.local/share/applications/HeliPilot-Build.desktop
@@ -106,7 +105,6 @@ if maybe_prompt_user "Do you want a desktop launcher too [N/y]?" ; then
     if [ ! -e ~/Desktop/HeliPilot-Build.desktop ]; then
         # create Application Launcher
         touch ~/Desktop/HeliPilot-Build.desktop
-        chmod 755 ~/Desktop/HeliPilot-Build.desktop
         echo "[Desktop Entry]" >> ~/Desktop/HeliPilot-Build.desktop
         echo "Encoding=UTF-8" >> ~/Desktop/HeliPilot-Build.desktop
         echo "Name=HeliPilot-Build" >> ~/Desktop/HeliPilot-Build.desktop
@@ -145,7 +143,6 @@ fi
 # create Application Launcher
 if [ ! -e ~/.local/share/applications/HeliPilot-Simulator.desktop ]; then
     touch ~/.local/share/applications/HeliPilot-Simulator.desktop
-    chmod 755 ~/.local/share/applications/HeliPilot-Simulator.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
     echo "Name=HeliPilot-Simulator" >> ~/.local/share/applications/HeliPilot-Simulator.desktop
@@ -167,7 +164,6 @@ if maybe_prompt_user "Do you want a desktop launcher too [N/y]?" ; then
     if [ ! -e ~/Desktop/HeliPilot-Simulator.desktop ]; then
         # create Application Launcher
         touch ~/Desktop/HeliPilot-Simulator.desktop
-        chmod 755 ~/Desktop/HeliPilot-Simulator.desktop
         echo "[Desktop Entry]" >> ~/Desktop/HeliPilot-Simulator.desktop
         echo "Encoding=UTF-8" >> ~/Desktop/HeliPilot-Simulator.desktop
         echo "Name=HeliPilot-Simulator" >> ~/Desktop/HeliPilot-Simulator.desktop
@@ -210,7 +206,6 @@ fi
 # create Application Launcher
 if [ ! -e ~/.local/share/applications/HeliPilot-Update.desktop ]; then
     touch ~/.local/share/applications/HeliPilot-Update.desktop
-    chmod 755 ~/.local/share/applications/HeliPilot-Update.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-Update.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-Update.desktop
     echo "Name=HeliPilot-Update" >> ~/.local/share/applications/HeliPilot-Update.desktop
@@ -232,7 +227,6 @@ if maybe_prompt_user "Do you want a desktop launcher too [N/y]?" ; then
     if [ ! -e ~/Desktop/HeliPilot-Update.desktop ]; then
         # create Application Launcher
         touch ~/Desktop/HeliPilot-Update.desktop
-        chmod 755 ~/Desktop/HeliPilot-Update.desktop
         echo "[Desktop Entry]" >> ~/Desktop/HeliPilot-Update.desktop
         echo "Encoding=UTF-8" >> ~/Desktop/HeliPilot-Update.desktop
         echo "Name=HeliPilot-Update" >> ~/Desktop/HeliPilot-Update.desktop
@@ -255,7 +249,6 @@ cp Tools/HeliPilot-uninstall ~/.local/bin/HeliPilot-uninstall
 chmod 755 ~/.local/bin/HeliPilot-uninstall
 if [ ! -e ~/.local/share/applications/HeliPilot-uninstall.desktop ]; then
     touch ~/.local/share/applications/HeliPilot-uninstall.desktop
-    chmod 755 ~/.local/share/applications/HeliPilot-uninstall.desktop
     echo "[Desktop Entry]" >> ~/.local/share/applications/HeliPilot-uninstall.desktop
     echo "Encoding=UTF-8" >> ~/.local/share/applications/HeliPilot-uninstall.desktop
     echo "Name=HeliPilot-uninstall" >> ~/.local/share/applications/HeliPilot-uninstall.desktop
@@ -269,8 +262,27 @@ else
     echo "nothing to do - application uninstaller already exists!"
 fi
 
+# install HeliPilot-QGC
+echo ""
+echo "Installation of HeliPilot Desktop Suite is complete"
+echo ""
+if maybe_prompt_user "Do you you want to install the HeliPilot Ground Station [N/y]?" ; then
+    echo ""
+    mkdir tmp
+    cd tmp
+    wget https://github.com/MidwestAire/HeliPilot/releases/download/v20.02/HeliPilot-QGCv20_Linux.zip
+    unzip HeliPilot-QGCv20_Linux.zip
+    cd HeliPilot-QGCv20 && ./install.sh
+    cd $root
+    rm -rf tmp
+else
+    echo ""
+    echo "Skipping Ground Station install.........."
+fi
+
 . ~/.profile
 echo ""
 echo "DONE!"
 echo ""
+echo "You should log out and log back in to register the paths for the program icons....."
 
