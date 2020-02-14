@@ -1,0 +1,86 @@
+#!/bin/bash
+# script to uninstall HeliPilot QGC
+# created by Chris Olson for HeliPilot
+
+function draw_logo() {
+    clear
+    echo -e "\e[1;34m 0  0  0000  0     0 \e[0m\e[1;31m  0 0   0  0      000   0000000 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0  0  0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0000  000   0     0 \e[0m\e[1;31m  0 0   0  0    0     0    0 \e[0m"
+    echo -e "\e[1;34m 0  0  0     0     0 \e[0m\e[1;31m  0     0  0     0   0     0 \e[0m"
+    echo -e "\e[1;34m 0  0  0000  0000  0 \e[0m\e[1;31m  0     0  0000   000      0 \e[0m"
+    echo -e "\e[1;34m----------------------\e[0m\e[1;31m--------------------------- \e[0m"
+    echo "uninstalling HeliPilot-QGCv20 Ground Station.................."
+    echo ""
+}
+
+ASSUME_YES=false
+function maybe_prompt_user() {
+    if $ASSUME_YES; then
+        return 1
+    else
+        read -p "$1"
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            return 1
+        else
+            return 0
+        fi
+    fi
+}
+
+draw_logo
+echo ""
+echo "This will uninstall HeliPilot-QGC and launchers..........."
+if maybe_prompt_user "Press Enter to continue....... [n/Y]" ; then
+    sudo rm /usr/share/icons/helipilot/icons/qgroundcontrol.png
+    rm -rv ~/.local/bin/release
+    rm ~/.local/share/applications/HeliPilot-QGC.desktop
+    rm ~/Desktop/HeliPilot-QGC.desktop
+    if [ ! -e ~/.local/bin/sim ]; then
+        sudo rm -rf /usr/share/icons/helipilot
+        rm ~/.local/share/applications/HeliPilot-uninstall.desktop
+        rm ~/.local/bin/HeliPilot-uninstall
+    fi
+    echo ""
+    echo "HeliPilot-QGC uninstalled......."
+else
+    echo ""
+    echo "Aborting............"
+fi
+
+draw_logo
+echo ""
+echo "This will uninstall the HeliPilot Desktop Suite..........."
+if maybe_prompt_user "Press Enter to continue....... [n/Y]" ; then
+    sudo rm /usr/share/icons/helipilot/icons/update.png
+    sudo rm /usr/share/icons/helipilot/icons/simulator.png
+    sudo rm /usr/share/icons/helipilot/icons/systembuild.png
+    rm ~/.local/bin/sim
+    rm ~/.local/bin/firmware-build.sh
+    rm ~/.local/bin/HeliPilot-Update 
+    rm ~/.local/share/applications/HeliPilot-Update.desktop
+    rm ~/.local/share/applications/HeliPilot-Build.desktop
+    rm ~/.local/share/applications/HeliPilot-Simulator.desktop
+    rm ~/Desktop/HeliPilot-Update.desktop
+    rm ~/Desktop/HeliPilot-Build.desktop
+    rm ~/Desktop/HeliPilot-Simulator.desktop
+    if [ ! -e /usr/share/icons/helipilot/icons/qgroundcontrol.png ]; then
+        sudo rm -rf /usr/share/icons/helipilot
+    fi
+    if [ ! -e ~/.local/bin/release ]; then
+        rm ~/.local/share/applications/HeliPilot-uninstall.desktop
+        rm ~/.local/bin/HeliPilot-uninstall
+    fi
+        
+    echo ""
+    echo "HeliPilot Desktop Suite uninstalled......."
+else
+    echo ""
+    echo "Aborting............"
+fi
+
+draw_logo
+echo ""
+echo "Applications have been uninstalled"
+read -p "Press Ctl-C to quit" quit
+

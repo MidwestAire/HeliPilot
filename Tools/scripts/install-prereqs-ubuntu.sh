@@ -24,9 +24,13 @@ fi
 
 # GNU Tools for ARM Embedded Processors
 # (see https://launchpad.net/gcc-arm-embedded/)
-ARM_ROOT="gcc-arm-none-eabi-6-2017-q2-update"
-ARM_TARBALL="$ARM_ROOT-linux.tar.bz2"
-ARM_TARBALL_URL="https://github.com/MidwestAire/HeliPilot/releases/download/v20.02.01/$ARM_TARBALL"
+if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+    ARM_ROOT="gcc-arm-none-eabi-6-2017-q2-update"
+else
+    ARM_ROOT="gcc-arm-none-eabi-4_9-2015q3-20150921"
+fi
+    ARM_TARBALL="$ARM_ROOT-linux.tar.bz2"
+    ARM_TARBALL_URL="https://github.com/MidwestAire/HeliPilot/releases/download/v20.02.01/$ARM_TARBALL"
 
 # HeliPilot Tools
 HELIPILOT_TOOLS="Tools/autotest"
