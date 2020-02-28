@@ -66,8 +66,8 @@ void AP_MotorsHeli_Throttle::set_throttle_curve2(float throttlecurve2[5])
     splinterp5(throttlecurve2, _throttlecurve2_poly);
 }
 
-// output - update value to send to ESC/Servo
-void AP_MotorsHeli_Throttle::output(RotorControlState state)
+// output - update value to send to throttle servo
+void AP_MotorsHeli_Throttle::output(EngineControlState state)
 {
     float dt;
     uint64_t now = AP_HAL::micros64();
@@ -81,42 +81,42 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
     }
 
     switch (state){
-        case ROTOR_CONTROL_STOP:
-            // set rotor ramp to decrease speed to zero, this happens instantly inside update_rotor_ramp()
-            update_rotor_ramp(0.0f, dt);
+        case ENGINE_CONTROL_STOP:
+            // set throttle ramp to decrease speed to zero, this happens instantly inside update_throttle_ramp()
+            update_throttle_ramp(0.0f, dt);
 
-            // control output forced to zero
+            // throttle control output forced to zero
             _throttle_output = 0.0f;
             _throttle2_output = 0.0f;
             break;
 
-        case ROTOR_CONTROL_IDLE:
-            // set rotor ramp to decrease speed to zero
-            update_rotor_ramp(0.0f, dt);
+        case ENGINE_CONTROL_IDLE:
+            // set throttle ramp to decrease speed to zero
+            update_throttle_ramp(0.0f, dt);
 
-            // set rotor control speed to idle speed parameter, this happens instantly and ignore ramping
+            // set throttle control to idle speed parameter, this happens instantly and ignore ramping
             _throttle_output = _idle_output;
             _throttle2_output = _idle_output;
             break;
 
-        case ROTOR_CONTROL_ACTIVE:
-            // set main rotor ramp to increase to full speed
-            update_rotor_ramp(1.0f, dt);
+        case ENGINE_CONTROL_AUTOTHROTTLE:
+            // set throttle ramp to increase to full speed
+            update_throttle_ramp(1.0f, dt);
 
             // single-engine throttle controls
             if (_control_mode == THROTTLE_CONTROL_SINGLE) {
-                calculate_engine_1_autothrottle();
+                engine_1_autothrottle_run();
 
             // twin-engine throttle controls
             } else if (_control_mode == THROTTLE_CONTROL_TWIN) {
-                calculate_engine_1_autothrottle();
-                calculate_engine_2_autothrottle();
+                engine_1_autothrottle_run();
+                engine_2_autothrottle_run();
             }
             break;
     }
 
-    // update rotor speed run-up estimate
-    update_rotor_runup(dt);
+    // update run-up estimate
+    update_engine_runup(dt);
 
     // write throttle outputs to servos
     write_throttle(_aux_fn, _throttle_output);
@@ -125,8 +125,8 @@ void AP_MotorsHeli_Throttle::output(RotorControlState state)
     }
 }
 
-// update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
-void AP_MotorsHeli_Throttle::update_rotor_ramp(float rotor_ramp_input, float dt)
+// update_throttle_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _throttle_ramp_output
+void AP_MotorsHeli_Throttle::update_throttle_ramp(float throttle_ramp_input, float dt)
 {
     // sanity check ramp time
     if (_ramp_time <= 0) {
@@ -134,24 +134,24 @@ void AP_MotorsHeli_Throttle::update_rotor_ramp(float rotor_ramp_input, float dt)
     }
 
     // ramp output upwards towards target
-    if (_rotor_ramp_output < rotor_ramp_input) {
+    if (_throttle_ramp_output < throttle_ramp_input) {
         // allow control output to jump to estimated speed
-        if (_rotor_ramp_output < _rotor_runup_output) {
-            _rotor_ramp_output = _rotor_runup_output;
+        if (_throttle_ramp_output < _engine_runup_output) {
+            _throttle_ramp_output = _engine_runup_output;
         }
         // ramp up slowly to target
-        _rotor_ramp_output += (dt / _ramp_time);
-        if (_rotor_ramp_output > rotor_ramp_input) {
-            _rotor_ramp_output = rotor_ramp_input;
+        _throttle_ramp_output += (dt / _ramp_time);
+        if (_throttle_ramp_output > throttle_ramp_input) {
+            _throttle_ramp_output = throttle_ramp_input;
         }
     }else{
         // ramping down happens instantly
-        _rotor_ramp_output = rotor_ramp_input;
+        _throttle_ramp_output = throttle_ramp_input;
     }
 }
 
-// update_rotor_runup - function to slew rotor runup scalar, outputs float scalar to _rotor_runup_ouptut
-void AP_MotorsHeli_Throttle::update_rotor_runup(float dt)
+// update_engine_runup - function to slew the runup scalar, outputs float scalar to _rotor_runup_ouptut
+void AP_MotorsHeli_Throttle::update_engine_runup(float dt)
 {
     // if control mode is disabled, then run-up complete always returns true
     if ( _control_mode == THROTTLE_CONTROL_DISABLED ){
@@ -169,25 +169,25 @@ void AP_MotorsHeli_Throttle::update_rotor_runup(float dt)
                 _runup_complete = false;
         }
     } else {
-        // measured rotor speed is not used, estimate rotor speed based on rotor runup scalar
+        // measured rotor speed is not used, estimate rotor speed based on engine runup scalar
         // check rotor runup setting and correct it if misconfigured
         if (_runup_time < _ramp_time) {
             _runup_time = _ramp_time;
         }
         float runup_increment = dt / _runup_time;
-        if (_rotor_runup_output < _rotor_ramp_output) {
-            _rotor_runup_output += runup_increment;
-            if (_rotor_runup_output > _rotor_ramp_output) {
-                _rotor_runup_output = _rotor_ramp_output;
+        if (_engine_runup_output < _throttle_ramp_output) {
+            _engine_runup_output += runup_increment;
+            if (_engine_runup_output > _throttle_ramp_output) {
+                _engine_runup_output = _throttle_ramp_output;
             }
         } else {
-            _rotor_runup_output -= runup_increment;
-            if (_rotor_runup_output < _rotor_ramp_output) {
-                _rotor_runup_output = _rotor_ramp_output;
+            _engine_runup_output -= runup_increment;
+            if (_engine_runup_output < _throttle_ramp_output) {
+                _engine_runup_output = _throttle_ramp_output;
             }
         }
         // update run-up complete flag using runup timer
-        if (!_runup_complete && (_rotor_ramp_output >= 1.0f) && (_rotor_runup_output >= 1.0f)) {
+        if (!_runup_complete && (_throttle_ramp_output >= 1.0f) && (_engine_runup_output >= 1.0f)) {
             _runup_complete = true;
         }
         if (_runup_complete && (get_rotor_speed() <= _critical_speed)) {
@@ -196,10 +196,10 @@ void AP_MotorsHeli_Throttle::update_rotor_runup(float dt)
     }
 }
 
-// get_rotor_speed - gets rotor speed as an estimate when no speed sensor is installed
+// get_rotor_speed - gets rotor speed as an estimate when no speed sensor is installed or has failed
 float AP_MotorsHeli_Throttle::get_rotor_speed() const
 {
-    return _rotor_runup_output;
+    return _engine_runup_output;
 }
 
 // write_throttle - outputs pwm onto output throttle channel
@@ -241,7 +241,7 @@ float AP_MotorsHeli_Throttle::calculate_throttlecurve2(float collective_in)
 }
 
 // calculate autothrottle for engine #1
-void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
+void AP_MotorsHeli_Throttle::engine_1_autothrottle_run()
 {
     float throttlecurve = calculate_throttlecurve(_collective_in);
     if (!_governor_on) {
@@ -260,7 +260,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
             if (!_autothrottle_on) {
                 _autothrottle_on = true;
             }
-        _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output)), 0.0f, 1.0f);
+        _throttle_output = constrain_float(_idle_output + (_throttle_ramp_output * (throttlecurve - _idle_output)), 0.0f, 1.0f);
         }
     } else {
         // GOVERNOR ON - governor can never be active unless system is on AutoThrottle
@@ -283,7 +283,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                 if (!_governor_engage && _rotor_rpm < _governor_reference) {
                     float torque_limit = (_governor_torque * _governor_torque);
                     _governor_output = (_rotor_rpm / _governor_reference) * torque_limit;
-                    _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve + _governor_output - _idle_output)), 0.0f, 1.0f);
+                    _throttle_output = constrain_float(_idle_output + (_throttle_ramp_output * (throttlecurve + _governor_output - _idle_output)), 0.0f, 1.0f);
                     // initial torque reference is set at the throttle it takes to reach governor reference speed
                     _throttle_torque_reference = _throttle_output;
                 } else {
@@ -323,7 +323,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                         } else {
                             _throttle_torque_reference = _throttle_torque_reference;
                         }
-                        _throttle_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle_torque_reference + _governor_output - _idle_output)), throttlecurve * _governor_tcgain, 1.0f);
+                        _throttle_output = constrain_float(_idle_output + (_throttle_ramp_output * (_throttle_torque_reference + _governor_output - _idle_output)), throttlecurve * _governor_tcgain, 1.0f);
                     }
                 }
             } else {
@@ -331,14 +331,14 @@ void AP_MotorsHeli_Throttle::calculate_engine_1_autothrottle()
                 _governor_output = 0.0f;
                 _governor_engage = false;
                 _throttle_torque_reference = 0.0f;
-                _throttle_output = _idle_output + (_rotor_ramp_output * (throttlecurve - _idle_output));
+                _throttle_output = _idle_output + (_throttle_ramp_output * (throttlecurve - _idle_output));
             }
         }
     }
 }
 
 // calculate autothrottle for engine #2
-void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
+void AP_MotorsHeli_Throttle::engine_2_autothrottle_run()
 {
     float throttlecurve2 = calculate_throttlecurve2(_collective_in);
     if (!_governor_on) {
@@ -357,7 +357,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
             if (!_autothrottle2_on) {
                 _autothrottle2_on = true;
             }
-            _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve2 - _idle_output)), 0.0f, 1.0f);
+            _throttle2_output = constrain_float(_idle_output + (_throttle_ramp_output * (throttlecurve2 - _idle_output)), 0.0f, 1.0f);
         }
     } else {
         // GOVERNOR ON - governor can never be active unless system is on AutoThrottle
@@ -381,7 +381,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                 if (!_governor2_engage && _rotor_rpm < _governor_reference) {
                     float torque2_limit = (_governor_torque * _governor_torque);
                     _governor2_output = (_rotor_rpm / _governor_reference) * torque2_limit;
-                    _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (throttlecurve2 + _governor2_output - _idle_output)), 0.0f, 1.0f);
+                    _throttle2_output = constrain_float(_idle_output + (_throttle_ramp_output * (throttlecurve2 + _governor2_output - _idle_output)), 0.0f, 1.0f);
                     _throttle2_torque_reference = _throttle2_output;
                 } else {
                     // if governor is engaged in rotor over-speed torque reference is set to current throttle curve position
@@ -420,7 +420,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                         } else {
                             _throttle2_torque_reference = _throttle2_torque_reference;
                         }
-                        _throttle2_output = constrain_float(_idle_output + (_rotor_ramp_output * (_throttle2_torque_reference + _governor_output - _idle_output)), throttlecurve2 * _governor2_tcgain, 1.0f);
+                        _throttle2_output = constrain_float(_idle_output + (_throttle_ramp_output * (_throttle2_torque_reference + _governor_output - _idle_output)), throttlecurve2 * _governor2_tcgain, 1.0f);
                     }
                 }
             } else {
@@ -429,7 +429,7 @@ void AP_MotorsHeli_Throttle::calculate_engine_2_autothrottle()
                 _throttle2_torque_reference = 0.0f;
                 _governor2_engage = false;
                 _throttle2_torque_reference = 0.0f;
-                _throttle2_output = _idle_output + (_rotor_ramp_output * (throttlecurve2 - _idle_output));
+                _throttle2_output = _idle_output + (_throttle_ramp_output * (throttlecurve2 - _idle_output));
             }
         }
     }

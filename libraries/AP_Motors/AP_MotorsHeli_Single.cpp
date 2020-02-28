@@ -33,7 +33,7 @@ const AP_Param::GroupInfo AP_MotorsHeli_Single::var_info[] = {
 
 #define YAW_SERVO_MAX_ANGLE 4500
 
-// set update rate to motors - a value in hertz
+// set update rate to servos - a value in hertz
 void AP_MotorsHeli_Single::set_update_rate( uint16_t speed_hz )
 {
     // record requested speed
@@ -222,13 +222,13 @@ uint16_t AP_MotorsHeli_Single::get_motor_mask()
     return rc_map_mask(mask);
 }
 
-// update_motor_controls - sends commands to motor controllers
-void AP_MotorsHeli_Single::update_motor_control(RotorControlState state)
+// update_engine_controls - sends commands to servo controllers
+void AP_MotorsHeli_Single::update_engine_control(EngineControlState state)
 {
-    // Send state update to motors
+    // Send state update to servos
     _main_rotor.output(state);
 
-    if (state == ROTOR_CONTROL_STOP){
+    if (state == ENGINE_CONTROL_STOP){
         // set engine run enable aux output to not run position to kill engine when disarmed
         SRV_Channels::set_output_limit(SRV_Channel::k_engine_run_enable, SRV_Channel::SRV_CHANNEL_LIMIT_MIN);
     } else {

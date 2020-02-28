@@ -54,10 +54,10 @@ public:
     // set frame class
     void set_frame_class_and_type(motor_frame_class frame_class, motor_frame_type frame_type);
 
-    // set update rate to motors - a value in hertz
+    // set update rate to servos - a value in hertz
     virtual void set_update_rate( uint16_t speed_hz ) = 0;
 
-    // output_min - sets servos to neutral point with motors stopped
+    // output_min - sets servos to neutral point with engine(s) stopped
     void output_min();
 
     // output_test - spin a motor at the pwm value specified
@@ -116,7 +116,7 @@ public:
     //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
     virtual uint16_t get_motor_mask() = 0;
 
-    // output - sends commands to the motors
+    // output - sends commands to the servos
     void output();
 
     // supports_yaw_passthrough
@@ -138,13 +138,13 @@ protected:
         SERVO_CONTROL_MODE_MANUAL_MIN,
     };
 
-    // output - sends commands to the motors
+    // output - sends commands to the servos
     void output_armed_stabilizing();
     void output_armed_zero_throttle();
     void output_disarmed();
 
-    // update_motor_controls - sends commands to motor controllers
-    virtual void update_motor_control(RotorControlState state) = 0;
+    // update_engine_controls - sends commands to servo controllers
+    virtual void update_engine_control(EngineControlState state) = 0;
 
     // reset_flight_controls - resets all controls and scalars to flight status
     void reset_flight_controls();

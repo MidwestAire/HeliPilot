@@ -5,11 +5,11 @@
 #include <RC_Channel/RC_Channel.h>
 #include <SRV_Channel/SRV_Channel.h>
 
-// rotor controller states
-enum RotorControlState {
-    ROTOR_CONTROL_STOP = 0,
-    ROTOR_CONTROL_IDLE,
-    ROTOR_CONTROL_ACTIVE
+// engine throttle controller states
+enum EngineControlState {
+    ENGINE_CONTROL_STOP = 0,
+    ENGINE_CONTROL_IDLE,
+    ENGINE_CONTROL_AUTOTHROTTLE
 };
 
 // throttle control modes
@@ -98,12 +98,12 @@ public:
     // set_collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
 
-    // output - update value to send to ESC/Servo
-    void        output(RotorControlState state);
+    // output - update value to send to throttle servo
+    void        output(EngineControlState state);
 
     // calculate autothrottle output
-    void        calculate_engine_1_autothrottle();
-    void        calculate_engine_2_autothrottle();
+    void        engine_1_autothrottle_run();
+    void        engine_2_autothrottle_run();
 
 private:
     uint64_t        _last_update_us;
@@ -117,7 +117,7 @@ private:
     // internal variables
     ThrottleControl _control_mode = THROTTLE_CONTROL_DISABLED;   // throttle control mode
     float           _critical_speed;              // rotor speed below which flight is not possible
-    float           _idle_output;                 // motor output idle speed
+    float           _idle_output;                 // engine idle speed output
     float           _throttle_input;              // latest manual throttle input, Engine #1
     float           _throttle2_input;             // latest manual throttle input, Engine #2
     float           _throttle_output;             // AutoThrottle output, Engine #1
@@ -126,8 +126,8 @@ private:
     float           _throttle2_torque_reference;  // throttle torque reference. Engine #2
     bool            _autothrottle_on;             // AutoThrottle status flag, Engine #1
     bool            _autothrottle2_on;            // AutoThrottle status flag, Engine #2
-    float           _rotor_ramp_output;           // scalar to ramp rotor speed from _throttle_idle_output (0.0-1.0f)
-    float           _rotor_runup_output;          // scalar used to store status of rotor run-up time (0.0-1.0f)
+    float           _throttle_ramp_output;        // scalar to ramp throttle from _throttle_idle_output (0.0-1.0f)
+    float           _engine_runup_output;         // scalar used to store status of engine run-up time (0.0-1.0f)
     int8_t          _ramp_time;                   // time in seconds to ramp throttle output
     int8_t          _runup_time;                  // time in seconds for the main rotor to reach full speed
     bool            _runup_complete;              // flag for determining if runup is complete
@@ -150,11 +150,11 @@ private:
     float           _governor2_tcgain;            // governor throttle curve gain, engine #2
     float           _governor_fault_timer;        // timer variable used to trigger a governor fault
 
-    // update_rotor_ramp - slews rotor output scalar between 0 and 1, outputs float scalar to _rotor_ramp_output
-    void            update_rotor_ramp(float rotor_ramp_input, float dt);
+    // update_throttle_ramp - slews output scalar between 0 and 1, outputs float scalar to _throttle_ramp_output
+    void            update_throttle_ramp(float throttle_ramp_input, float dt);
 
-    // update_rotor_runup - function to slew rotor runup scalar, outputs float scalar to _rotor_runup_ouptut
-    void            update_rotor_runup(float dt);
+    // update_engine_runup - function to slew runup scalar, outputs float scalar to _engine_runup_output
+    void            update_engine_runup(float dt);
 
     // write_throttle - outputs pwm onto output throttle channel. servo_out parameter is of the range 0 ~ 1
     void            write_throttle(SRV_Channel::Aux_servo_function_t aux_function, float servo_out);

@@ -31,7 +31,7 @@ public:
         AP_Param::setup_object_defaults(this, var_info);
     };
 
-    // set update rate to motors - a value in hertz
+    // set update rate to servos - a value in hertz
     void set_update_rate(uint16_t speed_hz) override;
 
     // output_test - spin a motor at the pwm value specified
@@ -88,8 +88,8 @@ protected:
     // init_outputs - initialise Servo/PWM ranges and endpoints
     bool init_outputs() override;
 
-    // update_motor_controls - sends commands to motor controllers
-    void update_motor_control(RotorControlState state) override;
+    // update_engine_controls - sends commands to servo controllers
+    void update_engine_control(EngineControlState state) override;
 
     // heli_move_actuators - moves swash plate and tail servo
     void move_actuators(float roll_out, float pitch_out, float coll_in, float yaw_out) override;

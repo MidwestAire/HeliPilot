@@ -289,13 +289,13 @@ void AP_MotorsHeli::set_frame_class_and_type(motor_frame_class frame_class, moto
     _flags.initialised_ok = (frame_class == MOTOR_FRAME_HELI);
 }
 
-// output_min - sets servos to neutral point with motors stopped
+// output_min - sets servos to neutral point with engine(s) stopped
 void AP_MotorsHeli::output_min()
 {
     // move swash to mid
     move_actuators(0.0f,0.0f,0.5f,0.0f);
 
-    update_motor_control(ROTOR_CONTROL_STOP);
+    update_engine_control(ENGINE_CONTROL_STOP);
 
     // override limits flags
     limit.roll_pitch = true;
@@ -322,7 +322,7 @@ void AP_MotorsHeli::output()
     }
 };
 
-// sends commands to the motors
+// sends commands to the servos
 void AP_MotorsHeli::output_armed_stabilizing()
 {
     // if swash setup manual override active after arming, deactivate it and reinitialize servos
@@ -332,10 +332,10 @@ void AP_MotorsHeli::output_armed_stabilizing()
 
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
 
-    update_motor_control(ROTOR_CONTROL_ACTIVE);
+    update_engine_control(ENGINE_CONTROL_AUTOTHROTTLE);
 }
 
-// output_armed_zero_throttle - sends commands to the motors
+// output_armed_zero_throttle - sends commands to the servos
 void AP_MotorsHeli::output_armed_zero_throttle()
 {
     // if swash setup manual override active after arming, deactivate it and reinitialize servos
@@ -345,10 +345,10 @@ void AP_MotorsHeli::output_armed_zero_throttle()
 
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
 
-    update_motor_control(ROTOR_CONTROL_IDLE);
+    update_engine_control(ENGINE_CONTROL_IDLE);
 }
 
-// output_disarmed - sends commands to the motors
+// output_disarmed - sends commands to the servos
 void AP_MotorsHeli::output_disarmed()
 {
     // manual override (i.e. when setting up swash)
@@ -396,7 +396,7 @@ void AP_MotorsHeli::output_disarmed()
     // helicopters always run stabilizing flight controls
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
 
-    update_motor_control(ROTOR_CONTROL_STOP);
+    update_engine_control(ENGINE_CONTROL_STOP);
 }
 
 // parameter_check - check if helicopter specific parameters are sensible
