@@ -883,7 +883,7 @@ bool AC_WPNav::advance_spline_target_along_track(float dt)
 
         // if within the stopping distance from destination, set target velocity to sqrt of distance * 2 * acceleration
         if (!_flags.fast_waypoint && spline_dist_to_wp < _slow_down_dist) {
-            _spline_vel_scaler = safe_sqrt(spline_dist_to_wp * 2.0f * _wp_accel_cmss);
+            _spline_vel_scaler = safe_sqrt(spline_dist_to_wp * _wp_accel_cmss);
         }else if(_spline_vel_scaler < vel_limit) {
             // increase velocity using acceleration
             _spline_vel_scaler += _wp_accel_cmss * dt;
@@ -1017,7 +1017,7 @@ void AC_WPNav::calc_slow_down_distance(float speed_cms, float accel_cmss)
 	}
     // To-Do: should we use a combination of horizontal and vertical speeds?
     // To-Do: update this automatically when speed or acceleration is changed
-    _slow_down_dist = speed_cms * speed_cms / (4.0f*accel_cmss);
+    _slow_down_dist = speed_cms * speed_cms / (accel_cmss);
 }
 
 /// get_slow_down_speed - returns target speed of target point based on distance from the destination (in cm)
