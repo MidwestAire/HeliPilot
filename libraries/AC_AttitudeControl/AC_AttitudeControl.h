@@ -324,9 +324,6 @@ public:
     bool pre_arm_checks(const char *param_prefix,
                         char *failure_msg,
                         const uint8_t failure_msg_len);
-
-    // enable inverted flight on backends that support it
-    virtual void set_inverted_flight(bool inverted) {}
     
     // User settable parameters
     static const struct AP_Param::GroupInfo var_info[];
@@ -463,9 +460,6 @@ protected:
     // update state in ControlMonitor
     void control_monitor_filter_pid(float value, float &rms_P);
     void control_monitor_update(void);
-
-    // true in inverted flight mode
-    bool _inverted_flight;
 
 public:
     // log a CTRL message

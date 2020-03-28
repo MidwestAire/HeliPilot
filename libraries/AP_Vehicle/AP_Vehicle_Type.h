@@ -19,13 +19,10 @@
   Also note that code needs to support other APM_BUILD_DIRECTORY
   values for example sketches
  */
-#define APM_BUILD_APMrover2      1
-#define APM_BUILD_ArduCopter     2
-#define APM_BUILD_ArduPlane      3
+#define APM_BUILD_Helicopter     2
 #define APM_BUILD_AntennaTracker 4
 #define APM_BUILD_UNKNOWN        5
 #define APM_BUILD_Replay         6
-#define APM_BUILD_ArduSub        7
 #define APM_BUILD_iofirmware     8
 #define APM_BUILD_AP_Periph      9
 

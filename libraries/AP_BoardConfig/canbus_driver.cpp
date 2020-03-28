@@ -23,7 +23,7 @@
   #include <AP_ToshibaCAN/AP_ToshibaCAN.h>
 
   // To be replaced with macro saying if KDECAN library is included
-  #if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+  #if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     #include <AP_KDECAN/AP_KDECAN.h>
   #endif
 
@@ -43,7 +43,7 @@ const AP_Param::GroupInfo AP_BoardConfig_CAN::Driver::var_info[] = {
     AP_SUBGROUPPTR(_uavcan, "UC_", 2, AP_BoardConfig_CAN::Driver, AP_UAVCAN),
 
 // To be replaced with macro saying if KDECAN library is included
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     // @Group: KDE_
     // @Path: ../AP_KDECAN/AP_KDECAN.cpp
     AP_SUBGROUPPTR(_kdecan, "KDE_", 3, AP_BoardConfig_CAN::Driver, AP_KDECAN),

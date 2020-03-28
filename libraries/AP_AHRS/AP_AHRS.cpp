@@ -413,7 +413,7 @@ AP_AHRS_View *AP_AHRS::create_view(enum Rotation rotation, float pitch_trim_deg)
  */
 void AP_AHRS::update_AOA_SSA(void)
 {
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
+#if !(APM_BUILD_TYPE(APM_BUILD_Helicopter))
     const uint32_t now = AP_HAL::millis();
     if (now - _last_AOA_update_ms < 50) {
         // don't update at more than 20Hz

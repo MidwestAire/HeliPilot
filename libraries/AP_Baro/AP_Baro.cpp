@@ -585,16 +585,8 @@ void AP_Baro::init(void)
 
     // can optionally have baro on I2C too
     if (_ext_bus >= 0) {
-#if APM_BUILD_TYPE(APM_BUILD_ArduSub)
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(GET_I2C_DEVICE(_ext_bus, HAL_BARO_MS5837_I2C_ADDR)), AP_Baro_MS56XX::BARO_MS5837));
-
-        ADD_BACKEND(AP_Baro_KellerLD::probe(*this,
-                                          std::move(GET_I2C_DEVICE(_ext_bus, HAL_BARO_KELLERLD_I2C_ADDR))));
-#else
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(GET_I2C_DEVICE(_ext_bus, HAL_BARO_MS5611_I2C_ADDR))));
-#endif
+    ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
+                                      std::move(GET_I2C_DEVICE(_ext_bus, HAL_BARO_MS5611_I2C_ADDR))));
     }
 
 #ifdef HAL_PROBE_EXTERNAL_I2C_BAROS
@@ -693,20 +685,6 @@ void AP_Baro::_probe_i2c_barometers(void)
                                               std::move(GET_I2C_DEVICE(i, HAL_BARO_LPS25H_I2C_ADDR))));
         }
     }
-#if APM_BUILD_TYPE(APM_BUILD_ArduSub)
-    if (probe & PROBE_LPS25H) {
-        FOREACH_I2C_MASK(i,mask) {
-            ADD_BACKEND(AP_Baro_KellerLD::probe(*this,
-                                                std::move(GET_I2C_DEVICE(i, HAL_BARO_KELLERLD_I2C_ADDR))));
-        }
-    }
-    if (probe & PROBE_MS5837) {
-        FOREACH_I2C_MASK(i,mask) {
-            ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                              std::move(GET_I2C_DEVICE(i, HAL_BARO_MS5837_I2C_ADDR)), AP_Baro_MS56XX::BARO_MS5837));
-        }
-    }
-#endif
 }
 
 bool AP_Baro::should_log() const

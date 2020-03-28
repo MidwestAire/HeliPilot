@@ -5,11 +5,7 @@
 
 extern const AP_HAL::HAL& hal;
 
-#if APM_BUILD_TYPE(APM_BUILD_APMrover2)
-#define AC_FENCE_TYPE_DEFAULT AC_FENCE_TYPE_CIRCLE | AC_FENCE_TYPE_POLYGON
-#else
 #define AC_FENCE_TYPE_DEFAULT AC_FENCE_TYPE_ALT_MAX | AC_FENCE_TYPE_CIRCLE | AC_FENCE_TYPE_POLYGON
-#endif
 
 const AP_Param::GroupInfo AC_Fence::var_info[] = {
     // @Param: ENABLE

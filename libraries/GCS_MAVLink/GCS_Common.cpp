@@ -55,7 +55,7 @@
   #include <AP_Common/AP_Common.h>
 
   // To be replaced with macro saying if KDECAN library is included
-  #if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+  #if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     #include <AP_KDECAN/AP_KDECAN.h>
   #endif
   #include <AP_ToshibaCAN/AP_ToshibaCAN.h>
@@ -3462,7 +3462,7 @@ MAV_RESULT GCS_MAVLINK::handle_command_preflight_can(const mavlink_command_long_
         switch (AP::can().get_protocol_type(i)) {
             case AP_BoardConfig_CAN::Protocol_Type_KDECAN: {
 // To be replaced with macro saying if KDECAN library is included
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
                 AP_KDECAN *ap_kdecan = AP_KDECAN::get_kdecan(i);
 
                 if (ap_kdecan != nullptr) {
@@ -4474,7 +4474,7 @@ bool GCS_MAVLINK::try_send_message(const enum ap_message id)
             switch (AP::can().get_protocol_type(i)) {
                 case AP_BoardConfig_CAN::Protocol_Type_KDECAN: {
 // To be replaced with macro saying if KDECAN library is included
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
                     AP_KDECAN *ap_kdecan = AP_KDECAN::get_kdecan(i);
                     if (ap_kdecan != nullptr) {
                         ap_kdecan->send_mavlink(uint8_t(chan));

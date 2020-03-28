@@ -42,11 +42,7 @@
 #define ADSB_BITBASK_RF_CAPABILITIES_UAT_IN         (1 << 0)
 #define ADSB_BITBASK_RF_CAPABILITIES_1090ES_IN      (1 << 1)
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
-    #define ADSB_LIST_RADIUS_DEFAULT        10000 // in meters
-#else // APM_BUILD_TYPE(APM_BUILD_ArduCopter), Rover, Boat
-    #define ADSB_LIST_RADIUS_DEFAULT        2000 // in meters
-#endif
+#define ADSB_LIST_RADIUS_DEFAULT        2000 // in meters
 
 extern const AP_HAL::HAL& hal;
 

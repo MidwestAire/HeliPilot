@@ -27,7 +27,7 @@
   #include <AP_UAVCAN/AP_UAVCAN.h>
 
   // To be replaced with macro saying if KDECAN library is included
-  #if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+  #if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     #include <AP_KDECAN/AP_KDECAN.h>
   #endif
   #include <AP_ToshibaCAN/AP_ToshibaCAN.h>
@@ -264,7 +264,7 @@ void SRV_Channels::push()
             }
             case AP_BoardConfig_CAN::Protocol_Type_KDECAN: {
 // To be replaced with macro saying if KDECAN library is included
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
                 AP_KDECAN *ap_kdecan = AP_KDECAN::get_kdecan(i);
                 if (ap_kdecan == nullptr) {
                     continue;

@@ -3,11 +3,11 @@
 #include "AP_BattMonitor_Params.h"
 #include "AP_BattMonitor_Analog.h"
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
   #define DEFAULT_LOW_BATTERY_VOLTAGE 10.5f
 #else
   #define DEFAULT_LOW_BATTERY_VOLTAGE 0.0f
-#endif // APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#endif // APM_BUILD_TYPE(APM_BUILD_Helicopter)
 
 const AP_Param::GroupInfo AP_BattMonitor_Params::var_info[] = {
     // @Param: MONITOR

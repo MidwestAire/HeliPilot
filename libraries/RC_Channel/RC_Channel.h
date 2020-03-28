@@ -140,7 +140,7 @@ public:
         AVOID_PROXIMITY =     40, // enable object avoidance using proximity sensors (ie. horizontal lidar)
         ARMDISARM =           41, // arm or disarm vehicle
         SMART_RTL =           42, // change to SmartRTL flight mode
-        INVERTED  =           43, // enable inverted flight
+        GOVERNOR  =           43, // helicopter governor
         WINCH_ENABLE =        44, // winch enable/disable
         WINCH_CONTROL =       45, // winch control
         RC_OVERRIDE_ENABLE =  46, // enable RC Override

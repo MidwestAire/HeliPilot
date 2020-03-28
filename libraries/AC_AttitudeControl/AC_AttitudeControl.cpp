@@ -3,13 +3,7 @@
 
 extern const AP_HAL::HAL& hal;
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
- // default gains for Plane
- # define AC_ATTITUDE_CONTROL_INPUT_TC_DEFAULT  0.2f    // Soft
-#else
- // default gains for Copter and Sub
- # define AC_ATTITUDE_CONTROL_INPUT_TC_DEFAULT  0.15f   // Medium
-#endif
+# define AC_ATTITUDE_CONTROL_INPUT_TC_DEFAULT  0.15f   // Medium
 
 // table of user settable parameters
 const AP_Param::GroupInfo AC_AttitudeControl::var_info[] = {

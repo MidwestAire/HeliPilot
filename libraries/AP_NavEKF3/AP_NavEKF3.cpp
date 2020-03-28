@@ -12,7 +12,7 @@
   APM_BUILD_DIRECTORY is taken from the main vehicle directory name
   where the code is built.
  */
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_Replay)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter) || APM_BUILD_TYPE(APM_BUILD_Replay)
 // copter defaults
 #define VELNE_M_NSE_DEFAULT     0.5f
 #define VELD_M_NSE_DEFAULT      0.7f
@@ -36,56 +36,6 @@
 #define FLOW_I_GATE_DEFAULT     300
 #define CHECK_SCALER_DEFAULT    100
 #define FLOW_USE_DEFAULT        1
-
-#elif APM_BUILD_TYPE(APM_BUILD_APMrover2)
-// rover defaults
-#define VELNE_M_NSE_DEFAULT     0.5f
-#define VELD_M_NSE_DEFAULT      0.7f
-#define POSNE_M_NSE_DEFAULT     0.5f
-#define ALT_M_NSE_DEFAULT       2.0f
-#define MAG_M_NSE_DEFAULT       0.05f
-#define GYRO_P_NSE_DEFAULT      1.5E-02f
-#define ACC_P_NSE_DEFAULT       3.5E-01f
-#define GBIAS_P_NSE_DEFAULT     1.0E-03f
-#define ABIAS_P_NSE_DEFAULT     3.0E-03f
-#define MAGB_P_NSE_DEFAULT      1.0E-04f
-#define MAGE_P_NSE_DEFAULT      1.0E-03f
-#define VEL_I_GATE_DEFAULT      500
-#define POS_I_GATE_DEFAULT      500
-#define HGT_I_GATE_DEFAULT      500
-#define MAG_I_GATE_DEFAULT      300
-#define MAG_CAL_DEFAULT         2
-#define GLITCH_RADIUS_DEFAULT   25
-#define FLOW_MEAS_DELAY         10
-#define FLOW_M_NSE_DEFAULT      0.25f
-#define FLOW_I_GATE_DEFAULT     300
-#define CHECK_SCALER_DEFAULT    100
-#define FLOW_USE_DEFAULT        1
-
-#elif APM_BUILD_TYPE(APM_BUILD_ArduPlane)
-// plane defaults
-#define VELNE_M_NSE_DEFAULT     0.5f
-#define VELD_M_NSE_DEFAULT      0.7f
-#define POSNE_M_NSE_DEFAULT     0.5f
-#define ALT_M_NSE_DEFAULT       3.0f
-#define MAG_M_NSE_DEFAULT       0.05f
-#define GYRO_P_NSE_DEFAULT      1.5E-02f
-#define ACC_P_NSE_DEFAULT       3.5E-01f
-#define GBIAS_P_NSE_DEFAULT     1.0E-03f
-#define ABIAS_P_NSE_DEFAULT     3.0E-03f
-#define MAGB_P_NSE_DEFAULT      1.0E-04f
-#define MAGE_P_NSE_DEFAULT      1.0E-03f
-#define VEL_I_GATE_DEFAULT      500
-#define POS_I_GATE_DEFAULT      500
-#define HGT_I_GATE_DEFAULT      500
-#define MAG_I_GATE_DEFAULT      300
-#define MAG_CAL_DEFAULT         0
-#define GLITCH_RADIUS_DEFAULT   25
-#define FLOW_MEAS_DELAY         10
-#define FLOW_M_NSE_DEFAULT      0.15f
-#define FLOW_I_GATE_DEFAULT     500
-#define CHECK_SCALER_DEFAULT    100
-#define FLOW_USE_DEFAULT        2
 
 #else
 // build type not specified, use copter defaults

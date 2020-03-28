@@ -98,11 +98,6 @@ public:
     // Command an euler roll, pitch and yaw angle with angular velocity feedforward and smoothing
     void input_euler_angle_roll_pitch_yaw(float euler_roll_angle_cd, float euler_pitch_angle_cd, float euler_yaw_angle_cd, bool slew_yaw) override;
     
-    // enable/disable inverted flight
-    void set_inverted_flight(bool inverted) override {
-        _inverted_flight = inverted;
-    }
-    
     // user settable parameters
     static const struct AP_Param::GroupInfo var_info[];
 

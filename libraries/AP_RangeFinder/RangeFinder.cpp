@@ -216,14 +216,8 @@ void RangeFinder::convert_params(void) {
     AP_Param::ConversionInfo info;
     info.new_name = param_name;
 
-#if APM_BUILD_TYPE(APM_BUILD_ArduPlane)
-    info.old_key = 71;
-#elif APM_BUILD_TYPE(APM_BUILD_ArduCopter)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
     info.old_key = 53;
-#elif APM_BUILD_TYPE(APM_BUILD_ArduSub)
-    info.old_key = 35;
-#elif APM_BUILD_TYPE(APM_BUILD_APMrover2)
-    info.old_key = 197;
 #else
     params[0].type.save(true);
     return; // no conversion is supported on this platform

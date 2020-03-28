@@ -8,8 +8,7 @@
 
 // swashplate types
 enum SwashPlateType {
-    SWASHPLATE_TYPE_H3 = 0,
-    SWASHPLATE_TYPE_H1,
+    SWASHPLATE_TYPE_H1 = 1,
     SWASHPLATE_TYPE_H3_140,
     SWASHPLATE_TYPE_H3_120,
     SWASHPLATE_TYPE_H4_90,
@@ -45,9 +44,6 @@ public:
     // linearize mechanical output of swashplate servo
     float get_linear_servo_output(float input) const;
 
-    // get_phase_angle - returns the rotor phase angle
-    int16_t get_phase_angle() const { return _phase_angle; }
-
     // var_info
     static const struct AP_Param::GroupInfo var_info[];
 
@@ -62,14 +58,7 @@ private:
 
     // parameters
     AP_Int8  _swashplate_type;                   // Swash Type Setting
-    AP_Int8  _swash_coll_dir;                    // Collective control direction, normal or reversed
+    AP_Int8  _swash_collective_direction;        // Collective control direction, normal or reversed
     AP_Int8  _linear_swash_servo;                // linearize swashplate output
-    AP_Int8  enable;
-    AP_Int16 _servo1_pos;                        // servo1 azimuth position on swashplate with front of heli being 0 deg
-    AP_Int16 _servo2_pos;                        // servo2 azimuth position on swashplate with front of heli being 0 deg
-    AP_Int16 _servo3_pos;                        // servo3 azimuth position on swashplate with front of heli being 0 deg
-    AP_Int16 _phase_angle;                       // Phase angle correction for rotor head.  If pitching the swash forward induces 
-                                                 // a roll, this can be negative depending on mechanics.
-
 };
 

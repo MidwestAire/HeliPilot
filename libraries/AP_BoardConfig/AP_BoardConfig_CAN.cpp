@@ -157,7 +157,7 @@ void AP_BoardConfig_CAN::init()
                 AP_Param::load_object_from_eeprom(_drivers[i]._uavcan, AP_UAVCAN::var_info);
             } else if (prot_type == Protocol_Type_KDECAN) {
 // To be replaced with macro saying if KDECAN library is included
-#if APM_BUILD_TYPE(APM_BUILD_ArduCopter) || APM_BUILD_TYPE(APM_BUILD_ArduPlane) || APM_BUILD_TYPE(APM_BUILD_ArduSub)
+#if APM_BUILD_TYPE(APM_BUILD_Helicopter)
                 _drivers[i]._driver = _drivers[i]._kdecan =  new AP_KDECAN;
 
                  if (_drivers[i]._driver == nullptr) {
