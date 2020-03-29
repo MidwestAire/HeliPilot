@@ -680,9 +680,6 @@ void AP_Frsky_Telem::check_sensor_status_flags(void)
         } else if ((_sensor_status_flags & MAV_SYS_STATUS_GEOFENCE) > 0) {
             queue_message(MAV_SEVERITY_CRITICAL, "Geofence Breach");
             check_sensor_status_timer = now;
-        } else if ((_sensor_status_flags & MAV_SYS_STATUS_AHRS) > 0) {
-            queue_message(MAV_SEVERITY_CRITICAL, "Bad AHRS");
-            check_sensor_status_timer = now;
         } else if ((_sensor_status_flags & MAV_SYS_STATUS_SENSOR_RC_RECEIVER) > 0) {
             queue_message(MAV_SEVERITY_CRITICAL, "No RC Receiver");
             check_sensor_status_timer = now;
