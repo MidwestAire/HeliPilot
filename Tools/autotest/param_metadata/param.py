@@ -42,16 +42,29 @@ known_param_fields = [
 # http://www.bipm.org/en/publications/si-brochure/
 # http://www1.bipm.org/en/CGPM/db/3/2/   g_n unit for G-force
 # one further constrain is that only printable (7bit) ASCII characters are allowed
+# Follow helicopter conventions from:
+# Chris Olson, Chief Pilot, Midwest Aire
 known_units = {
 #          abreviation : full-text (used in .html .rst and .wiki files)
 # time
              's'       : 'seconds'               ,
+             'sec'     : 'seconds'               ,
+             'seconds' : 'seconds'               ,
              'ds'      : 'deciseconds'           ,
              'cs'      : 'centiseconds'          ,
              'ms'      : 'milliseconds'          ,
              'PWM'     : 'PWM in microseconds'   , # should be microseconds, this is NOT a SI unit, but follows https://github.com/ArduPilot/ardupilot/pull/5538#issuecomment-271943061
              'Hz'      : 'hertz'                 ,
              'kHz'     : 'kilohertz'             ,
+             
+# helicopters
+             'RPM'       : 'Revolutions per Minute'    ,
+             'rpm'       : 'Revolutions per Minute'    ,
+             'Rrpm'      : 'Rotor RPM'                 ,
+             'Erpm'      : 'Engine RPM'                ,
+             '%Rrpm'     : '% Rotor RPM'               ,
+             '%throttle' : '% Throttle'                ,
+
 # distance
              'km'      : 'kilometers'                , # metre is the SI unit name, meter is the american spelling of it
              'm'       : 'meters'                    , # metre is the SI unit name, meter is the american spelling of it
@@ -103,7 +116,6 @@ known_units = {
              'm/V'     : 'meters per volt'       ,
              'gravities': 'standard acceleration due to gravity' , # g_n would be a more correct unit, but IMHO no one understands what g_n means
              'octal'   : 'octal'                 ,
-             'RPM'     : 'Revolutions Per Minute',
              }
 
 required_param_fields = [
