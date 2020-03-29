@@ -68,7 +68,7 @@ function run_autotest() {
 for t in $CI_BUILD_TARGET; do
     # special case for SITL testing in CI
     if [ "$t" == "sitltest-copter" ]; then
-        run_autotest "Copter" "build.ArduCopter" "fly.ArduCopter"
+        run_autotest "Copter" "build.Helicopter" "fly.Helicopter"
         continue
     fi
     if [ "$t" == "sitltest-plane" ]; then
@@ -171,8 +171,7 @@ for t in $CI_BUILD_TARGET; do
                 --check-c-compiler="$c_compiler" \
                 --check-cxx-compiler="$cxx_compiler"
         $waf clean
-        $waf copter
-        $waf plane
+        $waf all
         ccache -s && ccache -z
 
         if [[ $t == linux ]]; then
@@ -181,7 +180,7 @@ for t in $CI_BUILD_TARGET; do
     fi
 done
 
-python Tools/autotest/param_metadata/param_parse.py --vehicle ArduCopter
+python Tools/autotest/param_metadata/param_parse.py --vehicle Helicopter
 python Tools/autotest/param_metadata/param_parse.py --vehicle ArduPlane
 
 echo build OK

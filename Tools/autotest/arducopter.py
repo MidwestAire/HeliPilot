@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Fly ArduCopter in SITL
+# Fly Helicopter in SITL
 from __future__ import print_function
 import copy
 import math
@@ -53,7 +53,7 @@ class AutoTestCopter(AutoTest):
         return ["ACRO", "ALT_HOLD", "SPORT", "STABILIZE", "GUIDED_NOGPS"]
 
     def log_name(self):
-        return "ArduCopter"
+        return "Helicopter"
 
     def test_filepath(self):
          return os.path.realpath(__file__)
@@ -71,7 +71,7 @@ class AutoTestCopter(AutoTest):
         return 5
 
     def vehicleinfo_key(self):
-        return 'ArduCopter'
+        return 'Helicopter'
 
     def default_frame(self):
         return "+"
@@ -3250,7 +3250,7 @@ class AutoTestCopter(AutoTest):
             # now test RC targetting
             self.progress("Testing mount RC targetting")
 
-            # this is a one-off; ArduCopter *will* time out this directive!
+            # this is a one-off; Helicopter *will* time out this directive!
             self.progress("Levelling aircraft")
             self.mav.mav.set_attitude_target_send(
                 0, # time_boot_ms
@@ -3355,7 +3355,7 @@ class AutoTestCopter(AutoTest):
                          )
             self.test_mount_pitch(-7.5, 1)
 
-            self.progress("checking ArduCopter yaw-aircraft-for-roi")
+            self.progress("checking Helicopter yaw-aircraft-for-roi")
             try:
                 self.context_push()
 
@@ -4217,7 +4217,7 @@ class AutoTestCopter(AutoTest):
             ("LogDownLoad",
              "Log download",
              lambda: self.log_download(
-                 self.buildlogs_path("ArduCopter-log.bin"),
+                 self.buildlogs_path("Helicopter-log.bin"),
                  upload_logs=len(self.fail_list) > 0))
 
         ])
@@ -4405,7 +4405,7 @@ class AutoTestHeli(AutoTestCopter):
             ("LogDownLoad",
              "Log download",
              lambda: self.log_download(
-                 self.buildlogs_path("ArduCopter-log.bin"),
+                 self.buildlogs_path("Helicopter-log.bin"),
                  upload_logs=len(self.fail_list) > 0))
         ])
         return ret

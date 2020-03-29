@@ -10,16 +10,12 @@ import sys
 
 from optparse import OptionParser
 
-parser = OptionParser("print_version.py [options] ArduCopter|ArduPlane|APMrover2|AntennaTracker")
+parser = OptionParser("print_version.py [options] Helicopter")
 
 (opts, args) = parser.parse_args()
 
 includefiles = {
-    "ArduCopter": "version.h",
-    "ArduPlane": "version.h",
-    "APMrover2": "version.h",
-    "AntennaTracker": "version.h",
-    "ArduSub": "version.h",
+    "Helicopter": "version.h",
 }
 
 if len(args) > 0:

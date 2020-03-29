@@ -630,11 +630,11 @@ is bob we will attempt to checkout bob-AVR'''
         boards.extend(["skyviper-v2450", "aerofc-v1", "bebop", "CubeSolo", "CubeGreen-solo", "skyviper-journey"])
         boards.extend(self.common_boards()[:])
         self.build_vehicle(tag,
-                           "ArduCopter",
+                           "Helicopter",
                            boards,
                            "Copter",
                            "arducopter",
-                           "ArduCopter",
+                           "Helicopter",
                            frames=[None, "heli"])
 
     def build_arduplane(self, tag):

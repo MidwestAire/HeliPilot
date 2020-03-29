@@ -11,13 +11,13 @@ of an ArduPilot checkout:
 pbarker@bluebottle:~/rc/ardupilot(build-with-disabled-features)$ ./Tools/autotest/build-with-disabled-features.py
 
 BWFD: Building
-Running: ("/home/pbarker/rc/ardupilot/Tools/autotest/autotest.py" "build.ArduCopter") in (.)
+Running: ("/home/pbarker/rc/ardupilot/Tools/autotest/autotest.py" "build.Helicopter") in (.)
 lckfile='/home/pbarker/rc/buildlogs/autotest.lck'
 .
 .
 .
->>>> PASSED STEP: build.ArduCopter at Thu Feb 22 09:46:43 2018
-check step:  build.ArduCopter
+>>>> PASSED STEP: build.Helicopter at Thu Feb 22 09:46:43 2018
+check step:  build.Helicopter
 BWFD: ADVANCED_FAILSAFE OK
 BWFD: Successes: ['MOUNT', 'AUTOTUNE_ENABLED', 'AC_FENCE', 'CAMERA', 'RANGEFINDER_ENABLED', 'PROXIMITY_ENABLED', 'AC_RALLY', 'AC_AVOID_ENABLED', 'AC_TERRAIN', 'PARACHUTE', 'NAV_GUIDED', 'OPTFLOW', 'VISUAL_ODOMETRY_ENABLED', 'FRSKY_TELEM_ENABLED', 'ADSB_ENABLED', 'PRECISION_LANDING', 'SPRAYER', 'WINCH_ENABLED', 'ADVANCED_FAILSAFE']
 BWFD: Failures: ['LOGGING_ENABLED']
@@ -192,9 +192,9 @@ class BuilderCopter(Builder):
 
 specs = [
     {
-        "config": 'ArduCopter/config.h',
-        "autotest_target": "build.ArduCopter",
-        "target_binary": "bin/arducopter",
+        "config": 'Helicopter/config.h',
+        "autotest_target": "build.Helicopter",
+        "target_binary": "bin/firmware-multirotor",
         "reverse-deps": {
             "AC_FENCE": ["AC_AVOID_ENABLED", "MODE_FOLLOW_ENABLED"],
             "PROXIMITY_ENABLED": ["AC_AVOID_ENABLED", "MODE_FOLLOW_ENABLED"],
@@ -212,9 +212,9 @@ specs = [
         },
     },
     {
-        "config": 'ArduCopter/config.h',
+        "config": 'Helicopter/config.h',
         "autotest_target": "build.Helicopter",
-        "target_binary": "bin/arducopter-heli",
+        "target_binary": "bin/firmware-helicopter",
         "reverse-deps": {
             "AC_FENCE": ["AC_AVOID_ENABLED", "MODE_FOLLOW_ENABLED"],
             "PROXIMITY_ENABLED": ["AC_AVOID_ENABLED", "MODE_FOLLOW_ENABLED"],

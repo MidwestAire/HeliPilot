@@ -24,12 +24,16 @@ fi
 
 # GNU Tools for ARM Embedded Processors
 # (see https://launchpad.net/gcc-arm-embedded/)
-ARM_ROOT="gcc-arm-none-eabi-6-2017-q2-update"
-ARM_TARBALL="$ARM_ROOT-linux.tar.bz2"
-ARM_TARBALL_URL="http://firmware.ardupilot.org/Tools/STM32-tools/$ARM_TARBALL"
+if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+    ARM_ROOT="gcc-arm-none-eabi-6-2017-q2-update"
+else
+    ARM_ROOT="gcc-arm-none-eabi-4_9-2015q3-20150921"
+fi
+    ARM_TARBALL="$ARM_ROOT-linux.tar.bz2"
+    ARM_TARBALL_URL="https://github.com/MidwestAire/HeliPilot/releases/download/Tools/$ARM_TARBALL"
 
-# Ardupilot Tools
-ARDUPILOT_TOOLS="Tools/autotest"
+# HeliPilot Tools
+HELIPILOT_TOOLS="Tools/autotest"
 
 function maybe_prompt_user() {
     if $ASSUME_YES; then
@@ -109,7 +113,7 @@ if [ ! -d $OPT/$ARM_ROOT ]; then
 fi
 
 SCRIPT_DIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
-ARDUPILOT_ROOT=$(realpath "$SCRIPT_DIR/../../")
+HELIPILOT_ROOT=$(realpath "$SCRIPT_DIR/../../")
 
 exportline="export PATH=$OPT/$ARM_ROOT/bin:\$PATH";
 grep -Fxq "$exportline" ~/.profile 2>/dev/null || {
@@ -121,20 +125,20 @@ grep -Fxq "$exportline" ~/.profile 2>/dev/null || {
     fi
 }
 
-exportline2="export PATH=$ARDUPILOT_ROOT/$ARDUPILOT_TOOLS:\$PATH";
+exportline2="export PATH=$HELIPILOT_ROOT/$HELIPILOT_TOOLS:\$PATH";
 grep -Fxq "$exportline2" ~/.profile 2>/dev/null || {
-    if maybe_prompt_user "Add $ARDUPILOT_ROOT/$ARDUPILOT_TOOLS to your PATH [N/y]?" ; then
+    if maybe_prompt_user "Add $HELIPILOT_ROOT/$HELIPILOT_TOOLS to your PATH [N/y]?" ; then
         echo $exportline2 >> ~/.profile
         eval $exportline2
     else
-        echo "Skipping adding $ARDUPILOT_ROOT/$ARDUPILOT_TOOLS to PATH."
+        echo "Skipping adding $HELIPILOT_ROOT/$HELIPILOT_TOOLS to PATH."
     fi
 }
 
 apt-cache search arm-none-eabi
 
 (
- cd $ARDUPILOT_ROOT
+ cd $HELIPILOT_ROOT
  git submodule update --init --recursive
 )
 echo "---------- $0 end ----------"

@@ -85,7 +85,7 @@ def error(str_to_print):
 truename_map = {
     "Rover": "Rover",
     "ArduSub": "Sub",
-    "ArduCopter": "Copter",
+    "Helicopter": "Copter",
     "ArduPlane": "Plane",
     "AntennaTracker": "Tracker",
 }

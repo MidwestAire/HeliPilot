@@ -174,7 +174,7 @@ def param_parse_filepath():
 
 def all_vehicles():
     return ('ArduPlane',
-            'ArduCopter',
+            'Helicopter',
             'APMrover2',
             'AntennaTracker',
             'ArduSub')
@@ -250,11 +250,11 @@ def should_run_step(step):
 
 
 __bin_names = {
-    "ArduCopter": "arducopter",
+    "Helicopter": "firmware-multirotor",
     "ArduPlane": "arduplane",
     "APMrover2": "ardurover",
     "AntennaTracker": "antennatracker",
-    "CopterAVC": "arducopter-heli",
+    "CopterAVC": "firmware-helicopter",
     "QuadPlane": "arduplane",
     "ArduSub": "ardusub",
     "balancebot": "ardurover",
@@ -301,7 +301,7 @@ def find_specific_test_to_run(step):
     return "%s.%s" % (testname, test)
 
 tester_class_map = {
-    "fly.ArduCopter": arducopter.AutoTestCopter,
+    "fly.Helicopter": arducopter.AutoTestCopter,
     "fly.ArduPlane": arduplane.AutoTestPlane,
     "fly.QuadPlane": quadplane.AutoTestQuadPlane,
     "drive.APMrover2": apmrover2.AutoTestRover,
@@ -352,14 +352,14 @@ def run_step(step):
     if step == 'build.APMrover2':
         vehicle_binary = 'bin/ardurover'
 
-    if step == 'build.ArduCopter':
-        vehicle_binary = 'bin/arducopter'
+    if step == 'build.Helicopter':
+        vehicle_binary = 'bin/firmware-multirotor'
 
     if step == 'build.AntennaTracker':
         vehicle_binary = 'bin/antennatracker'
 
     if step == 'build.Helicopter':
-        vehicle_binary = 'bin/arducopter-heli'
+        vehicle_binary = 'bin/firmware-helicopter'
 
     if step == 'build.ArduSub':
         vehicle_binary = 'bin/ardusub'
@@ -388,7 +388,7 @@ def run_step(step):
     if opts.speedup is not None:
         fly_opts["speedup"] = opts.speedup
 
-    # handle "fly.ArduCopter" etc:
+    # handle "fly.Helicopter" etc:
     if step in tester_class_map:
         t = tester_class_map[step](binary, **fly_opts)
         return (t.autotest(), t)
@@ -762,9 +762,9 @@ if __name__ == "__main__":
         'drive.APMrover2',
         'drive.balancebot',
 
-        'build.ArduCopter',
-        'defaults.ArduCopter',
-        'fly.ArduCopter',
+        'build.Helicopter',
+        'defaults.Helicopter',
+        'fly.Helicopter',
 
         'build.Helicopter',
         'fly.CopterAVC',

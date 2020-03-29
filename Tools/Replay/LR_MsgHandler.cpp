@@ -358,7 +358,7 @@ void LR_MsgHandler_MSG::process_message(uint8_t *msg)
 	::printf("Detected Plane\n");
 	ahrs.set_vehicle_class(AHRS_VEHICLE_FIXED_WING);
 	ahrs.set_fly_forward(true);
-    } else if (strncmp(msg_text, "ArduCopter", strlen("ArduCopter")) == 0 ||
+    } else if (strncmp(msg_text, "Helicopter", strlen("Helicopter")) == 0 ||
 	       strncmp(msg_text, "APM:Copter", strlen("APM:Copter")) == 0) {
 	vehicle = VehicleType::VEHICLE_COPTER;
 	::printf("Detected Copter\n");
