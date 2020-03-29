@@ -34,14 +34,14 @@ def build(bld):
     )
 
     bld.ap_program(
-        program_name='arducopter',
+        program_name='firmware-multirotor',
         program_groups=['bin', 'copter'],
         use=vehicle + '_libs',
         defines=['FRAME_CONFIG=MULTICOPTER_FRAME'],
         )
 
     bld.ap_program(
-        program_name='arducopter-heli',
+        program_name='firmware-helicopter',
         program_groups=['bin', 'heli'],
         use=vehicle + '_libs',
         defines=['FRAME_CONFIG=HELI_FRAME'],
