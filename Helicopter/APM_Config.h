@@ -6,7 +6,7 @@
 // uncomment the lines below to disable features (flash sizes listed are for APM2 boards and will underestimate savings on Pixhawk and other boards)
 //#define LOGGING_ENABLED       DISABLED            // disable logging to save 11K of flash space
 //#define MOUNT                 DISABLED            // disable the camera gimbal to save 8K of flash space
-//#define AUTOTUNE_ENABLED      DISABLED            // disable the auto tune functionality to save 7k of flash
+#define AUTOTUNE_ENABLED        DISABLED            // disable the auto tune functionality to save 7k of flash
 //#define AC_FENCE              DISABLED            // disable fence to save 2k of flash
 //#define CAMERA                DISABLED            // disable camera trigger to save 1k of flash
 //#define RANGEFINDER_ENABLED   DISABLED            // disable rangefinder to save 1k of flash
@@ -20,7 +20,7 @@
 //#define OPTFLOW               DISABLED            // disable optical flow sensor to save 5K of flash space
 //#define VISUAL_ODOMETRY_ENABLED DISABLED          // disable visual odometry to save 2K of flash space
 //#define FRSKY_TELEM_ENABLED   DISABLED            // disable FRSky telemetry
-//#define ADSB_ENABLED          DISABLED            // disable ADSB support
+#define ADSB_ENABLED            DISABLED            // disable ADSB support
 //#define PRECISION_LANDING     DISABLED            // disable precision landing using companion computer or IRLock sensor
 //#define BEACON_ENABLED        DISABLED            // disable beacon support
 //#define SPRAYER_ENABLED       DISABLED            // disable the crop sprayer feature (two ESC controlled pumps the speed of which depends upon the vehicle's horizontal velocity)
@@ -33,19 +33,19 @@
 //#define MODE_AUTO_ENABLED     DISABLED            // disable auto mode support
 //#define MODE_BRAKE_ENABLED    DISABLED            // disable brake mode support
 //#define MODE_CIRCLE_ENABLED   DISABLED            // disable circle mode support
-//#define MODE_DRIFT_ENABLED    DISABLED            // disable drift mode support
-//#define MODE_FLIP_ENABLED     DISABLED            // disable flip mode support
+#define MODE_DRIFT_ENABLED      DISABLED            // disable drift mode support
+#define MODE_FLIP_ENABLED       DISABLED            // disable flip mode support
 //#define MODE_FOLLOW_ENABLED   DISABLED            // disable follow mode support
 //#define MODE_GUIDED_ENABLED   DISABLED            // disable guided mode support
 //#define MODE_GUIDED_NOGPS_ENABLED   DISABLED      // disable guided/nogps mode support
 //#define MODE_LOITER_ENABLED   DISABLED            // disable loiter mode support
 //#define MODE_POSHOLD_ENABLED  DISABLED            // disable poshold mode support
 //#define MODE_RTL_ENABLED      DISABLED            // disable rtl mode support
-//#define MODE_SMARTRTL_ENABLED DISABLED            // disable smartrtl mode support
-//#define MODE_SPORT_ENABLED    DISABLED            // disable sport mode support
+#define MODE_SMARTRTL_ENABLED   DISABLED            // disable smartrtl mode support
+#define MODE_SPORT_ENABLED      DISABLED            // disable sport mode support
 //#define MODE_SYSTEMID_ENABLED DISABLED            // disable system ID mode support
-//#define MODE_THROW_ENABLED    DISABLED            // disable throw mode support
-//#define MODE_ZIGZAG_ENABLED   DISABLED            // disable zigzag mode support
+#define MODE_THROW_ENABLED      DISABLED            // disable throw mode support
+#define MODE_ZIGZAG_ENABLED     DISABLED            // disable zigzag mode support
 //#define OSD_ENABLED           DISABLED            // disable on-screen-display support
 //#define BUTTON_ENABLED        DISABLED            // disable button support
 

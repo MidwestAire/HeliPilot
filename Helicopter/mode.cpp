@@ -188,7 +188,7 @@ bool Copter::set_mode(Mode::Number mode, ModeReason reason)
 
     Mode *new_flightmode = mode_from_mode_num((Mode::Number)mode);
     if (new_flightmode == nullptr) {
-        gcs().send_text(MAV_SEVERITY_WARNING,"No such mode");
+        gcs().send_text(MAV_SEVERITY_WARNING,"Mode disabled for helicopters");
         AP::logger().Write_Error(LogErrorSubsystem::FLIGHT_MODE, LogErrorCode(mode));
         return false;
     }
@@ -201,7 +201,7 @@ bool Copter::set_mode(Mode::Number mode, ModeReason reason)
     if (!ignore_checks && 
     !new_flightmode->has_manual_throttle() && 
     (motors->get_spool_state() == AP_Motors::SpoolState::SPOOLING_UP || motors->get_spool_state() == AP_Motors::SpoolState::SPOOLING_DOWN)) {
-        gcs().send_text(MAV_SEVERITY_WARNING,"Flight mode change failed");
+        gcs().send_text(MAV_SEVERITY_WARNING,"Rotor RPM too low to change flight mode");
         AP::logger().Write_Error(LogErrorSubsystem::FLIGHT_MODE, LogErrorCode(mode));
         return false;
     }
@@ -223,7 +223,7 @@ bool Copter::set_mode(Mode::Number mode, ModeReason reason)
         user_throttle &&
         !copter.flightmode->has_manual_throttle() &&
         new_flightmode->get_pilot_desired_throttle() > copter.get_non_takeoff_throttle()) {
-        gcs().send_text(MAV_SEVERITY_WARNING, "Mode change failed: throttle too high");
+        gcs().send_text(MAV_SEVERITY_WARNING, "Mode change failed: collective too high");
         AP::logger().Write_Error(LogErrorSubsystem::FLIGHT_MODE, LogErrorCode(mode));
         return false;
     }
