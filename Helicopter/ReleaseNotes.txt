@@ -1,4 +1,50 @@
-ArduPilot Copter Release Notes:
+HeliPilot Release Notes:
+------------------------------------------------------------------
+HeliPilot 21.01.01-beta
+1) HeliPilot v20 port to ArduPilot Copter 4.0 codebase
+------------------------------------------------------------------
+HeliPilot 20.02.01 Approved Release
+1) New governor with torque limiter
+2) New AutoThrottle system with manual throttle controls
+3) Updated FrSky telemetry with RPM SPort support
+------------------------------------------------------------------
+HeliPilot 19.10.01 Approved Release
+1) Changes to governor torque limiter variables to be consistent with change from
+governor range to governor torque
+------------------------------------------------------------------
+HeliPilot 19.09.22 Preliminary Certified Release
+1) Changes to documentation for settings and inspections
+------------------------------------------------------------------
+HeliPilot 19.09.01 Certification Release September 2019
+------------------------------------------------------------------
+HeliPilot 19.08.17 Pre-Release
+Changes from ArduHeli HeliPilot 19.08.11
+1) Remove inverted flight function
+2) Remove throttle mode setting
+    a.HeliPilot uses throttle curve by default
+3) Re-index and group parameters for easier code maintenance
+4) Add governor on/off switch function
+    a.governor disengage parameter deprecated
+------------------------------------------------------------------
+HeliPilot 19.08.11 Pre-Release
+Changes from ArduHeli HeliPilot 19.08.05
+1) Remove redunduant throttle modes
+    a.HeliPilot only supports throttle curve and governor operation
+2) Remove flybar support from main build
+    a.HeliPilot requires special build for flybar support
+3) Remove DDVP, DDFP and external tail gyro support
+    a.HeliPilot only supports single-rotor conventional helicopters
+4) Remove servo test function - not needed for commercial use
+5) Remove H3 swashplate and adjustable servo positions
+6) Regroup parameters to make setup easier, improve prearm error messages
+------------------------------------------------------------------
+HeliPilot 19.08.05 Pre-Release 05-August-2019
+Changes from ArduHeli 3.6.7
+1) Actual rotor speed used for runup complete when rotor speed sensor is installed
+2) Four-servo swashplate support added
+3) All throttle related settings changed to 0-100%
+4) General improvements to param descriptions
+------------------------------------------------------------------
 ------------------------------------------------------------------
 Copter 4.0.5 27-Oct-2020 / 4.0.5-rc2 08-Oct-2020
 Changes from 4.0.5-rc1
