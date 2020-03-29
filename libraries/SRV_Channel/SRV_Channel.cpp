@@ -197,8 +197,7 @@ bool SRV_Channel::is_motor(SRV_Channel::Aux_servo_function_t function)
 // return true if function is for anything that should be stopped in a e-stop situation, ie is dangerous
 bool SRV_Channel::should_e_stop(SRV_Channel::Aux_servo_function_t function)
 {
-    return ((function >= SRV_Channel::k_heli_rsc && function <= SRV_Channel::k_motor8) ||
-            function == SRV_Channel::k_starter || function == SRV_Channel::k_throttle ||
+    return (function == SRV_Channel::k_starter || function == SRV_Channel::k_throttle ||
             function == SRV_Channel::k_throttleLeft || function == SRV_Channel::k_throttleRight ||
             (function >= SRV_Channel::k_boost_throttle && function <= SRV_Channel::k_motor12) ||
             function == k_engine_run_enable);
