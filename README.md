@@ -1,3 +1,17 @@
+# HeliPilot Project
+
+HeliPilot is a fork of the ArduPilot project specific to commercially flown unmanned helicopters. Release versioning is based on the year and month of release. HeliPilot provides support only for single-rotor conventional helicopters with focus on stability and extensive testing of the code for reliability. Testing is conducted on microcontrollers running the NuttX RTOS sub-system and autopilots running a linux-based sub-system. Credit is given below to the ArduPilot project's resources, developers and maintainers.
+
+## Building and Working with the code ##
+
+The HeliPilot code repository can be cloned and compiled with normal git tools and waf (included as a submodule) on Linux, Mac and Windows (with Windows Subsystem for Linux). It can also be cloned, built and run the simulator with the Desktop Suite for Linux found in the releases.
+
+## License ##
+
+The HeliPilot project is compliant with and licenced under the GNU General Public License, version 3.
+
+- [Full Text](https://github.com/MidwestAire/HeliPilot/blob/HeliPilot-master/COPYING.txt)
+
 # ArduPilot Project
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ArduPilot/ardupilot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
