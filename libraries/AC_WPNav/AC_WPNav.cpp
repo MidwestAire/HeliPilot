@@ -1029,7 +1029,7 @@ float AC_WPNav::get_slow_down_speed(float dist_from_dest_cm, float accel_cmss)
     }
 
     // calculate desired speed near destination
-    float target_speed = safe_sqrt(dist_from_dest_cm * 4.0f * accel_cmss);
+    float target_speed = safe_sqrt(dist_from_dest_cm * accel_cmss);
 
     // ensure desired speed never becomes too low
     if (target_speed < WPNAV_WP_TRACK_SPEED_MIN) {
