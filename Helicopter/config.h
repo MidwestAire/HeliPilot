@@ -56,7 +56,7 @@
 // FRAME_CONFIG
 //
 #ifndef FRAME_CONFIG
- # define FRAME_CONFIG   MULTICOPTER_FRAME
+ # define FRAME_CONFIG   HELI_FRAME
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@
   # define WP_YAW_BEHAVIOR_DEFAULT              WP_YAW_BEHAVIOR_LOOK_AHEAD
   # define THR_MIN_DEFAULT                      0
   # define AUTOTUNE_ENABLED                     DISABLED
-  # define ACCEL_Z_P                            0.30f
+  # define ACCEL_Z_P                            0.28f
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@
 #endif
 
 #ifndef PREARM_DISPLAY_PERIOD
-# define PREARM_DISPLAY_PERIOD 30
+# define PREARM_DISPLAY_PERIOD 150
 #endif
 
 // pre-arm baro vs inertial nav max alt disparity
@@ -296,13 +296,13 @@
 //////////////////////////////////////////////////////////////////////////////
 // Drift - fly vehicle in altitude-held, coordinated-turn mode
 #ifndef MODE_DRIFT_ENABLED
-# define MODE_DRIFT_ENABLED ENABLED
+# define MODE_DRIFT_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
 // flip - fly vehicle in flip in pitch and roll direction mode
 #ifndef MODE_FLIP_ENABLED
-# define MODE_FLIP_ENABLED ENABLED
+# define MODE_FLIP_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -344,13 +344,13 @@
 //////////////////////////////////////////////////////////////////////////////
 // SmartRTL - allows vehicle to retrace a (loop-eliminated) breadcrumb home
 #ifndef MODE_SMARTRTL_ENABLED
-# define MODE_SMARTRTL_ENABLED ENABLED
+# define MODE_SMARTRTL_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
 // Sport - fly vehicle in rate-controlled (earth-frame) mode
 #ifndef MODE_SPORT_ENABLED
-# define MODE_SPORT_ENABLED !HAL_MINIMIZE_FEATURES
+# define MODE_SPORT_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -362,13 +362,13 @@
 //////////////////////////////////////////////////////////////////////////////
 // Throw - fly vehicle after throwing it in the air
 #ifndef MODE_THROW_ENABLED
-# define MODE_THROW_ENABLED ENABLED
+# define MODE_THROW_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
 // ZigZag - allow vehicle to fly in a zigzag manner with predefined point A B
 #ifndef MODE_ZIGZAG_ENABLED
-# define MODE_ZIGZAG_ENABLED !HAL_MINIMIZE_FEATURES
+# define MODE_ZIGZAG_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -381,7 +381,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Button - Enable the button connected to AUX1-6
 #ifndef BUTTON_ENABLED
- # define BUTTON_ENABLED ENABLED
+ # define BUTTON_ENABLED DISABLED
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
