@@ -354,8 +354,6 @@ void AP_MotorsHeli::output_armed_stabilizing()
     }
 
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
-
-    update_engine_control(ENGINE_CONTROL_AUTOTHROTTLE);
 }
 
 // output_armed_zero_throttle - sends commands to the servos
@@ -367,8 +365,6 @@ void AP_MotorsHeli::output_armed_zero_throttle()
     }
 
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
-
-    update_engine_control(ENGINE_CONTROL_IDLE);
 }
 
 // output_disarmed - sends commands to the servos
@@ -418,8 +414,6 @@ void AP_MotorsHeli::output_disarmed()
 
     // helicopters always run stabilizing flight controls
     move_actuators(_roll_in, _pitch_in, get_throttle(), _yaw_in);
-
-    update_engine_control(ENGINE_CONTROL_STOP);
 }
 
 // run spool logic
