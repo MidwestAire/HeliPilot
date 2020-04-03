@@ -376,7 +376,7 @@ const AP_Param::Info Copter::var_info[] = {
     // @DisplayName: PosHold braking angle max
     // @Description: PosHold flight mode's max lean angle during braking in centi-degrees
     // @Units: cdeg
-    // @Range: 2000 4500
+    // @Range: 800 4500
     // @User: Advanced
     GSCALAR(poshold_brake_angle_max, "PHLD_BRAKE_ANGLE",  POSHOLD_BRAKE_ANGLE_DEFAULT),
 
@@ -759,7 +759,7 @@ const AP_Param::GroupInfo ParametersG2::var_info[] = {
     // @Description: Ground Effect Compensation Enable/Disable
     // @Values: 0:Disabled,1:Enabled
     // @User: Advanced
-    AP_GROUPINFO("GND_EFFECT_COMP", 5, ParametersG2, gndeffect_comp_enabled, 1),
+    AP_GROUPINFO("GND_EFFECT_COMP", 5, ParametersG2, gndeffect_comp_enabled, 0),
 
 #if ADVANCED_FAILSAFE == ENABLED
     // @Group: AFS_
@@ -1233,7 +1233,7 @@ void Copter::convert_pid_parameters(void)
         { "LOIT_BRK_ACCEL", 125.0f },
         { "LOIT_BRK_DELAY", 1.0f },
         { "LOIT_BRK_JERK", 250.0f },
-        { "LOIT_SPEED", 3000.0f },
+        { "LOIT_SPEED", 1200.0f },
         { "PHLD_BRAKE_ANGLE", 1200.0f },
         { "PHLD_BRAKE_RATE", 6.0f },
         { "PSC_ACCZ_P", 0.28f },
