@@ -21,7 +21,7 @@
 
 #define FRSKY_TELEM_PAYLOAD_STATUS_CAPACITY          5 // size of the message buffer queue (max number of messages waiting to be sent)
 
-/* 
+/*
 for FrSky D protocol (D-receivers)
 */
 // FrSky sensor hub data IDs
@@ -48,24 +48,26 @@ for FrSky D protocol (D-receivers)
 #define START_STOP_D                0x5E
 #define BYTESTUFF_D                 0x5D
 
-/* 
+/*
 for FrSky SPort and SPort Passthrough (OpenTX) protocols (X-receivers)
 */
 // FrSky Sensor IDs
 #define SENSOR_ID_VARIO             0x00 // Sensor ID  0
 #define SENSOR_ID_FAS               0x22 // Sensor ID  2
 #define SENSOR_ID_GPS               0x83 // Sensor ID  3
+#define SENSOR_ID_RPM               0xE4 // Sensor ID  4
 #define SENSOR_ID_SP2UR             0xC6 // Sensor ID  6
 #define SENSOR_ID_28                0x1B // Sensor ID 28
 
 // FrSky data IDs
 #define GPS_LONG_LATI_FIRST_ID      0x0800
 #define DIY_FIRST_ID                0x5000
+#define RPM_LAST_ID                 0x050F
 
 #define START_STOP_SPORT            0x7E
 #define BYTESTUFF_SPORT             0x7D
 #define SPORT_DATA_FRAME            0x10
-/* 
+/*
 for FrSky SPort Passthrough
 */
 // data bits preparation
@@ -108,8 +110,12 @@ for FrSky SPort Passthrough
 #define ATTIANDRNG_PITCH_LIMIT      0x3FF
 #define ATTIANDRNG_PITCH_OFFSET     11
 #define ATTIANDRNG_RNGFND_OFFSET    21
+// for vfrhud
+#define VFRHUD_ASPD_OFFSET          0
+#define VFRHUD_THR_OFFSET           8
+#define VFRHUD_BALT_OFFSET          15
 // for fair scheduler
-#define TIME_SLOT_MAX               11
+#define TIME_SLOT_MAX               13
 
 class AP_Frsky_Telem {
 public:
@@ -155,7 +161,7 @@ private:
         mavlink_statustext_t next;
         bool available;
     } _statustext;
-    
+
     struct
     {
         int32_t vario_vspd;
@@ -184,7 +190,7 @@ private:
         uint8_t avg_packet_rate;
         uint8_t new_byte;
     } _passthrough;
-    
+
 
     struct
     {
@@ -199,7 +205,9 @@ private:
             500,    //0x5004 home       2Hz
             500,    //0x5008 batt 2     2Hz
             500,    //0x5003 batt 1     2Hz
-            1000    //0x5007 parameters 1Hz
+            1000,   //0x5007 parameters 1Hz
+            280,    //0x500A rpm        3Hz
+            500     //0x50F2 vfrhud     2Hz
         };
     } _sport_config;
 
@@ -212,21 +220,22 @@ private:
         uint8_t gps_call;
         uint8_t vario_call;
         uint8_t various_call;
+        uint8_t rpm_call;
     } _SPort;
-    
+
     struct
     {
         uint32_t last_200ms_frame;
         uint32_t last_1000ms_frame;
     } _D;
-    
+
     struct
     {
         uint32_t chunk; // a "chunk" (four characters/bytes) at a time of the queued message to be sent
         uint8_t repeats; // send each message "chunk" 3 times to make sure the entire messsage gets through without getting cut
         uint8_t char_index; // index of which character to get in the message
     } _msg_chunk;
-    
+
     float get_vspeed_ms(void);
     // passthrough WFQ scheduler
     void update_avg_packet_rate();
@@ -259,18 +268,21 @@ private:
     uint32_t calc_velandyaw(void);
     uint32_t calc_attiandrng(void);
     uint16_t prep_number(int32_t number, uint8_t digits, uint8_t power);
+    uint32_t calc_rpm(void);
+    uint32_t calc_vfrhud(void);
 
     // methods to convert flight controller data to FrSky D or SPort format
     void calc_nav_alt(void);
     float format_gps(float dec);
     void calc_gps_position(void);
+    bool get_rpm(const uint8_t instance, int32_t &value) const;
 
     // setup ready for passthrough operation
     void setup_passthrough(void);
 
     // get next telemetry data for external consumers of SPort data (internal function)
     bool _get_telem_data(uint8_t &frame, uint16_t &appid, uint32_t &data);
-    
+
     static AP_Frsky_Telem *singleton;
 
     // use_external_data is set when this library will

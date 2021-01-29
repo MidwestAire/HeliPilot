@@ -18,7 +18,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* 
+/*
    FRSKY Telemetry library
 */
 
@@ -32,6 +32,7 @@
 #include <AP_Common/Location.h>
 #include <AP_GPS/AP_GPS.h>
 #include <AP_Baro/AP_Baro.h>
+#include <AP_RPM/AP_RPM.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -82,6 +83,8 @@ void AP_Frsky_Telem::setup_passthrough(void)
     _passthrough.packet_weight[8] = 1300;  // 0x5008 Battery 2 status
     _passthrough.packet_weight[9] = 1300;  // 0x5003 Battery 1 status
     _passthrough.packet_weight[10] = 1700; // 0x5007 parameters
+    _passthrough.packet_weight[11] = 300;  // 0x500A rpm 1 and 2
+    _passthrough.packet_weight[12] = 400;  // 0x50F2 vfr hud
 }
 
 /*
@@ -120,7 +123,7 @@ void AP_Frsky_Telem::update_avg_packet_rate()
     uint32_t poll_now = AP_HAL::millis();
 
     _passthrough.avg_packet_counter++;
-    
+
     if (poll_now - _passthrough.last_poll_timer > 1000) { //average in last 1000ms
         // initialize
         if (_passthrough.avg_packet_rate == 0) _passthrough.avg_packet_rate = _passthrough.avg_packet_counter;
@@ -142,7 +145,7 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
 
     uint32_t now = AP_HAL::millis();
     uint8_t max_delay_idx = 0;
-    
+
     float max_delay = 0;
     float delay = 0;
     bool packet_ready = false;
@@ -151,7 +154,7 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
     check_sensor_status_flags();
     // build message queue for ekf_status
     check_ekf_status();
-    
+
     // dynamic priorities
     bool queue_empty;
     {
@@ -165,7 +168,7 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
         _passthrough.packet_weight[0] = 5000;   // messages
         _passthrough.packet_weight[1] = 45;     // attitude
     }
-    
+
     // search the packet with the longest delay after the scheduled time
     for (int i=0;i<TIME_SLOT_MAX;i++) {
         //normalize packet delay relative to packet weight
@@ -183,6 +186,16 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
                     break;
                 case 8:
                     packet_ready = AP::battery().num_instances() > 1;
+                    break;
+                case 11:
+                    {
+                        packet_ready = false;
+                        const AP_RPM *rpm = AP::rpm();
+                        if (rpm == nullptr) {
+                            break;
+                        }
+                        packet_ready = rpm->num_sensors() > 0;
+                    }
                     break;
                 default:
                     packet_ready = true;
@@ -211,7 +224,7 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
             send_uint32(SPORT_DATA_FRAME, GPS_LONG_LATI_FIRST_ID, calc_gps_latlng(&_passthrough.send_latitude)); // gps latitude or longitude
             _passthrough.gps_lng_sample = calc_gps_latlng(&_passthrough.send_latitude);
             // force the scheduler to select GPS lon as packet that's been waiting the most
-            // this guarantees that gps coords are sent at max 
+            // this guarantees that gps coords are sent at max
             // _passthrough.avg_polling_period*number_of_downlink_sensors time separation
             _passthrough.packet_timer[3] = _passthrough.packet_timer[2] - 10000;
             break;
@@ -238,6 +251,12 @@ void AP_Frsky_Telem::passthrough_wfq_adaptive_scheduler(void)
             break;
         case 10: // 0x5007 parameters
             send_uint32(SPORT_DATA_FRAME, DIY_FIRST_ID+7, calc_param());
+            break;
+        case 11: // 0x500A rpm sensors 1 and 2
+            send_uint32(SPORT_DATA_FRAME, DIY_FIRST_ID+0x0A, calc_rpm());
+            break;
+        case 12: // 0x50F2 VFRHUD
+            send_uint32(SPORT_DATA_FRAME, DIY_FIRST_ID+0xF2, calc_vfrhud());
             break;
     }
 }
@@ -329,8 +348,8 @@ void AP_Frsky_Telem::send_SPort(void)
                     }
                     if (++_SPort.vario_call > 2) {
                         _SPort.vario_call = 0;
-                    } 
-                    break;    
+                    }
+                    break;
                 case SENSOR_ID_FAS: // Sensor ID  2
                     switch (_SPort.fas_call) {
                         case 0:
@@ -347,7 +366,7 @@ void AP_Frsky_Telem::send_SPort(void)
                                 }
                                 send_uint32(SPORT_DATA_FRAME, DATA_ID_CURRENT, (uint16_t)roundf(current * 10.0f)); // send current consumption
                                 break;
-                            }                        
+                            }
                             break;
                     }
                     if (++_SPort.fas_call > 2) {
@@ -381,6 +400,22 @@ void AP_Frsky_Telem::send_SPort(void)
                     }
                     if (++_SPort.gps_call > 6) {
                         _SPort.gps_call = 0;
+                    }
+                    break;
+                case SENSOR_ID_RPM: // Sensor ID 4
+                    {
+                        const AP_RPM* rpm = AP::rpm();
+                        if (rpm == nullptr) {
+                            break;
+                        }
+                        int32_t value;
+                        if (get_rpm(_SPort.rpm_call, value)) {
+                            // use high numbered frsky sensor ids to leave low numbered free for externally attached physical frsky sensors
+                            send_uint32(SPORT_DATA_FRAME, 1+RPM_LAST_ID-(rpm->num_sensors()-_SPort.rpm_call), value);
+                        }
+                        if (++_SPort.rpm_call > (rpm->num_sensors()-1)) {
+                            _SPort.rpm_call = 0;
+                        }
                     }
                     break;
                 case SENSOR_ID_SP2UR: // Sensor ID  6
@@ -423,7 +458,7 @@ void AP_Frsky_Telem::send_D(void)
         if (!_battery.current_amps(current)) {
             current = 0;
         }
-        send_uint16(DATA_ID_CURRENT, (uint16_t)roundf(current * 10.0f)); // send current consumption        
+        send_uint16(DATA_ID_CURRENT, (uint16_t)roundf(current * 10.0f)); // send current consumption
         calc_nav_alt();
         send_uint16(DATA_ID_BARO_ALT_BP, _SPort_data.alt_nav_meters); // send nav altitude integer part
         send_uint16(DATA_ID_BARO_ALT_AP, _SPort_data.alt_nav_cm); // send nav altitude decimal part
@@ -474,7 +509,7 @@ void AP_Frsky_Telem::loop(void)
     }
 }
 
-/* 
+/*
  * build up the frame's crc
  * for FrSky SPort protocol (X-receivers)
  */
@@ -489,7 +524,7 @@ void AP_Frsky_Telem::calc_crc(uint8_t byte)
  * send the frame's crc at the end of the frame
  * for FrSky SPort protocol (X-receivers)
  */
-void AP_Frsky_Telem::send_crc(void) 
+void AP_Frsky_Telem::send_crc(void)
 {
     send_byte(0xFF - _crc);
     _crc = 0;
@@ -612,7 +647,7 @@ bool AP_Frsky_Telem::get_next_msg_chunk(void)
         // send messages twice
         extra_chunks = 1;
     }
-    
+
     if (_msg_chunk.repeats++ > extra_chunks ) {
         _msg_chunk.repeats = 0;
         if (_msg_chunk.char_index == 0) {
@@ -734,7 +769,7 @@ void AP_Frsky_Telem::check_ekf_status(void)
         }
     }
 }
-      
+
 /*
  * prepare parameter data
  * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
@@ -766,7 +801,7 @@ uint32_t AP_Frsky_Telem::calc_param(void)
     }
     //Reserve first 8 bits for param ID, use other 24 bits to store parameter value
     param = (_paramID << PARAM_ID_OFFSET) | (param & PARAM_VALUE_LIMIT);
-    
+
     return param;
 }
 
@@ -813,12 +848,12 @@ uint32_t AP_Frsky_Telem::calc_gps_status(void)
     // GPS receiver status (limit to 0-3 (0x3) since the value is stored on 2 bits: NO_GPS = 0, NO_FIX = 1, GPS_OK_FIX_2D = 2, GPS_OK_FIX_3D or GPS_OK_FIX_3D_DGPS or GPS_OK_FIX_3D_RTK_FLOAT or GPS_OK_FIX_3D_RTK_FIXED = 3)
     gps_status |= ((gps.status() < GPS_STATUS_LIMIT) ? gps.status() : GPS_STATUS_LIMIT)<<GPS_STATUS_OFFSET;
     // GPS horizontal dilution of precision in dm
-    gps_status |= prep_number(roundf(gps.get_hdop() * 0.1f),2,1)<<GPS_HDOP_OFFSET; 
+    gps_status |= prep_number(roundf(gps.get_hdop() * 0.1f),2,1)<<GPS_HDOP_OFFSET;
     // GPS receiver advanced status (0: no advanced fix, 1: GPS_OK_FIX_3D_DGPS, 2: GPS_OK_FIX_3D_RTK_FLOAT, 3: GPS_OK_FIX_3D_RTK_FIXED)
     gps_status |= ((gps.status() > GPS_STATUS_LIMIT) ? gps.status()-GPS_STATUS_LIMIT : 0)<<GPS_ADVSTATUS_OFFSET;
     // Altitude MSL in dm
     const Location &loc = gps.location();
-    gps_status |= prep_number(roundf(loc.alt * 0.1f),2,2)<<GPS_ALTMSL_OFFSET; 
+    gps_status |= prep_number(roundf(loc.alt * 0.1f),2,2)<<GPS_ALTMSL_OFFSET;
     return gps_status;
 }
 
@@ -838,7 +873,7 @@ uint32_t AP_Frsky_Telem::calc_batt(uint8_t instance)
     if (!_battery.consumed_mah(consumed_mah, instance)) {
         consumed_mah = 0;
     }
-    
+
     // battery voltage in decivolts, can have up to a 12S battery (4.25Vx12S = 51.0V)
     batt = (((uint16_t)roundf(_battery.voltage(instance) * 10.0f)) & BATT_VOLTAGE_LIMIT);
     // battery current draw in deciamps
@@ -874,8 +909,8 @@ uint32_t AP_Frsky_Telem::calc_ap_status(void)
     ap_status |= (uint8_t)(AP_Notify::flags.ekf_bad)<<AP_EKF_FS_OFFSET;
     // IMU temperature
     ap_status |= imu_temp << AP_IMU_TEMP_OFFSET;
-    //hal.console->printf("flying=%d\n",AP_Notify::flags.flying);    
-    //hal.console->printf("ap_status=%08X\n",ap_status);    
+    //hal.console->printf("flying=%d\n",AP_Notify::flags.flying);
+    //hal.console->printf("ap_status=%08X\n",ap_status);
     return ap_status;
 }
 
@@ -898,7 +933,7 @@ uint32_t AP_Frsky_Telem::calc_home(void)
         home_loc = _ahrs.get_home();
     }
 
-    if (get_position) {            
+    if (get_position) {
         // check home_loc is valid
         if (home_loc.lat != 0 || home_loc.lng != 0) {
             // distance between vehicle and home_loc in meters
@@ -931,7 +966,7 @@ uint32_t AP_Frsky_Telem::calc_velandyaw(void)
     WITH_SEMAPHORE(_ahrs.get_semaphore());
     // horizontal velocity in dm/s (use airspeed if available and enabled - even if not used - otherwise use groundspeed)
     const AP_Airspeed *aspeed = _ahrs.get_airspeed();
-    if (aspeed && aspeed->enabled()) {        
+    if (aspeed && aspeed->enabled()) {
         velandyaw |= prep_number(roundf(aspeed->get_airspeed() * 10), 2, 1)<<VELANDYAW_XYVEL_OFFSET;
     } else { // otherwise send groundspeed estimate from ahrs
         velandyaw |= prep_number(roundf(_ahrs.groundspeed() * 10), 2, 1)<<VELANDYAW_XYVEL_OFFSET;
@@ -1053,10 +1088,10 @@ float AP_Frsky_Telem::get_vspeed_ms(void)
 void AP_Frsky_Telem::calc_nav_alt(void)
 {
     _SPort_data.vario_vspd = (int32_t)(get_vspeed_ms()*100); //convert to cm/s
-    
+
     Location loc;
     float current_height = 0; // in centimeters above home
-    
+
     AP_AHRS &_ahrs = AP::ahrs();
     WITH_SEMAPHORE(_ahrs.get_semaphore());
     if (_ahrs.get_position(loc)) {
@@ -1069,7 +1104,7 @@ void AP_Frsky_Telem::calc_nav_alt(void)
 
     _SPort_data.alt_nav_meters = (int16_t)current_height;
     _SPort_data.alt_nav_cm = (current_height - _SPort_data.alt_nav_meters) * 100;
-} 
+}
 
 /*
  * format the decimal latitude/longitude to the required degrees/minutes
@@ -1124,7 +1159,72 @@ void AP_Frsky_Telem::calc_gps_position(void)
     }
 
     AP_AHRS &_ahrs = AP::ahrs();
-    _SPort_data.yaw = (uint16_t)((_ahrs.yaw_sensor / 100) % 360); // heading in degree based on AHRS and not GPS    
+    _SPort_data.yaw = (uint16_t)((_ahrs.yaw_sensor / 100) % 360); // heading in degree based on AHRS and not GPS
+}
+
+/*
+ * prepare rpm for sensors 1 and 2
+ * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
+ * resolution is 10rpm, we send rpm*0.1 as int16_t
+ */
+uint32_t AP_Frsky_Telem::calc_rpm(void)
+{
+    const AP_RPM *rpm = AP::rpm();
+    if (rpm == nullptr) {
+        return 0;
+    }
+    uint32_t value = 0;
+
+    // bits 0-15 for rpm 0
+    if (rpm->healthy(0)) {
+        value |= (int16_t)roundf(rpm->get_rpm(0) * 0.1);
+    }
+    // bits 16-31 for rpm 1
+    if (rpm->healthy(1)) {
+        value |= (int16_t)roundf(rpm->get_rpm(1) * 0.1) << 16;
+    }
+    return value;
+}
+
+/*
+ * prepare vfrhud data
+ * for FrSky SPort Passthrough (OpenTX) protocol (X-receivers)
+ */
+uint32_t AP_Frsky_Telem::calc_vfrhud(void)
+{
+    const AP_Airspeed *aspeed = AP::airspeed();
+    if (aspeed == nullptr) {
+        return 0;
+    }
+
+    uint32_t value = 0;
+    if (aspeed->enabled()) {
+        value |= prep_number(roundf(aspeed->get_airspeed() * 10), 2, 1)<<VFRHUD_ASPD_OFFSET;
+    }
+    value |= ((uint8_t)gcs().get_hud_throttle())<<VFRHUD_THR_OFFSET;
+
+    AP_Baro &baro = AP::baro();
+    WITH_SEMAPHORE(baro.get_semaphore());
+    value |= prep_number(roundf(baro.get_altitude() * 0.1f), 3, 2)<<VFRHUD_BALT_OFFSET;
+
+    return value;
+}
+
+/*
+ * prepare rpm data
+ * for FrSky D and SPort protocols
+ */
+bool AP_Frsky_Telem::get_rpm(const uint8_t instance, int32_t &value) const
+{
+    const AP_RPM* rpm = AP::rpm();
+    if (rpm == nullptr) {
+        return false;
+    }
+
+    if (rpm->healthy(instance)) {
+        value = static_cast<int32_t>(roundf(rpm->get_rpm(instance)));
+    }
+    return true;
 }
 
 uint32_t AP_Frsky_Telem::sensor_status_flags() const
