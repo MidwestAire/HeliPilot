@@ -178,7 +178,7 @@ const AP_Param::GroupInfo AP_MotorsHeli_RSC::var_info[] = {
     // @Units: s
     // @Increment: 1
     // @User: Standard
-    AP_GROUPINFO("GOV_CLDWN", 22, AP_MotorsHeli_RSC, _governor_cooldown, 0),
+    AP_GROUPINFO("GOV_CLDWN", 22, AP_MotorsHeli_RSC, _autothrottle_cooldown, 0),
 
     AP_GROUPEND
 };
@@ -232,7 +232,9 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
             _control_output = 0.0f;
             
             // governor is forced to disengage status and ensure governor outputs are reset
+            _autothrottle = false;
             _governor_engage = false;
+            _governor_fault = false;
             _governor_output = 0.0f;
             _governor_torque_reference = 0.0f;
             break;
@@ -243,16 +245,17 @@ void AP_MotorsHeli_RSC::output(RotorControlState state)
 
             // set rotor control speed to engine idle and ensure governor is not engaged, if used
             _governor_engage = false;
+            _governor_fault = false;
             _governor_output = 0.0f;
             _governor_torque_reference = 0.0f;
             if (!_autothrottle) {
                 _control_output = get_idle_output();
             } else {
                 _control_output = get_idle_output() * 1.5f;
-                _governor_fast_idle += dt;
-                if (_governor_fast_idle > _governor_cooldown) {
+                _autothrottle_fast_idle += dt;
+                if (_autothrottle_fast_idle > _autothrottle_cooldown) {
                     _autothrottle = false;
-                    _governor_fast_idle = 0.0f;
+                    _autothrottle_fast_idle = 0.0f;
                 }
             }
             break;
@@ -397,85 +400,56 @@ float AP_MotorsHeli_RSC::calculate_throttlecurve(float collective_in)
 void AP_MotorsHeli_RSC::autothrottle_run()
 {
     float throttlecurve = calculate_throttlecurve(_collective_in);
-    if (!_autothrottle) {
-        _governor_output = 0.0f;
-        _governor_torque_reference = 0.0f;
-        _governor_engage = false;   //governor cannot be engaged unless autothrottle is operating
-        _governor_fault = false;    //resets a governor hard fault only if autothrottle is expired or inactive
-    }
-
-    // AutoThrottle and governor engage sequence
-    // autothrottle checks for valid signal from speed sensor. If no signal, system is on permanent throttle curve
-    if (!_governor_engage && !_governor_fault && (_rotor_rpm > (_governor_rpm * 0.5f))) {
-        _autothrottle = true;
-        if (!_governor_engage && (_rotor_rpm < _governor_rpm)) {
-            // torque limiter accelerates rotor to the reference speed at tapering torque
-            float torque_limit = (get_governor_torque() * get_governor_torque());
-            _governor_output = (_rotor_rpm / _governor_rpm) * torque_limit;
-        }
-    }
-
+    
     // Normal autothrottle operation with governor
     if (_governor_engage && !_governor_fault) {
         float governor_droop = (_governor_rpm - _rotor_rpm) * get_governor_droop_response();
         _governor_output = governor_droop + ((throttlecurve - _governor_torque_reference) *  get_governor_ff());
-        // if rotor rpm is low or high by more than 2 rpm, increment the torque reference at 1% throttle/second
-        if (_rotor_rpm < (_governor_rpm - 2.0f)) {
+        if (_rotor_rpm < (_governor_rpm - 2.0f)) {   // torque compensator
             _governor_torque_reference += get_governor_compensator();
         } else if (_rotor_rpm > (_governor_rpm + 2.0f)) {
             _governor_torque_reference -= get_governor_compensator();
         }
-    }
-
-    // governor and speed sensor fault detection - must maintain Rrpm -3/+2%
-    // speed fault detector will allow a fault to persist for 200 contiguous governor update cycles
-    if (_governor_engage && !_governor_fault) {
-        if ((_rotor_rpm < (_governor_rpm * 0.97f)) || (_rotor_rpm > (_governor_rpm * 1.02f))) {
+    _control_output = constrain_float((_governor_torque_reference + _governor_output), throttlecurve * get_governor_ff(), 1.0f);
+        // governor and speed sensor fault detection - must maintain Rrpm -3/+2%
+        // speed fault detector will allow a fault to persist for 200 contiguous governor update cycles
+        if ((_rotor_rpm <= (_governor_rpm * 0.97f)) || (_rotor_rpm >= (_governor_rpm * 1.02f))) {
             _governor_fault_count += 1.0f;
             if (_governor_fault_count > 200.0f) {
                 _governor_fault = true;
+                _governor_engage = false;
                 _governor_output = 0.0f;
                 _governor_torque_reference = 0.0f;
                 gcs().send_text(MAV_SEVERITY_WARNING, "Governor Fault: Speed Range");
             }
         } else {
-            // governor fault counter reset to zero if out of range readings don't persist
             _governor_fault_count = 0.0f;
+        }    
+    } else if (!_governor_engage && !_governor_fault) {
+        if (_rotor_rpm >= (_governor_rpm * 0.5f)) {
+            // torque rise limiter accelerates rotor to the reference speed
+            float torque_limit = (get_governor_torque() * get_governor_torque());
+            _governor_output = (_rotor_rpm / _governor_rpm) * torque_limit;
+            _control_output = constrain_float(throttlecurve + _governor_output, 0.0f, 1.0f);
+            _governor_torque_reference = _control_output;
+            if (_rotor_rpm >= (_governor_rpm - 2.0f)) {
+                _governor_engage = true;
+                _autothrottle = true;
+            }
+        } else {
+            _control_output = constrain_float(get_idle_output() + (_rotor_ramp_output * (throttlecurve - get_idle_output())), 0.0f, 1.0f);
         }
-    } else if (_autothrottle && !_governor_engage && !_governor_fault && (_rotor_rpm > (_governor_rpm * 1.02f))) {
-        // if governor is not engaged and rotor is overspeeding by more than 2% due to misconfigured
-        // throttle curve or stuck throttle, set a fault and governor will not operate
-        _governor_fault = true;
-        gcs().send_text(MAV_SEVERITY_WARNING, "Governor Fault: Rotor Overspeed");
-    }
-    
-    // temporary rpm debug message
-//    static uint16_t counter = 0;
-//    if (_rotor_rpm > 0.0f) {
-//        counter++;
-//        if (counter > 2000) {
-//            counter = 0;
-//            gcs().send_text(MAV_SEVERITY_INFO, "%f rpm", roundf(_rotor_rpm));
-//        }
-//    }
-
-    // Control outputs depending on status of autothrottle logic
-    // first stage is governor ramping in, initial torque reference is set at the throttle opening required
-    // to reach governor reference speed, at which point governor fully engages
-    if (_autothrottle && !_governor_engage && !_governor_fault) {
-        _control_output = constrain_float(throttlecurve + _governor_output, 0.0f, 1.0f);
-        _governor_torque_reference = _control_output;
-        if (_rotor_rpm >= (_governor_rpm - 2.0f)) {
-            _governor_engage = true;
-        }
-    } else if (_autothrottle && _governor_engage && !_governor_fault) {
-        // second stage with no faults is normal autothrottle governor output
-        _control_output = constrain_float((_governor_torque_reference + _governor_output), throttlecurve * get_governor_ff(), 1.0f);
     } else {
-        // revert to throttle curve if all else fails
-        _governor_engage = false;
+        // if governor has faulted use throttle curve
+        _control_output = constrain_float(get_idle_output() + (_rotor_ramp_output * (throttlecurve - get_idle_output())), 0.0f, 1.0f);
+    }
+
+    // if governor is not engaged and rotor is overspeeding by more than 2% due to misconfigured
+    // throttle curve or stuck throttle, set a fault and governor will not operate
+    if (!_governor_engage && !_governor_fault && (_rotor_rpm > (_governor_rpm * 1.02f))) {
+        _governor_fault = true;
         _governor_output = 0.0f;
         _governor_torque_reference = 0.0f;
-        _control_output = get_idle_output() + (_rotor_ramp_output * (throttlecurve - get_idle_output()));
+        gcs().send_text(MAV_SEVERITY_WARNING, "Governor Fault: Rotor Overspeed");
     }
 }

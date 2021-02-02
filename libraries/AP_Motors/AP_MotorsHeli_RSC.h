@@ -175,15 +175,15 @@ private:
     // parameters
     AP_Int16        _power_slewrate;            // throttle slew rate (percentage per second)
     AP_Int16        _thrcrv[5];                 // throttle value sent to throttle servo at 0, 25, 50, 75 and 100 percent collective
-    AP_Int16        _governor_rpm;              // governor reference for speed calculations
+    AP_Float        _governor_rpm;              // governor reference for speed calculations
     AP_Float        _governor_torque;           // governor torque rise setting
     AP_Float        _governor_torque_reference; // governor reference for load calculations
     AP_Float        _governor_compensator;      // governor torque compensator variable
     AP_Float        _governor_droop_response;   // governor response to droop under load
     AP_Float        _governor_ff;               // governor feedforward variable
-    AP_Float        _governor_cooldown;         // autothrottle cooldown timer to provide a fast idle
     AP_Float        _governor_fault_count;      // variable for tracking governor speed sensor faults
-    AP_Float        _governor_fast_idle;        // autothrottle variable for cooldown
+    AP_Float        _autothrottle_fast_idle;    // autothrottle variable for cooldown
+    AP_Float        _autothrottle_cooldown;     // autothrottle cooldown timer to provide a fast idle
 
     // parameter accessors to allow conversions
     float       get_critical_speed() const { return _critical_speed * 0.01; }
