@@ -402,22 +402,22 @@ void AP_Frsky_Telem::send_SPort(void)
                         _SPort.gps_call = 0;
                     }
                     break;
-//                case SENSOR_ID_RPM: // Sensor ID 4
-//                    {
-//                        const AP_RPM* rpm = AP::rpm();
-//                        if (rpm == nullptr) {
-//                            break;
-//                        }
-//                        int32_t value;
-//                        if (get_rpm(_SPort.rpm_call, value)) {
-//                            // use high numbered frsky sensor ids to leave low numbered free for externally attached physical frsky sensors
-//                            send_uint32(SPORT_DATA_FRAME, 1+RPM_LAST_ID-(rpm->num_sensors()-_SPort.rpm_call), value);
-//                        }
-//                        if (++_SPort.rpm_call > (rpm->num_sensors()-1)) {
-//                            _SPort.rpm_call = 0;
-//                        }
-//                    }
-//                    break;
+                case SENSOR_ID_RPM: // Sensor ID 4
+                    {
+                        const AP_RPM* rpm = AP::rpm();
+                        if (rpm == nullptr) {
+                            break;
+                        }
+                        int32_t value;
+                        if (get_rpm(_SPort.rpm_call, value)) {
+                            // use high numbered frsky sensor ids to leave low numbered free for externally attached physical frsky sensors
+                            send_uint32(SPORT_DATA_FRAME, 1+RPM_LAST_ID-(rpm->num_sensors()-_SPort.rpm_call), value);
+                        }
+                        if (++_SPort.rpm_call > (rpm->num_sensors()-1)) {
+                            _SPort.rpm_call = 0;
+                        }
+                    }
+                    break;
                 case SENSOR_ID_SP2UR: // Sensor ID  6
                     switch (_SPort.various_call) {
                         case 0 :
