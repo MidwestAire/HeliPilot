@@ -109,3 +109,20 @@ void AP_RPM_Pin::update(void)
         state.rate_rpm = 0;
     }
 }
+
+    // update rpm with PFC pulse frequency counter
+//    static uint8_t state_count = 0;
+//    static float elasped_time = 0.0f;
+//    static uint8_t last_pin = 0;
+//    if (last_pin != hal.gpio->read(pin)) {
+//        last_pin = hal.gpio->read(pin);
+//        ++state_count;
+//        float elapsed_time += dt;
+//        if (state_count >= 4) {
+//            float new_rpm = 60000.0f / (elapsed_time / (state_count * 0.5f));
+//            _rotor_rpm = (last_rpm + new_rpm) * 0.5f;
+//            float last_rpm = new_rpm;
+//            state_count = 0;
+//            elapsed_time = 0.0f
+//        } 
+//    }
