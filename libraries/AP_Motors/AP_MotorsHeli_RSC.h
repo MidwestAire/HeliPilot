@@ -81,8 +81,9 @@ public:
     // set_idle_output
     void        set_idle_output(float idle_output) { _idle_output = idle_output; }
 
-    // set rotor speed governor parameters
+    // set autothrottle parameters
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
+    void        set_governor_switch(bool governor_switch) {_governor_switch = (bool)governor_switch; }
 
     // get_desired_speed
     float       get_desired_speed() const { return _desired_speed; }
@@ -95,10 +96,10 @@ public:
 
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
-    
+
     // set_rotor_rpm - when speed sensor is available for governor
     void        set_rotor_rpm(float rotor_rpm) {_rotor_rpm = (float)rotor_rpm; }
-    
+
     // get_governor_output
     float       get_governor_output() const { return _governor_output; }
 
@@ -116,7 +117,7 @@ public:
 
     // set_collective. collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
-    
+
     // calculate autothrottle output
     void        autothrottle_run();
 
@@ -155,6 +156,7 @@ private:
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
     float           _governor_output;             // governor output for rotor speed control
+    bool            _governor_switch = 1;         // flag for governor on/off switch, defaults to switch on if not used
     bool            _governor_engage;             // RSC governor status flag
     bool            _autothrottle;                // autothrottle status flag
     bool            _governor_fault;              // governor fault status flag

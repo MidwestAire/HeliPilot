@@ -123,6 +123,12 @@ void AP_MotorsHeli_Quad::calculate_armed_scalars()
 
     // set bailout ramp time
     _main_rotor.use_bailout_ramp_time(_heliflags.enable_bailout);
+
+    if (_heliflags.governor_switch) {
+        _main_rotor.set_governor_switch(true);
+    } else {
+        _main_rotor.set_governor_switch(false);
+    }
 }
 
 // calculate_scalars

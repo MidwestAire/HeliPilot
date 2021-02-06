@@ -23,7 +23,7 @@
 // flybar types
 #define AP_MOTORS_HELI_NOFLYBAR                 0
 
-// rsc function output channels. 
+// rsc function output channels.
 #define AP_MOTORS_HELI_RSC                      CH_8
 
 class AP_HeliControls;
@@ -74,12 +74,15 @@ public:
     // set_inverted_flight - enables/disables inverted flight
     void set_inverted_flight(bool inverted) { _heliflags.inverted_flight = inverted; }
 
+    // set_governor_switch - enables/disables governor with aux function switch
+    void set_governor(bool governor) { _heliflags.governor_switch = governor; }
+
     // get_rsc_mode - gets the current rotor speed control method
     uint8_t get_rsc_mode() const { return _main_rotor.get_control_mode(); }
 
     // get_rsc_setpoint - gets contents of _rsc_setpoint parameter (0~1)
     float get_rsc_setpoint() const { return _main_rotor._rsc_setpoint.get() * 0.01f; }
-    
+
     // set_rpm - for rotor speed governor
     virtual void set_rpm(float rotor_rpm) = 0;
 
@@ -97,10 +100,10 @@ public:
 
     // rotor_speed_above_critical - return true if rotor speed is above that critical for flight
     virtual bool rotor_speed_above_critical() const = 0;
-    
+
     //get rotor governor output
     virtual float get_governor_output() const = 0;
-    
+
     //get engine throttle output
     virtual float get_control_output() const = 0;
 
@@ -132,7 +135,7 @@ public:
 
     // return true if the servo test is still running/pending
     bool servo_test_running() const { return _heliflags.servo_test_running; }
-    
+
     // var_info for holding Parameter information
     static const struct AP_Param::GroupInfo var_info[];
 
@@ -199,6 +202,7 @@ protected:
         uint8_t rotor_runup_complete    : 1;    // true if the rotors have had enough time to wind up
         uint8_t inverted_flight         : 1;    // true for inverted flight
         uint8_t init_targets_on_arming  : 1;    // 0 if targets were initialized, 1 if targets were not initialized after arming
+        uint8_t governor_switch         : 1;    // true for governor on using aux function switch
         uint8_t save_rsc_mode           : 1;    // used to determine the rsc mode needs to be saved while disarmed
         uint8_t in_autorotation         : 1;    // true if aircraft is in autorotation
         uint8_t enable_bailout          : 1;    // true if allowing RSC to quickly ramp up engine
