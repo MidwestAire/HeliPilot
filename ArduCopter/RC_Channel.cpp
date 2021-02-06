@@ -79,6 +79,7 @@ void RC_Channel_Copter::init_aux_function(const aux_func_t ch_option, const aux_
     case AUX_FUNC::WINCH_ENABLE:
     case AUX_FUNC::STANDBY:
     case AUX_FUNC::SURFACE_TRACKING:
+    case AUX_FUNC::HELI_GOVERNOR:
         do_aux_function(ch_option, ch_flag);
         break;
     // the following functions do not need to be initialised:
@@ -577,6 +578,24 @@ void RC_Channel_Copter::do_aux_function(const aux_func_t ch_option, const aux_sw
                 copter.surface_tracking.set_surface(Copter::SurfaceTracking::Surface::CEILING);
                 break;
             }
+            break;
+            
+        case AUX_FUNC::HELI_GOVERNOR:
+#if FRAME_CONFIG == HELI_FRAME
+            // governor on/off switch for helicopter governor
+            switch (ch_flag) {
+            case HIGH:
+                copter.motors->set_governor(true);
+                copter.heli_flags.governor_switch = true;
+                break;
+            case MIDDLE:
+            // nothing
+            case LOW:
+                copter.motors->set_governor(false);
+                copter.heli_flags.governor_switch = false;
+                break;
+            }
+#endif
             break;
 
     default:
