@@ -78,12 +78,14 @@ public:
     // set_critical_speed
     void        set_critical_speed(float critical_speed) { _critical_speed = critical_speed; }
 
-    // set_idle_output
-    void        set_idle_output(float idle_output) { _idle_output = idle_output; }
-
-    // set autothrottle parameters
+    // set autothrottle, governor and throttle control parameters
+    void        set_throttle_curve();
+    void        autothrottle_run();
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_switch(bool governor_switch) {_governor_switch = (bool)governor_switch; }
+    float       get_governor_output() const { return _governor_output; }
+    void        set_idle_output(float idle_output) { _idle_output = idle_output; }
+    float       get_control_output() const { return _control_output; }
 
     // get_desired_speed
     float       get_desired_speed() const { return _desired_speed; }
@@ -91,17 +93,8 @@ public:
     // set_desired_speed - this requires input to be 0-1
     void        set_desired_speed(float desired_speed) { _desired_speed = desired_speed; }
 
-    // get_control_speed
-    float       get_control_output() const { return _control_output; }
-
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
-
-    // set_rotor_rpm - when speed sensor is available for governor
-    void        set_rotor_rpm(float rotor_rpm) {_rotor_rpm = (float)rotor_rpm; }
-
-    // get_governor_output
-    float       get_governor_output() const { return _governor_output; }
 
     // is_runup_complete
     bool        is_runup_complete() const { return _runup_complete; }
@@ -112,14 +105,8 @@ public:
     // set_runup_time
     void        set_runup_time(int8_t runup_time) { _runup_time = runup_time; }
 
-    // set_throttle_curve
-    void        set_throttle_curve();
-
     // set_collective. collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
-
-    // calculate autothrottle output
-    void        autothrottle_run();
 
     // use bailout ramp time
     void        use_bailout_ramp_time(bool enable) { _use_bailout_ramp = enable; }
