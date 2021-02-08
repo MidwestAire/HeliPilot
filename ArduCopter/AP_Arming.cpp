@@ -44,7 +44,7 @@ bool AP_Arming_Copter::run_pre_arm_checks(bool display_failure)
     // otherwise exit immediately.  This check to be repeated,
     // as state can change at any time.
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
-        check_failed(display_failure, "Motor Interlock Enabled");
+        check_failed(display_failure, "Throttle switch is ON");
     }
 
     // if pre arm checks are disabled run only the mandatory checks
@@ -217,7 +217,7 @@ bool AP_Arming_Copter::parameter_checks(bool display_failure)
         }
         // Ensure an Aux Channel is configured for motor interlock
         if (rc().find_channel_for_option(RC_Channel::aux_func_t::MOTOR_INTERLOCK) == nullptr) {
-            check_failed(ARMING_CHECK_PARAMETERS, display_failure, "Motor Interlock not configured");
+            check_failed(ARMING_CHECK_PARAMETERS, display_failure, "Throttle switch not configured");
             return false;
         }
 
@@ -594,7 +594,7 @@ bool AP_Arming_Copter::arm_checks(AP_Arming::Method method)
     // if we are using motor interlock switch and it's enabled, fail to arm
     // skip check in Throw mode which takes control of the motor interlock
     if (copter.ap.using_interlock && copter.ap.motor_interlock_switch) {
-        check_failed(true, "Motor Interlock Enabled");
+        check_failed(true, "Throttle switch is ON");
         return false;
     }
 
@@ -724,7 +724,7 @@ bool AP_Arming_Copter::arm(const AP_Arming::Method method, const bool do_arming_
     }
 
 #if HIL_MODE != HIL_MODE_DISABLED || CONFIG_HAL_BOARD == HAL_BOARD_SITL
-    gcs().send_text(MAV_SEVERITY_INFO, "Arming motors");
+    gcs().send_text(MAV_SEVERITY_INFO, "Arming flight system");
 #endif
 
     // Remember Orientation
@@ -813,7 +813,7 @@ bool AP_Arming_Copter::disarm()
     }
 
 #if HIL_MODE != HIL_MODE_DISABLED || CONFIG_HAL_BOARD == HAL_BOARD_SITL
-    gcs().send_text(MAV_SEVERITY_INFO, "Disarming motors");
+    gcs().send_text(MAV_SEVERITY_INFO, "Disarming flight system");
 #endif
 
     AP_AHRS_NavEKF &ahrs = AP::ahrs_navekf();
