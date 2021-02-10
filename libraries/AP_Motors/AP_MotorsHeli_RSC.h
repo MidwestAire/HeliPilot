@@ -78,9 +78,10 @@ public:
     // set_critical_speed
     void        set_critical_speed(float critical_speed) { _critical_speed = critical_speed; }
 
-    // set autothrottle, governor and throttle control parameters
+    // set autothrottle, governor and throttle control functions
     void        set_throttle_curve();
     void        autothrottle_run();
+    void        governor_reset();
     void        set_governor_output(float governor_output) {_governor_output = governor_output; }
     void        set_governor_switch(bool governor_switch) {_governor_switch = (bool)governor_switch; }
     float       get_governor_output() const { return _governor_output; }
