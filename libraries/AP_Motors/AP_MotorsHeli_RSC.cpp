@@ -127,17 +127,6 @@ const AP_Param::GroupInfo AP_MotorsHeli_RSC::var_info[] = {
 
     // Indices 13 thru 17 have been re-assigned and should not be used in the future
 
-#if CONFIG_HAL_BOARD == HAL_BOARD_SITL
-    // @Param: AROT_PCT
-    // @DisplayName: Autorotation Throttle Percentage for External Governor
-    // @Description: The throttle percentage sent to external governors, signaling to enable fast spool-up, when bailing out of an autorotation.  Set 0 to disable. If also using a tail rotor of type DDVP with external governor then this value must lie within the autorotation window of both governors.
-    // @Range: 0 40
-    // @Units: %
-    // @Increment: 1
-    // @User: Standard
-    AP_GROUPINFO("AROT_PCT", 18, AP_MotorsHeli_RSC, _ext_gov_arot_pct, 0),
-#endif
-
     // @Param: GOV_CLDWN
     // @DisplayName: AutoThrottle Cooldown Time
     // @Description: Will provide a fast idle for engine cooldown by raising the Ground Idle speed setting by 50% for the number of seconds the timer is set for. A setting of zero disables the fast idle. This feature will only apply after the governor and autothrottle have been engaged (throttle switch on and rotor rpm at least 100% of normal speed). At any time during fast idle, disarming will shut the engine down.

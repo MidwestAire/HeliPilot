@@ -27,12 +27,6 @@
 #define AP_MOTORS_HELI_RSC_THRCRV_75_DEFAULT    50
 #define AP_MOTORS_HELI_RSC_THRCRV_100_DEFAULT   100
 
-// RSC governor defaults
-#define AP_MOTORS_HELI_RSC_GOVERNOR_RPM_DEFAULT       1500
-#define AP_MOTORS_HELI_RSC_GOVERNOR_TORQUE_DEFAULT    30
-#define AP_MOTORS_HELI_RSC_GOVERNOR_DROOP_DEFAULT     25
-#define AP_MOTORS_HELI_RSC_GOVERNOR_FF_DEFAULT        50
-
 // rotor controller states
 enum RotorControlState {
     ROTOR_CONTROL_STOP = 0,
@@ -78,16 +72,6 @@ public:
     // set_critical_speed
     void        set_critical_speed(float critical_speed) { _critical_speed = critical_speed; }
 
-    // set autothrottle, governor and throttle control functions
-    void        set_throttle_curve();
-    void        autothrottle_run();
-    void        governor_reset();
-    void        set_governor_output(float governor_output) {_governor_output = governor_output; }
-    void        set_governor_switch(bool governor_switch) {_governor_switch = (bool)governor_switch; }
-    float       get_governor_output() const { return _governor_output; }
-    void        set_idle_output(float idle_output) { _idle_output = idle_output; }
-    float       get_control_output() const { return _control_output; }
-
     // get_desired_speed
     float       get_desired_speed() const { return _desired_speed; }
 
@@ -97,14 +81,20 @@ public:
     // get_rotor_speed - estimated rotor speed when no governor or rpm sensor is used
     float       get_rotor_speed() const;
 
-    // is_runup_complete
-    bool        is_runup_complete() const { return _runup_complete; }
+    // functions for autothrottle, throttle curve, governor, idle speed, output to servo
+    void        set_governor_output(float governor_output) {_governor_output = governor_output; }
+    float       get_governor_output() const { return _governor_output; }
+    void        set_governor_switch(bool governor_switch) {_governor_switch = (bool)governor_switch; }
+    void        governor_reset();
+    float       get_control_output() const { return _control_output; }
+    void        set_idle_output(float idle_output) { _idle_output = idle_output; }
+    void        autothrottle_run();
+    void        set_throttle_curve();
 
-    // set_ramp_time
+    // functions for ramp and runup timers, runup_complete flag
     void        set_ramp_time(int8_t ramp_time) { _ramp_time = ramp_time; }
-
-    // set_runup_time
     void        set_runup_time(int8_t runup_time) { _runup_time = runup_time; }
+    bool        is_runup_complete() const { return _runup_complete; }
 
     // set_collective. collective for throttle curve calculation
     void        set_collective(float collective) { _collective_in = collective; }
@@ -144,7 +134,7 @@ private:
     float           _collective_in;               // collective in for throttle curve calculation, range 0-1.0f
     float           _rotor_rpm;                   // rotor rpm from speed sensor for governor
     float           _governor_output;             // governor output for rotor speed control
-    bool            _governor_switch = 1;         // flag for governor on/off switch, defaults to switch on if not used
+    bool            _governor_switch;             // flag for governor on/off switch, defaults to switch on if not used
     bool            _governor_engage;             // RSC governor status flag
     bool            _autothrottle;                // autothrottle status flag
     bool            _governor_fault;              // governor fault status flag
