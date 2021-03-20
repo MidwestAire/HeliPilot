@@ -443,7 +443,7 @@ void AP_MotorsHeli_RSC::autothrottle_run()
         } else if (!_governor_engage && !_governor_fault) {
             // torque rise limiter accelerates rotor to the reference speed
             // this limits the max torque rise the governor could call for from the main power loop
-            if (_rotor_rpm >= (_governor_rpm * 0.5f)) {
+            if (_rotor_rpm >= (_governor_rpm * 0.8f)) {
                 float torque_limit = (get_governor_torque() * get_governor_torque());
                 _governor_output = (_rotor_rpm / _governor_rpm) * torque_limit;
                 _control_output = constrain_float(throttlecurve + _governor_output, (get_idle_output() * 1.5f), 1.0f);
